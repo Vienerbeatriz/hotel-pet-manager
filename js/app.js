@@ -48,10 +48,9 @@ function atualizarRelogio() {
 
 function configurarMenu() {
     const botaoAbrir = document.getElementById("abrirMenu");
-    const botaoFechar = document.getElementById("fecharMenu");
     const fundo = document.getElementById("menuFundo");
 
-    if (!botaoAbrir || !botaoFechar || !fundo) return;
+    if (!botaoAbrir || !fundo) return;
 
     function abrirMenu() {
         document.body.classList.add("menu-aberto");
@@ -64,7 +63,7 @@ function configurarMenu() {
     }
 
     botaoAbrir.addEventListener("click", abrirMenu);
-    botaoFechar.addEventListener("click", fecharMenu);
+
     fundo.addEventListener("click", fecharMenu);
 
     document.addEventListener("keydown", evento => {

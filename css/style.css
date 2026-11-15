@@ -608,3 +608,545 @@ td {
     font-size: 13px;
     font-weight: 500;
 }
+
+/* =====================================
+   NOVO LAYOUT MOBILE - HOTEL PET MANAGER
+===================================== */
+
+/* Botão do menu */
+.menu-toggle {
+    display: none;
+    border: none;
+    background: #52765C;
+    color: white;
+    font-size: 25px;
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-fechar {
+    display: none;
+}
+
+/* Ajustes para celular */
+@media (max-width: 650px) {
+
+    .layout {
+        display: block;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: min(290px, 82vw);
+        min-height: 100vh;
+        height: 100dvh;
+        overflow-y: auto;
+        z-index: 1001;
+        padding: 25px 18px;
+        transform: translateX(-105%);
+        transition: transform 0.28s ease;
+        box-shadow: 8px 0 25px #00000020;
+    }
+
+    body.menu-aberto .sidebar {
+        transform: translateX(0);
+    }
+
+    .menu-toggle {
+        display: flex;
+        flex-shrink: 0;
+    }
+
+    .menu-fechar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #FFFFFF55;
+        border-radius: 9px;
+        background: transparent;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .logo {
+        margin-bottom: 25px;
+    }
+
+    nav {
+        gap: 9px;
+    }
+
+    nav a {
+        font-size: 16px;
+        padding: 15px 13px;
+    }
+
+    .sidebar-footer {
+        display: block;
+        font-size: 14px;
+    }
+
+    .main-content {
+        width: 100%;
+        padding: 18px 14px 25px;
+    }
+
+    .topbar {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+
+    .topbar > div:first-child {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .topbar h1 {
+        font-size: 25px;
+    }
+
+    .topbar p {
+        font-size: 15px;
+        line-height: 1.4;
+    }
+
+    .user-profile {
+        padding: 9px;
+        gap: 7px;
+    }
+
+    .user-profile span {
+        font-size: 22px;
+    }
+
+    .user-profile strong {
+        font-size: 13px;
+    }
+
+    .user-profile small {
+        font-size: 11px;
+    }
+
+    .welcome {
+        padding: 20px 17px;
+        margin-bottom: 18px;
+    }
+
+    .welcome h2 {
+        font-size: 20px;
+        line-height: 1.4;
+    }
+
+    .welcome p {
+        font-size: 15px;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px;
+        margin-bottom: 18px;
+    }
+
+    .stat-card {
+        padding: 15px 12px;
+    }
+
+    .stat-card span {
+        font-size: 24px;
+    }
+
+    .stat-card p {
+        font-size: 15px;
+        line-height: 1.35;
+        margin: 9px 0;
+    }
+
+    .stat-card h2 {
+        font-size: 22px;
+    }
+
+    .stat-card small {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    /* Próximas movimentações e relógio lado a lado */
+    .dashboard-bottom {
+        grid-template-columns: minmax(0, 1.3fr) minmax(112px, 0.85fr);
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .dashboard-bottom .panel {
+        min-width: 0;
+        padding: 13px 10px;
+        border-radius: 12px;
+    }
+
+    .dashboard-bottom .panel h3 {
+        font-size: 14px;
+        line-height: 1.4;
+        margin-bottom: 12px;
+    }
+
+    .empty-state {
+        font-size: 13px;
+        line-height: 1.5;
+        padding: 10px 0;
+    }
+
+    .painel-relogio {
+        min-height: 0;
+        gap: 5px;
+    }
+
+    .painel-relogio h2 {
+        font-size: clamp(20px, 6vw, 27px);
+        letter-spacing: 0;
+        margin: 8px 0 3px;
+    }
+
+    .painel-relogio p {
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .mensagem-dia {
+        font-size: 11px;
+        line-height: 1.4;
+        margin-top: 8px;
+    }
+
+    footer {
+        font-size: 12px;
+        margin-top: 25px;
+    }
+}
+
+/* Celulares muito estreitos */
+@media (max-width: 360px) {
+    .main-content {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .dashboard-bottom {
+        grid-template-columns: minmax(0, 1.15fr) minmax(105px, 0.85fr);
+        gap: 7px;
+    }
+
+    .dashboard-bottom .panel {
+        padding: 10px 8px;
+    }
+
+    .user-profile {
+        padding: 7px;
+    }
+
+    .user-profile small {
+        display: none;
+    }
+}
+
+/* Fundo escuro atrás do menu */
+.menu-fundo {
+    display: none;
+}
+
+@media (max-width: 650px) {
+    .menu-fundo {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: #00000055;
+    }
+
+    body.menu-aberto .menu-fundo {
+        display: block;
+    }
+}
+
+/* =====================================
+   MENU LATERAL NO CELULAR
+===================================== */
+
+.menu-toggle {
+    display: none;
+}
+
+.menu-fechar {
+    display: none !important;
+}
+
+.menu-fundo {
+    display: none;
+}
+
+@media (max-width: 650px) {
+
+    .layout {
+        display: block;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+
+        width: min(290px, 82vw);
+        height: 100vh;
+        height: 100dvh;
+
+        min-height: 0;
+        overflow-y: auto;
+
+        z-index: 1001;
+
+        padding: 28px 18px;
+
+        transform: translateX(-105%);
+        transition: transform 0.28s ease;
+
+        box-shadow: 8px 0 25px #00000020;
+    }
+
+    body.menu-aberto .sidebar {
+        transform: translateX(0);
+    }
+
+    .menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+
+        width: 44px;
+        height: 44px;
+
+        border: none;
+        border-radius: 9px;
+
+        background: #E2EBDD;
+        color: #365640;
+
+        font-size: 27px;
+        cursor: pointer;
+    }
+
+    .menu-fundo {
+        display: block;
+
+        position: fixed;
+        inset: 0;
+
+        z-index: 1000;
+
+        background: #00000055;
+
+        opacity: 0;
+        visibility: hidden;
+
+        transition: opacity 0.28s ease,
+                    visibility 0.28s ease;
+    }
+
+    body.menu-aberto .menu-fundo {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .logo {
+        margin-bottom: 35px;
+    }
+
+    nav {
+        gap: 9px;
+    }
+
+    nav a {
+        font-size: 16px;
+        padding: 15px 13px;
+    }
+
+    .sidebar-footer {
+        display: block;
+    }
+
+    .main-content {
+        width: 100%;
+        padding: 18px 14px 25px;
+    }
+
+    .topbar {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .topbar > div:first-of-type {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .topbar h1 {
+        font-size: 25px;
+    }
+
+    .topbar p {
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .user-profile {
+        padding: 9px;
+        gap: 7px;
+    }
+
+    .user-profile span {
+        font-size: 22px;
+    }
+
+    .user-profile strong {
+        font-size: 13px;
+    }
+
+    .user-profile small {
+        font-size: 11px;
+    }
+
+    .welcome {
+        padding: 20px 17px;
+        margin-bottom: 18px;
+    }
+
+    .welcome h2 {
+        font-size: 20px;
+        line-height: 1.4;
+    }
+
+    .welcome p {
+        font-size: 15px;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px;
+        margin-bottom: 18px;
+    }
+
+    .stat-card {
+        padding: 15px 12px;
+    }
+
+    .stat-card span {
+        font-size: 24px;
+    }
+
+    .stat-card p {
+        font-size: 15px;
+        line-height: 1.35;
+        margin: 9px 0;
+    }
+
+    .stat-card h2 {
+        font-size: 22px;
+    }
+
+    .stat-card small {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .dashboard-bottom {
+        grid-template-columns: minmax(0, 1.3fr) minmax(112px, 0.85fr);
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .dashboard-bottom .panel {
+        min-width: 0;
+        padding: 13px 10px;
+        border-radius: 12px;
+    }
+
+    .dashboard-bottom .panel h3 {
+        font-size: 14px;
+        line-height: 1.4;
+        margin-bottom: 12px;
+    }
+
+    .empty-state {
+        font-size: 13px;
+        line-height: 1.5;
+        padding: 10px 0;
+    }
+
+    .painel-relogio {
+        min-height: 0;
+        gap: 5px;
+    }
+
+    .painel-relogio h2 {
+        font-size: clamp(20px, 6vw, 27px);
+        letter-spacing: 0;
+        margin: 8px 0 3px;
+    }
+
+    .painel-relogio p {
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .mensagem-dia {
+        font-size: 11px;
+        line-height: 1.4;
+        margin-top: 8px;
+    }
+
+    footer {
+        font-size: 12px;
+        margin-top: 25px;
+    }
+}
+
+@media (max-width: 360px) {
+
+    .main-content {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .dashboard-bottom {
+        grid-template-columns: minmax(0, 1.15fr) minmax(105px, 0.85fr);
+        gap: 7px;
+    }
+
+    .dashboard-bottom .panel {
+        padding: 10px 8px;
+    }
+
+    .user-profile {
+        padding: 7px;
+    }
+
+    .user-profile small {
+        display: none;
+    }
+}
