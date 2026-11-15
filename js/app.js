@@ -44,16 +44,51 @@ function atualizarRelogio() {
         data.charAt(0).toUpperCase() + data.slice(1);
 }
 
+/* MENU LATERAL */
+
+function configurarMenu() {
+    const botaoAbrir = document.getElementById("abrirMenu");
+    const botaoFechar = document.getElementById("fecharMenu");
+    const fundo = document.getElementById("menuFundo");
+
+    if (!botaoAbrir || !botaoFechar || !fundo) return;
+
+    function abrirMenu() {
+        document.body.classList.add("menu-aberto");
+        botaoAbrir.setAttribute("aria-expanded", "true");
+    }
+
+    function fecharMenu() {
+        document.body.classList.remove("menu-aberto");
+        botaoAbrir.setAttribute("aria-expanded", "false");
+    }
+
+    botaoAbrir.addEventListener("click", abrirMenu);
+    botaoFechar.addEventListener("click", fecharMenu);
+    fundo.addEventListener("click", fecharMenu);
+
+    document.addEventListener("keydown", evento => {
+        if (evento.key === "Escape") {
+            fecharMenu();
+        }
+    });
+
+    document.querySelectorAll(".sidebar nav a").forEach(link => {
+        link.addEventListener("click", fecharMenu);
+    });
+}
+
 function atualizarAplicacao() {
     atualizarNomeHotel();
     atualizarRelogio();
 }
 
+configurarMenu();
 atualizarAplicacao();
+
 setInterval(atualizarRelogio, 1000);
 
 window.addEventListener("storage", atualizarNomeHotel);
-
 window.addEventListener("pageshow", atualizarAplicacao);
 
 window.addEventListener(

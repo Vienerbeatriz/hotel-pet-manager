@@ -13,6 +13,11 @@
     <div class="layout">
 
         <aside class="sidebar">
+
+            <button class="menu-fechar" id="fecharMenu" type="button">
+                ✕ Fechar menu
+            </button>
+
             <div class="logo">
                 <span>🐾</span>
                 <h2 class="nomeHotelDinamico">Hotel Pet</h2>
@@ -33,11 +38,25 @@
                 <span class="nomeHotelDinamico">Hotel Pet Manager</span>
                 <small>Gestão inteligente</small>
             </div>
+
         </aside>
+
+        <div class="menu-fundo" id="menuFundo"></div>
 
         <main class="main-content">
 
             <header class="topbar">
+
+                <button
+                    class="menu-toggle"
+                    id="abrirMenu"
+                    type="button"
+                    aria-label="Abrir menu"
+                    aria-expanded="false"
+                >
+                    ☰
+                </button>
+
                 <div>
                     <h1>Painel inicial</h1>
                     <p>Bem-vindo ao seu espaço de gerenciamento!</p>
@@ -50,6 +69,7 @@
                         <small>Gerenciamento</small>
                     </div>
                 </div>
+
             </header>
 
             <section class="welcome">
