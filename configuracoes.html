@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#52765C">
+
+    <title>Configurações | Hotel Pet Manager</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <span>🐾</span>
+            <h2 class="nomeHotelDinamico">Hotel Pet</h2>
+            <small>MANAGER</small>
+        </div>
+
+        <nav>
+            <a href="index.html">🏠 Painel inicial</a>
+            <a href="clientes.html">👥 Clientes</a>
+            <a href="pets.html">🐶 Pets</a>
+            <a href="reservas.html">📅 Reservas</a>
+            <a href="hospedagem.html">🛏️ Hospedagens</a>
+            <a href="financeiro.html">💰 Financeiro</a>
+            <a href="configuracoes.html" class="active">⚙️ Configurações</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="nomeHotelDinamico">Hotel Pet Manager</span>
+            <small>Gestão inteligente</small>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <h1>Configurações</h1>
+                <p>Personalize as informações do estabelecimento.</p>
+            </div>
+
+            <div class="user-profile">
+                <span>🐾</span>
+                <div>
+                    <strong>Administrador</strong>
+                    <small>Gerenciamento</small>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="welcome">
+
+            <div>
+                <h2>Configurações do hotel ⚙️</h2>
+                <p>Personalize e gerencie as informações do estabelecimento.</p>
+            </div>
+
+        </section>
+
+        <section class="client-form panel">
+
+            <div class="list-header">
+                <div>
+                    <h2>🏨 Dados do estabelecimento</h2>
+                    <p>Informações principais do hotel pet.</p>
+                </div>
+            </div>
+
+            <form id="configForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="nomeHotel">Nome do hotel</label>
+                        <input
+                            type="text"
+                            id="nomeHotel"
+                            placeholder="Nome do estabelecimento"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefoneHotel">Telefone</label>
+                        <input
+                            type="tel"
+                            id="telefoneHotel"
+                            placeholder="(00) 00000-0000"
+                        >
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="enderecoHotel">Endereço</label>
+                        <input
+                            type="text"
+                            id="enderecoHotel"
+                            placeholder="Endereço do estabelecimento"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="capacidadeHotel">Quantidade de vagas</label>
+                        <input
+                            type="number"
+                            id="capacidadeHotel"
+                            min="1"
+                            step="1"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        Salvar configurações
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+        <section class="client-form panel">
+
+            <div class="list-header">
+                <div>
+                    <h2>🔔 Notificações</h2>
+                    <p>Escolha quais avisos deseja visualizar no sistema.</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="avisoReservas" checked>
+                    Avisos de novas reservas
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="avisoPagamentos" checked>
+                    Avisos de pagamentos pendentes
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="salvarNotificacoes"
+                >
+                    Salvar preferências
+                </button>
+            </div>
+
+        </section>
+
+        <section class="client-form panel">
+
+            <div class="list-header">
+                <div>
+                    <h2>💾 Backup dos dados</h2>
+                    <p>Exporte uma cópia das informações cadastradas no sistema.</p>
+                </div>
+            </div>
+
+            <p>
+                O backup inclui clientes, pets, reservas, despesas e configurações.
+            </p>
+
+            <div class="form-actions">
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="exportarBackup"
+                >
+                    Exportar backup
+                </button>
+            </div>
+
+        </section>
+
+        <footer>
+            <span class="nomeHotelDinamico">Hotel Pet Manager</span> © 2026
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="js/configuracoes.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

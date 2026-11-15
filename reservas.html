@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#52765C">
+    <title>Reservas | Hotel Pet Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="logo">
+            <span>🐾</span>
+            <h2 class="nomeHotelDinamico">Hotel Pet</h2>
+            <small>MANAGER</small>
+        </div>
+
+        <nav>
+            <a href="index.html">🏠 Painel inicial</a>
+            <a href="clientes.html">👥 Clientes</a>
+            <a href="pets.html">🐶 Pets</a>
+            <a href="reservas.html" class="active">📅 Reservas</a>
+            <a href="hospedagem.html">🛏️ Hospedagens</a>
+            <a href="financeiro.html">💰 Financeiro</a>
+            <a href="configuracoes.html">⚙️ Configurações</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="nomeHotelDinamico">Hotel Pet Manager</span>
+            <small>Gestão inteligente</small>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h1>Reservas</h1>
+                <p>Gerencie as reservas do hotel.</p>
+            </div>
+
+            <div class="user-profile">
+                <span>🐾</span>
+                <div>
+                    <strong>Administrador</strong>
+                    <small>Gerenciamento</small>
+                </div>
+            </div>
+        </header>
+
+        <section class="welcome">
+            <div>
+                <h2>Gerenciamento de reservas 🐾</h2>
+                <p>Cadastre e acompanhe as reservas do hotel.</p>
+            </div>
+        </section>
+
+        <section class="client-form">
+
+            <div class="list-header">
+                <div>
+                    <h2>Nova reserva</h2>
+                    <p>Preencha as informações da hospedagem.</p>
+                </div>
+            </div>
+
+            <form id="reservationForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="reservaPet">Animal</label>
+                        <select id="reservaPet" required>
+                            <option value="">Selecione o animal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reservaTutor">Tutor</label>
+                        <input
+                            type="text"
+                            id="reservaTutor"
+                            placeholder="Nome do tutor"
+                            readonly
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dataEntrada">Data de entrada</label>
+                        <input type="date" id="dataEntrada" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dataSaida">Data de saída</label>
+                        <input type="date" id="dataSaida" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="duracaoReserva">Duração da hospedagem</label>
+                        <input
+                            type="text"
+                            id="duracaoReserva"
+                            value="0 dias"
+                            readonly
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipoCobranca">Como informar o valor?</label>
+                        <select id="tipoCobranca" required>
+                            <option value="diaria">Valor por diária</option>
+                            <option value="total">Valor total da hospedagem</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valorReserva" id="labelValor">
+                            Valor por diária (R$)
+                        </label>
+                        <input
+                            type="number"
+                            id="valorReserva"
+                            min="0"
+                            step="0.01"
+                            placeholder="0,00"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="totalReserva">Valor total</label>
+                        <input
+                            type="text"
+                            id="totalReserva"
+                            value="R$ 0,00"
+                            readonly
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valorPago">Valor já pago (R$)</label>
+                        <input
+                            type="number"
+                            id="valorPago"
+                            min="0"
+                            step="0.01"
+                            value="0"
+                            placeholder="0,00"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="statusReserva">Status da reserva</label>
+                        <select id="statusReserva" required>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Confirmada">Confirmada</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="observacoesReserva">Observações</label>
+                        <textarea
+                            id="observacoesReserva"
+                            rows="3"
+                            placeholder="Informações adicionais sobre a reserva..."
+                        ></textarea>
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        Salvar reserva
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+        <section class="client-list">
+
+            <div class="list-header">
+                <div>
+                    <h2>Reservas cadastradas</h2>
+                    <p>Consulte e filtre as hospedagens.</p>
+                </div>
+
+                <span id="reservationCount">0 reservas</span>
+            </div>
+
+            <div class="form-group" style="max-width: 280px; margin-bottom: 20px;">
+                <label for="filtroReservas">Filtrar reservas</label>
+                <select id="filtroReservas">
+                    <option value="todas">Todas as reservas</option>
+                    <option value="futuras">Reservas futuras</option>
+                    <option value="andamento">Em andamento</option>
+                    <option value="pendentes">Pendentes</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Animal</th>
+                            <th>Tutor</th>
+                            <th>Entrada</th>
+                            <th>Saída</th>
+                            <th>Duração</th>
+                            <th>Valor informado como</th>
+                            <th>Valor total</th>
+                            <th>Valor pago</th>
+                            <th>Pagamento</th>
+                            <th>Status da reserva</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="reservationTable"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <footer>
+            <span class="nomeHotelDinamico">Hotel Pet Manager</span> © 2026
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="js/reservas.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

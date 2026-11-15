@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#52765C">
+
+    <title>Financeiro | Hotel Pet Manager</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <span>🐾</span>
+            <h2 class="nomeHotelDinamico">Hotel Pet</h2>
+            <small>MANAGER</small>
+        </div>
+
+        <nav>
+            <a href="index.html">🏠 Painel inicial</a>
+            <a href="clientes.html">👥 Clientes</a>
+            <a href="pets.html">🐶 Pets</a>
+            <a href="reservas.html">📅 Reservas</a>
+            <a href="hospedagem.html">🛏️ Hospedagens</a>
+            <a href="financeiro.html" class="active">💰 Financeiro</a>
+            <a href="configuracoes.html">⚙️ Configurações</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="nomeHotelDinamico">Hotel Pet Manager</span>
+            <small>Gestão inteligente</small>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <h1>Financeiro</h1>
+                <p>Acompanhe as movimentações financeiras do hotel.</p>
+            </div>
+
+            <div class="user-profile">
+                <span>🐾</span>
+                <div>
+                    <strong>Administrador</strong>
+                    <small>Gerenciamento</small>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="welcome">
+
+            <div>
+                <h2>Controle financeiro 💰</h2>
+                <p>Acompanhe os recebimentos, valores pendentes e despesas do hotel.</p>
+            </div>
+
+        </section>
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <span>💰</span>
+                <p>Receita recebida</p>
+                <h2 id="totalRecebido">R$ 0,00</h2>
+            </div>
+
+            <div class="stat-card">
+                <span>⏳</span>
+                <p>Valores a receber</p>
+                <h2 id="totalPendente">R$ 0,00</h2>
+            </div>
+
+            <div class="stat-card">
+                <span>🧾</span>
+                <p>Total de despesas</p>
+                <h2 id="totalDespesas">R$ 0,00</h2>
+            </div>
+
+            <div class="stat-card">
+                <span>📊</span>
+                <p>Saldo atual</p>
+                <h2 id="saldoAtual">R$ 0,00</h2>
+            </div>
+
+        </section>
+
+        <section class="client-list panel">
+
+            <div class="list-header">
+
+                <div>
+                    <h2>💳 Pagamentos das hospedagens</h2>
+                    <p>Valores calculados automaticamente pelas reservas.</p>
+                </div>
+
+                <span id="pagamentosCount">0 reservas</span>
+
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Animal</th>
+                            <th>Tutor</th>
+                            <th>Valor total</th>
+                            <th>Valor pago</th>
+                            <th>Falta receber</th>
+                            <th>Pagamento</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="pagamentosTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section class="client-form panel">
+
+            <div class="list-header">
+
+                <div>
+                    <h2>➕ Cadastrar despesa</h2>
+                    <p>Registre os gastos do hotel.</p>
+                </div>
+
+            </div>
+
+            <form id="despesaForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="despesaDescricao">Descrição</label>
+                        <input
+                            type="text"
+                            id="despesaDescricao"
+                            placeholder="Ex.: Compra de ração"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="despesaCategoria">Categoria</label>
+
+                        <select id="despesaCategoria" required>
+                            <option value="">Selecione</option>
+                            <option value="Alimentação">Alimentação</option>
+                            <option value="Produtos de limpeza">Produtos de limpeza</option>
+                            <option value="Veterinário">Veterinário</option>
+                            <option value="Manutenção">Manutenção</option>
+                            <option value="Contas">Contas</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="despesaData">Data</label>
+                        <input type="date" id="despesaData" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="despesaValor">Valor (R$)</label>
+                        <input
+                            type="number"
+                            id="despesaValor"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="0,00"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+
+                    <button type="submit" class="btn-primary">
+                        Adicionar despesa
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+        <section class="client-list panel">
+
+            <div class="list-header">
+
+                <div>
+                    <h2>🧾 Despesas cadastradas</h2>
+                    <p>Histórico de gastos registrados.</p>
+                </div>
+
+                <span id="despesasCount">0 despesas</span>
+
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Categoria</th>
+                            <th>Data</th>
+                            <th>Valor</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="despesasTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <footer>
+            <span class="nomeHotelDinamico">Hotel Pet Manager</span> © 2026
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="js/financeiro.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

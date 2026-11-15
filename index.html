@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#52765C">
+    <title>Hotel Pet Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="layout">
+
+        <aside class="sidebar">
+            <div class="logo">
+                <span>🐾</span>
+                <h2 class="nomeHotelDinamico">Hotel Pet</h2>
+                <small>MANAGER</small>
+            </div>
+
+            <nav>
+                <a href="index.html" class="active">🏠 Painel inicial</a>
+                <a href="clientes.html">👥 Clientes</a>
+                <a href="pets.html">🐶 Pets</a>
+                <a href="reservas.html">📅 Reservas</a>
+                <a href="hospedagem.html">🛏️ Hospedagens</a>
+                <a href="financeiro.html">💰 Financeiro</a>
+                <a href="configuracoes.html">⚙️ Configurações</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span class="nomeHotelDinamico">Hotel Pet Manager</span>
+                <small>Gestão inteligente</small>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <div>
+                    <h1>Painel inicial</h1>
+                    <p>Bem-vindo ao seu espaço de gerenciamento!</p>
+                </div>
+
+                <div class="user-profile">
+                    <span>🐾</span>
+                    <div>
+                        <strong>Administrador</strong>
+                        <small>Gerenciamento</small>
+                    </div>
+                </div>
+            </header>
+
+            <section class="welcome">
+                <div>
+                    <h2>
+                        Olá! Bem-vindo ao
+                        <span class="nomeHotelDinamico">Hotel Pet</span> 🐶
+                    </h2>
+                    <p>Confira o resumo do seu hotel hoje.</p>
+                </div>
+            </section>
+
+            <section class="stats">
+
+                <div class="stat-card">
+                    <span>🐕</span>
+                    <p>Pets hospedados</p>
+                    <h2>0</h2>
+                    <small>Atualmente no hotel</small>
+                </div>
+
+                <div class="stat-card">
+                    <span>📅</span>
+                    <p>Reservas futuras</p>
+                    <h2>0</h2>
+                    <small>Agendamentos registrados</small>
+                </div>
+
+                <div class="stat-card">
+                    <span>👥</span>
+                    <p>Clientes cadastrados</p>
+                    <h2>0</h2>
+                    <small>Tutores registrados</small>
+                </div>
+
+                <div class="stat-card">
+                    <span>💰</span>
+                    <p>Receita do mês</p>
+                    <h2>R$ 0,00</h2>
+                    <small>Valores recebidos</small>
+                </div>
+
+            </section>
+
+            <section class="dashboard-bottom">
+
+                <div class="panel">
+                    <h3>📋 Próximas movimentações</h3>
+                    <p class="empty-state">
+                        Nenhuma entrada ou saída cadastrada.
+                    </p>
+                </div>
+
+                <div class="panel painel-relogio">
+                    <h3>🕒 Horário atual</h3>
+
+                    <h2 id="relogioDigital">00:00:00</h2>
+
+                    <p id="dataAtual"></p>
+
+                    <div class="mensagem-dia">
+                        🐾 Cada patinha deixa uma marca de carinho por aqui!
+                    </div>
+                </div>
+
+            </section>
+
+            <footer>
+                <span class="nomeHotelDinamico">Hotel Pet Manager</span> © 2026
+            </footer>
+
+        </main>
+
+    </div>
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>
