@@ -1150,3 +1150,68 @@ td {
         display: none;
     }
 }
+/* AJUSTE FINAL DO BOTAO DO MENU NAS PAGINAS INTERNAS */
+.menu-toggle {
+    display: none;
+}
+
+@media screen and (max-width: 650px) {
+    .topbar .menu-toggle,
+    button.menu-toggle#abrirMenu {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 44px;
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        border-radius: 9px;
+        background: #E2EBDD;
+        color: #365640;
+        font-family: Arial, sans-serif;
+        font-size: 27px;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .topbar {
+        display: flex;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 12px;
+    }
+}/* FORÇAR EXIBIÇÃO DO MENU MOBILE EM CLIENTES */
+@media screen and (max-width: 650px) {
+    body .layout .main-content .topbar button#abrirMenu.menu-toggle {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        z-index: 1002 !important;
+        flex: 0 0 44px !important;
+        width: 44px !important;
+        min-width: 44px !important;
+        height: 44px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: #E2EBDD !important;
+        color: #365640 !important;
+        border: none !important;
+        border-radius: 9px !important;
+        font-size: 27px !important;
+        line-height: 1 !important;
+        cursor: pointer !important;
+    }
+
+    body .layout .main-content .topbar {
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+}
