@@ -52,6 +52,11 @@ function configurarMenu() {
 
     if (!botaoAbrir || !fundo) return;
 
+    // Evita registrar os eventos mais de uma vez.
+    if (botaoAbrir.dataset.menuConfigurado === "true") return;
+
+    botaoAbrir.dataset.menuConfigurado = "true";
+
     function abrirMenu() {
         document.body.classList.add("menu-aberto");
         botaoAbrir.setAttribute("aria-expanded", "true");
@@ -62,7 +67,17 @@ function configurarMenu() {
         botaoAbrir.setAttribute("aria-expanded", "false");
     }
 
-    botaoAbrir.addEventListener("click", abrirMenu);
+    function alternarMenu() {
+        const menuAberto = document.body.classList.contains("menu-aberto");
+
+        if (menuAberto) {
+            fecharMenu();
+        } else {
+            abrirMenu();
+        }
+    }
+
+    botaoAbrir.addEventListener("click", alternarMenu);
 
     fundo.addEventListener("click", fecharMenu);
 
@@ -78,11 +93,11 @@ function configurarMenu() {
 }
 
 function atualizarAplicacao() {
+    configurarMenu();
     atualizarNomeHotel();
     atualizarRelogio();
 }
 
-configurarMenu();
 atualizarAplicacao();
 
 setInterval(atualizarRelogio, 1000);
