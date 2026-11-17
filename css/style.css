@@ -1093,3 +1093,22 @@ body.modo-escuro .btn-delete {
     background: #593B38;
     color: #F0B6AC;
 }
+
+/* ALINHAMENTO DOS CHECKBOXES */
+
+.form-group label:has(input[type="checkbox"]) {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    text-align: left;
+    width: 100%;
+}
+
+.form-group input[type="checkbox"] {
+    width: 20px !important;
+    height: 20px;
+    flex: 0 0 20px;
+    margin: 0;
+    accent-color: #52765C;
+}
