@@ -18,6 +18,26 @@ function atualizarNomeHotel() {
     });
 }
 
+/* MODO ESCURO */
+
+function aplicarTema() {
+    const config = obterConfiguracoes();
+    const escuro = config.modoEscuro === true;
+
+    document.body.classList.toggle("modo-escuro", escuro);
+
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+
+    if (metaTheme) {
+        metaTheme.setAttribute(
+            "content",
+            escuro ? "#202923" : "#52765C"
+        );
+    }
+}
+
+/* RELÓGIO */
+
 function atualizarRelogio() {
     const relogio = document.getElementById("relogioDigital");
     const dataAtual = document.getElementById("dataAtual");
@@ -52,7 +72,6 @@ function configurarMenu() {
 
     if (!botaoAbrir || !fundo) return;
 
-    // Evita registrar os eventos mais de uma vez.
     if (botaoAbrir.dataset.menuConfigurado === "true") return;
 
     botaoAbrir.dataset.menuConfigurado = "true";
@@ -78,7 +97,6 @@ function configurarMenu() {
     }
 
     botaoAbrir.addEventListener("click", alternarMenu);
-
     fundo.addEventListener("click", fecharMenu);
 
     document.addEventListener("keydown", evento => {
@@ -92,9 +110,12 @@ function configurarMenu() {
     });
 }
 
+/* ATUALIZAÇÃO GERAL */
+
 function atualizarAplicacao() {
     configurarMenu();
     atualizarNomeHotel();
+    aplicarTema();
     atualizarRelogio();
 }
 
@@ -102,12 +123,19 @@ atualizarAplicacao();
 
 setInterval(atualizarRelogio, 1000);
 
-window.addEventListener("storage", atualizarNomeHotel);
+window.addEventListener("storage", () => {
+    atualizarNomeHotel();
+    aplicarTema();
+});
+
 window.addEventListener("pageshow", atualizarAplicacao);
 
 window.addEventListener(
     "hotelPetConfiguracoesAtualizadas",
-    atualizarNomeHotel
+    () => {
+        atualizarNomeHotel();
+        aplicarTema();
+    }
 );
 
 console.log("Hotel Pet Manager iniciado!");

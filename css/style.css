@@ -934,3 +934,162 @@ td {
         padding-bottom: 15px;
     }
 }
+
+/* AJUSTE DO ESPAÇO INFERIOR - HOSPEDAGENS */
+@media screen and (max-width: 650px) {
+    .main-content:has(#hospedagemTable) {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-content:has(#hospedagemTable) footer {
+        margin-top: auto;
+        padding-top: 15px;
+        padding-bottom: 10px;
+    }
+}
+
+/* =====================================
+   MODO ESCURO - HOTEL PET MANAGER
+===================================== */
+
+body.modo-escuro {
+    background: #202923;
+    color: #E5EDE5;
+}
+
+body.modo-escuro .main-content {
+    background: #202923;
+}
+
+body.modo-escuro .topbar p,
+body.modo-escuro .welcome p {
+    color: #B5C4B5;
+}
+
+body.modo-escuro .welcome,
+body.modo-escuro .painel-relogio {
+    background: #303D33;
+    color: #E5EDE5;
+}
+
+body.modo-escuro .panel,
+body.modo-escuro .stat-card,
+body.modo-escuro .user-profile {
+    background: #2B362E;
+    color: #E5EDE5;
+    box-shadow: 0 3px 12px #00000020;
+}
+
+body.modo-escuro .stat-card h2,
+body.modo-escuro .painel-relogio h2,
+body.modo-escuro .mensagem-dia {
+    color: #A8D0AE;
+}
+
+body.modo-escuro .stat-card p,
+body.modo-escuro .stat-card small,
+body.modo-escuro .user-profile small,
+body.modo-escuro .empty-state,
+body.modo-escuro .panel p {
+    color: #B5C4B5;
+}
+
+body.modo-escuro .form-group label,
+body.modo-escuro th {
+    color: #A8D0AE;
+}
+
+body.modo-escuro .form-group input,
+body.modo-escuro .form-group textarea,
+body.modo-escuro .form-group select {
+    background-color: #202923;
+    color: #E5EDE5;
+    border-color: #526957;
+}
+
+body.modo-escuro .form-group input::placeholder,
+body.modo-escuro .form-group textarea::placeholder {
+    color: #9AA99C;
+}
+
+body.modo-escuro .form-group input[type="date"] {
+    background-color: #202923;
+    color: #E5EDE5;
+    color-scheme: dark;
+    border-color: #526957;
+}
+
+body.modo-escuro .form-group select option {
+    background-color: #2B362E;
+    color: #E5EDE5;
+}
+
+body.modo-escuro th,
+body.modo-escuro td {
+    border-bottom-color: #435247;
+}
+
+body.modo-escuro td {
+    color: #C4CEC5;
+}
+
+body.modo-escuro .acesso-card {
+    background: #202923;
+    border-color: #526957;
+}
+
+body.modo-escuro .acesso-card strong {
+    color: #A8D0AE;
+}
+
+body.modo-escuro .acesso-card small {
+    color: #B5C4B5;
+}
+
+body.modo-escuro .acesso-card:hover {
+    background: #35483A;
+}
+
+body.modo-escuro #clientCount {
+    background: #35483A;
+    color: #C6E2CA;
+}
+
+body.modo-escuro footer {
+    color: #9AA99C;
+}
+
+body.modo-escuro .menu-toggle {
+    background: #35483A !important;
+    color: #E5EDE5 !important;
+}
+
+body.modo-escuro .sidebar {
+    background: #293B2E;
+}
+
+body.modo-escuro nav a:hover,
+body.modo-escuro nav a.active {
+    background: #46664D;
+}
+
+body.modo-escuro .btn-secondary {
+    background: #35483A;
+    color: #E5EDE5;
+}
+
+body.modo-escuro .panel button:not(.btn-primary) {
+    background: #35483A;
+    color: #C6E2CA;
+}
+
+body.modo-escuro .panel button:not(.btn-primary):hover {
+    background: #46664D;
+}
+
+body.modo-escuro .btn-delete {
+    background: #593B38;
+    color: #F0B6AC;
+}

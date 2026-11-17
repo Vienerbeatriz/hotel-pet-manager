@@ -19,12 +19,23 @@
 
     const avisoReservas = document.getElementById("avisoReservas");
     const avisoPagamentos = document.getElementById("avisoPagamentos");
+    const modoEscuro = document.getElementById("modoEscuro");
 
     function obterConfiguracoesSalvas() {
         try {
-            return JSON.parse(localStorage.getItem(CONFIG_KEY_CONFIGURACOES)) || {};
+            return JSON.parse(
+                localStorage.getItem(CONFIG_KEY_CONFIGURACOES)
+            ) || {};
         } catch {
             return {};
+        }
+    }
+
+    function aplicarTema(escuro) {
+        document.body.classList.toggle("modo-escuro", escuro);
+
+        if (modoEscuro) {
+            modoEscuro.checked = escuro;
         }
     }
 
@@ -48,6 +59,8 @@
         avisoReservas.checked = config.avisoReservas !== false;
         avisoPagamentos.checked = config.avisoPagamentos !== false;
 
+        aplicarTema(config.modoEscuro === true);
+
         atualizarNomeHotelConfiguracoes();
     }
 
@@ -60,13 +73,17 @@
     }
 
     function obterConfiguracoes() {
+        const configAnterior = obterConfiguracoesSalvas();
+
         return {
+            ...configAnterior,
             nome: nomeHotel.value.trim(),
             telefone: telefoneHotel.value.trim(),
             endereco: enderecoHotel.value.trim(),
             capacidade: Number(capacidadeHotel.value),
             avisoReservas: avisoReservas.checked,
-            avisoPagamentos: avisoPagamentos.checked
+            avisoPagamentos: avisoPagamentos.checked,
+            modoEscuro: modoEscuro ? modoEscuro.checked : false
         };
     }
 
@@ -90,6 +107,8 @@
             JSON.stringify(config)
         );
 
+        aplicarTema(config.modoEscuro);
+
         atualizarNomeHotelConfiguracoes();
 
         window.dispatchEvent(
@@ -109,9 +128,27 @@
 
     document.getElementById("salvarNotificacoes").addEventListener("click", () => {
         if (salvarConfiguracoes()) {
-            alert("Preferências de notificações salvas!");
+            alert("Preferências salvas com sucesso!");
         }
     });
+
+    if (modoEscuro) {
+        modoEscuro.addEventListener("change", () => {
+            aplicarTema(modoEscuro.checked);
+
+            const config = obterConfiguracoesSalvas();
+            config.modoEscuro = modoEscuro.checked;
+
+            localStorage.setItem(
+                CONFIG_KEY_CONFIGURACOES,
+                JSON.stringify(config)
+            );
+
+            window.dispatchEvent(
+                new Event("hotelPetConfiguracoesAtualizadas")
+            );
+        });
+    }
 
     document.getElementById("exportarBackup").addEventListener("click", () => {
         const backup = {
