@@ -203,7 +203,10 @@
             localStorage.getItem("hotelPetConfiguracoes")
         ) || {};
 
-        if (configTema.modoEscuro === true) {
+        if (
+            configTema.modoEscuro === true ||
+            configTema.tema === "escuro"
+        ) {
             document.body.classList.add("modo-escuro");
         }
     } catch (erro) {
@@ -243,6 +246,8 @@
 
     </aside>
 
+    <!-- FUNDO PARA FECHAR O MENU -->
+
     <div class="menu-fundo" id="menuFundo"></div>
 
     <!-- CONTEÚDO PRINCIPAL -->
@@ -257,13 +262,6 @@
                 type="button"
                 aria-label="Abrir menu"
                 aria-expanded="false"
-                onclick="
-                    document.body.classList.toggle('menu-aberto');
-                    this.setAttribute(
-                        'aria-expanded',
-                        document.body.classList.contains('menu-aberto')
-                    );
-                "
             >
                 ☰
             </button>
@@ -568,7 +566,7 @@
 <!-- SCRIPTS -->
 
 <script src="js/agenda-vet.js?v=3"></script>
-<script src="js/app.js?v=6"></script>
+<script src="js/app.js?v=7"></script>
 
 </body>
 </html>

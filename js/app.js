@@ -333,18 +333,24 @@ function atualizarMovimentacoes(banho, vet, hoje) {
 function configurarMenu() {
     const botaoMenu = document.getElementById("abrirMenu");
     const fundoMenu = document.getElementById("menuFundo");
+    const sidebar = document.querySelector(".sidebar");
 
-    if (!botaoMenu) {
-        console.error("Botão abrirMenu não encontrado.");
+    if (!botaoMenu || !sidebar) {
+        console.error("Elementos do menu não encontrados.");
         return;
     }
 
     function fecharMenu() {
         document.body.classList.remove("menu-aberto");
+
         botaoMenu.setAttribute("aria-expanded", "false");
     }
 
-    function alternarMenu() {
+    function alternarMenu(evento) {
+        if (evento) {
+            evento.stopPropagation();
+        }
+
         const aberto = document.body.classList.toggle("menu-aberto");
 
         botaoMenu.setAttribute(
@@ -353,23 +359,47 @@ function configurarMenu() {
         );
     }
 
-    // Evita registrar o mesmo evento mais de uma vez.
+    // ABRIR E FECHAR PELO BOTÃO
+
     botaoMenu.onclick = alternarMenu;
 
+    // FECHAR AO CLICAR NO FUNDO ESCURO
+
     if (fundoMenu) {
-        fundoMenu.onclick = fecharMenu;
+        fundoMenu.onclick = function (evento) {
+            evento.stopPropagation();
+            fecharMenu();
+        };
     }
 
-    document.querySelectorAll(".sidebar nav a").forEach(link => {
-        link.onclick = fecharMenu;
+    // FECHAR AO CLICAR FORA DA SIDEBAR
+
+    document.addEventListener("click", function (evento) {
+        if (!document.body.classList.contains("menu-aberto")) {
+            return;
+        }
+
+        const clicouNaSidebar = sidebar.contains(evento.target);
+        const clicouNoBotao = botaoMenu.contains(evento.target);
+
+        if (!clicouNaSidebar && !clicouNoBotao) {
+            fecharMenu();
+        }
     });
 
-    // Fecha o menu ao pressionar ESC.
-    document.onkeydown = function (evento) {
+    // FECHAR AO CLICAR EM UM LINK
+
+    document.querySelectorAll(".sidebar nav a").forEach(link => {
+        link.addEventListener("click", fecharMenu);
+    });
+
+    // FECHAR COM ESC
+
+    document.addEventListener("keydown", function (evento) {
         if (evento.key === "Escape") {
             fecharMenu();
         }
-    };
+    });
 }
 
 // INICIALIZAÇÃO
