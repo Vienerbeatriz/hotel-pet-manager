@@ -303,7 +303,19 @@
 </head>
 
 <body>
+<script>
+    try {
+        const configTema = JSON.parse(
+            localStorage.getItem("hotelPetConfiguracoes")
+        ) || {};
 
+        if (configTema.modoEscuro === true) {
+            document.body.classList.add("modo-escuro");
+        }
+    } catch (erro) {
+        console.error("Erro ao carregar o tema:", erro);
+    }
+</script>
 <div class="layout">
 
     <aside class="sidebar">
