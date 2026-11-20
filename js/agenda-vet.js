@@ -1,7 +1,7 @@
 
 const CLIENT_KEY = "hotelPetClientes";
 const PET_KEY = "hotelPetAnimais";
-const VET_KEY = "petsitterAgendaVet";
+const CHAVE_VET_AGENDA = "petsitterAgendaVet";
 
 const vetForm = document.getElementById("vetForm");
 const vetCards = document.getElementById("vetCards");
@@ -296,7 +296,7 @@ function carregarDados(chave, padrao = []) {
 
 let clientes = carregarDados(CLIENT_KEY);
 let pets = carregarDados(PET_KEY);
-let atendimentos = carregarDados(VET_KEY);
+let atendimentos = carregarDados(CHAVE_VET_AGENDA);
 
 if (!Array.isArray(clientes)) clientes = [];
 if (!Array.isArray(pets)) pets = [];
@@ -304,7 +304,7 @@ if (!Array.isArray(atendimentos)) atendimentos = [];
 
 function salvarAtendimentos() {
     try {
-        localStorage.setItem(VET_KEY, JSON.stringify(atendimentos));
+        localStorage.setItem(CHAVE_VET_AGENDA, JSON.stringify(atendimentos));
         return true;
     } catch (erro) {
         console.error(erro);
@@ -835,7 +835,7 @@ function criarCartaoAtendimento(item) {
 function atualizarAgenda() {
     vetCards.innerHTML = "";
 
-    atendimentos = carregarDados(VET_KEY);
+    atendimentos = carregarDados(CHAVE_VET_AGENDA);
 
     if (!Array.isArray(atendimentos)) {
         atendimentos = [];
@@ -1024,7 +1024,7 @@ window.addEventListener("storage", function(event) {
     if (
         event.key === CLIENT_KEY ||
         event.key === PET_KEY ||
-        event.key === VET_KEY
+        event.key === CHAVE_VET_AGENDA
     ) {
         atualizarClientes();
         atualizarAgenda();
