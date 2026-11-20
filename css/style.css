@@ -1343,3 +1343,258 @@ body.modo-escuro .form-group input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0 1000px #202923 inset !important;
     transition: background-color 9999s ease-in-out 0s;
 }
+/* =========================================
+   PETSITTER - MELHORIAS GERAIS PARA CELULAR
+========================================= */
+
+@media screen and (max-width: 650px) {
+
+    /* Espaço principal */
+    .main-content {
+        width: 100%;
+        padding: 20px 14px 30px !important;
+        overflow-x: hidden;
+    }
+
+    /* Cabeçalho */
+    .topbar {
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+
+    .topbar h1 {
+        font-size: 23px;
+        line-height: 1.3;
+    }
+
+    .topbar p {
+        font-size: 14px;
+    }
+
+    /* Painéis e cartões */
+    .panel,
+    .client-form,
+    .client-list {
+        width: 100%;
+        padding: 20px 16px !important;
+        margin-bottom: 20px;
+        border-radius: 16px;
+        min-width: 0;
+    }
+
+    .panel h3,
+    .client-form h3,
+    .client-list h3 {
+        font-size: 19px;
+        line-height: 1.4;
+    }
+
+    /* Formulários */
+    .form-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 19px;
+    }
+
+    .form-group {
+        width: 100%;
+        min-width: 0;
+        gap: 10px;
+    }
+
+    .form-group label {
+        font-size: 15px;
+        line-height: 1.4;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        min-height: 52px;
+        padding: 14px !important;
+        font-size: 16px !important;
+        border-radius: 11px;
+    }
+
+    .form-group textarea {
+        min-height: 110px;
+    }
+
+    /* Botões maiores */
+    .form-actions {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+
+    .form-actions button,
+    .btn-primary,
+    .btn-secondary,
+    .panel button {
+        width: 100%;
+        min-height: 52px;
+        padding: 14px 16px;
+        font-size: 16px;
+        border-radius: 11px;
+    }
+
+    .btn-delete {
+        min-height: 46px;
+        padding: 12px 16px;
+        font-size: 15px;
+    }
+
+    /* Cabeçalho das listas */
+    .list-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 13px;
+    }
+
+    .list-header h2,
+    .list-header h3 {
+        font-size: 19px;
+    }
+
+    /* Tabelas: permitem deslizar para os lados */
+    .table-container {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto !important;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 10px;
+    }
+
+    .table-container table {
+        width: max-content;
+        min-width: 620px;
+        border-collapse: collapse;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 16px 14px;
+        font-size: 14px;
+        white-space: normal;
+        min-width: 100px;
+        line-height: 1.5;
+    }
+
+    .table-container th {
+        white-space: nowrap;
+    }
+
+    .table-container td button {
+        min-height: 44px;
+        padding: 11px 14px;
+    }
+
+    /* Cartões de estatísticas */
+    .stats {
+        gap: 13px;
+    }
+
+    .stat-card {
+        padding: 18px 14px;
+        min-width: 0;
+    }
+
+    /* Acessos */
+    .acessos-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px;
+    }
+
+    .acesso-card {
+        padding: 19px 16px;
+        min-height: 105px;
+    }
+
+    .acesso-card strong {
+        font-size: 16px;
+    }
+
+    .acesso-card small {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    /* Painéis inferiores do início */
+    .dashboard-bottom {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+
+    .dashboard-bottom .panel {
+        padding: 20px 16px !important;
+    }
+
+    .dashboard-bottom .panel h3 {
+        font-size: 17px;
+    }
+
+    /* Relógio */
+    .painel-relogio {
+        min-height: 220px;
+        padding: 22px !important;
+    }
+
+    .painel-relogio h2 {
+        font-size: 36px;
+    }
+
+    /* Menu lateral */
+    nav a {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+    }
+
+    /* Rodapé */
+    footer {
+        padding: 15px 5px;
+        line-height: 1.5;
+    }
+}
+
+/* CELULARES MUITO ESTREITOS */
+@media screen and (max-width: 380px) {
+
+    .main-content {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .panel,
+    .client-form,
+    .client-list {
+        padding: 17px 12px !important;
+    }
+
+    .topbar h1 {
+        font-size: 21px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* MELHOR EXPERIÊNCIA DE TOQUE */
+@media (hover: none) and (pointer: coarse) {
+    button,
+    .btn-delete,
+    nav a,
+    .acesso-card {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+        touch-action: manipulation;
+    }
+}
