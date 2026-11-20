@@ -3837,3 +3837,42 @@ body.modo-escuro #saldoValorManual::-webkit-inner-spin-button {
     filter: invert(1) !important;
     opacity: 1 !important;
 }
+/* CORREÇÃO DO MENU NO CELULAR */
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 260px;
+        height: 100vh;
+        z-index: 1001;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        overflow-y: auto;
+    }
+
+    body.menu-aberto .sidebar {
+        transform: translateX(0);
+    }
+
+    .menu-fundo {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    body.menu-aberto .menu-fundo {
+        display: block;
+    }
+
+    .menu-toggle {
+        display: flex !important;
+        position: relative;
+        z-index: 1002;
+        cursor: pointer;
+    }
+}
