@@ -8,9 +8,35 @@
 
     <title>Petsitter</title>
 
-    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="css/style.css?v=8">
+
+    <!-- Aplica o tema antes de mostrar o painel -->
+    <script>
+        try {
+            const configTema = JSON.parse(
+                localStorage.getItem("hotelPetConfiguracoes")
+            ) || {};
+
+            const modoEscuro =
+                configTema.modoEscuro === true ||
+                configTema.tema === "escuro";
+
+            if (modoEscuro) {
+                document.documentElement.classList.add("modo-escuro");
+            }
+        } catch (erro) {
+            console.error("Erro ao carregar o tema:", erro);
+        }
+    </script>
 </head>
 <body>
+
+    <script>
+        // Garante que o tema seja aplicado também ao body.
+        if (document.documentElement.classList.contains("modo-escuro")) {
+            document.body.classList.add("modo-escuro");
+        }
+    </script>
 
     <div class="layout">
 
@@ -82,46 +108,52 @@
                 </div>
             </section>
 
+            <!-- INDICADORES -->
+
             <section class="stats">
 
                 <div class="stat-card">
                     <span>🐕</span>
                     <p>Pets hospedados</p>
-                    <h2>0</h2>
+                    <h2 id="petsHospedados">0</h2>
                     <small>Atualmente hospedados</small>
                 </div>
 
                 <div class="stat-card">
                     <span>📅</span>
                     <p>Reservas futuras</p>
-                    <h2>0</h2>
+                    <h2 id="reservasFuturas">0</h2>
                     <small>Agendamentos registrados</small>
                 </div>
 
                 <div class="stat-card">
                     <span>👥</span>
                     <p>Clientes cadastrados</p>
-                    <h2>0</h2>
+                    <h2 id="clientesCadastrados">0</h2>
                     <small>Tutores registrados</small>
                 </div>
 
                 <div class="stat-card">
                     <span>💰</span>
                     <p>Receita do mês</p>
-                    <h2>R$ 0,00</h2>
+                    <h2 id="receitaMes">R$ 0,00</h2>
                     <small>Valores recebidos</small>
                 </div>
 
             </section>
+
+            <!-- PRÓXIMAS MOVIMENTAÇÕES E RELÓGIO -->
 
             <section class="dashboard-bottom">
 
                 <div class="panel">
                     <h3>📋 Próximas movimentações</h3>
 
-                    <p class="empty-state">
-                        Nenhuma entrada ou saída cadastrada.
-                    </p>
+                    <div id="movimentacoesDashboard">
+                        <p class="empty-state">
+                            Carregando movimentações...
+                        </p>
+                    </div>
                 </div>
 
                 <div class="panel painel-relogio">
@@ -148,7 +180,7 @@
 
     </div>
 
-    <script src="js/app.js?v=5"></script>
+    <script src="js/app.js?v=8"></script>
 
 </body>
 </html>

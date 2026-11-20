@@ -189,7 +189,15 @@ function formatarData(data) {
 
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
+function obterDataLocalHoje() {
+    const hoje = new Date();
 
+    return [
+        hoje.getFullYear(),
+        String(hoje.getMonth() + 1).padStart(2, "0"),
+        String(hoje.getDate()).padStart(2, "0")
+    ].join("-");
+}
 function obterNomeServico(servico) {
     const nomes = {
         banho: "Banho",
@@ -579,7 +587,7 @@ agendaForm.addEventListener("submit", function(event) {
         return;
     }
 
-    const novoAgendamento = {
+    const novoAgendamento = {dataPagamento: formaPagamento && valor > 0 ? obterDataLocalHoje() : "",
         id: Date.now().toString(),
 
         tutorId: tutor.id,
@@ -596,6 +604,10 @@ agendaForm.addEventListener("submit", function(event) {
         valor,
 
         formaPagamento: formaPagamento || "",
+
+        dataPagamento: formaPagamento && valor > 0
+            ? obterDataLocalHoje()
+            : "",
 
         parcelasPagamento:
             formaPagamento === "Cartão de crédito" ? parcelas : 1,

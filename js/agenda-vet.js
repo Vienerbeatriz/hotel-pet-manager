@@ -334,6 +334,16 @@ function formatarData(data) {
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
+function obterDataLocalHoje() {
+    const hoje = new Date();
+
+    return [
+        hoje.getFullYear(),
+        String(hoje.getMonth() + 1).padStart(2, "0"),
+        String(hoje.getDate()).padStart(2, "0")
+    ].join("-");
+}
+
 function normalizarTexto(texto) {
     return String(texto || "")
         .normalize("NFD")
@@ -610,6 +620,8 @@ vetForm.addEventListener("submit", function(event) {
 
         parcelasPagamento:
             formaPagamento === "Cartão de crédito" ? parcelas : 1,
+
+        dataPagamento: formaPagamento && valor > 0 ? obterDataLocalHoje() : "",
 
         status: document.getElementById("vetStatus").value,
 

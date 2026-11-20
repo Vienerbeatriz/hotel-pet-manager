@@ -3517,3 +3517,323 @@ body.modo-escuro .status-pendente {
         right: -8px;
     }
 }
+/* MOVIMENTAÇÕES DO PAINEL */
+
+.movimentacao-item {
+    font-size: 14px;
+    padding: 14px;
+}
+
+.movimentacao-info strong,
+.movimentacao-data strong {
+    font-size: 15px;
+}
+
+.movimentacao-info span,
+.movimentacao-data span {
+    font-size: 13px;
+}
+
+.movimentacao-icone {
+    font-size: 22px;
+}
+
+/* ==============================
+   AJUSTES DOS INDICADORES FINANCEIROS
+============================== */
+
+.ajuste-indicador {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.ajuste-indicador label {
+    font-size: 13px;
+    font-weight: 600;
+    color: inherit;
+}
+
+.ajuste-indicador select,
+.ajuste-indicador input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 9px 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+}
+
+.ajuste-indicador select:focus,
+.ajuste-indicador input:focus {
+    border-color: #EB9933;
+}
+
+.ajuste-indicador select {
+    background: #fff;
+    color: #333;
+}
+
+.ajuste-indicador input {
+    background: #fff;
+    color: #333;
+}
+
+.ajuste-indicador button {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #EB9933;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.ajuste-indicador button:hover {
+    background: #d9821c;
+}
+
+.ajuste-indicador [hidden] {
+    display: none !important;
+}
+
+.ajuste-indicador #receitaManualArea,
+.ajuste-indicador #saldoManualArea {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Evita que os conteúdos ultrapassem os cards */
+
+.stats .stat-card {
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.stats .stat-card > * {
+    max-width: 100%;
+}
+
+/* Modo escuro */
+
+.modo-escuro .ajuste-indicador select,
+.modo-escuro .ajuste-indicador input {
+    background: #292929;
+    color: #fff;
+    border-color: #555;
+}
+
+.modo-escuro .ajuste-indicador label {
+    color: #eee;
+}
+
+.modo-escuro .ajuste-indicador button {
+    background: #EB9933;
+    color: #fff;
+}
+
+.modo-escuro .ajuste-indicador button:hover {
+    background: #d9821c;
+}
+
+/* Corrigir seleção dos campos do Financeiro */
+
+.ajuste-indicador select,
+.ajuste-indicador select:focus,
+.ajuste-indicador select:active {
+    background-color: #fff !important;
+    color: #333 !important;
+    border: 1px solid #EB9933 !important;
+    outline-color: #EB9933;
+    accent-color: #EB9933;
+    color-scheme: light;
+}
+
+.ajuste-indicador select option {
+    background-color: #fff;
+    color: #333;
+}
+
+.modo-escuro .ajuste-indicador select,
+.modo-escuro .ajuste-indicador select:focus,
+.modo-escuro .ajuste-indicador select:active {
+    background-color: #292929 !important;
+    color: #fff !important;
+    border-color: #EB9933 !important;
+    color-scheme: dark;
+}
+
+.modo-escuro .ajuste-indicador select option {
+    background-color: #292929;
+    color: #fff;
+}
+/* SETA PERSONALIZADA DOS SELETORES DO FINANCEIRO */
+
+.ajuste-indicador select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23EB9933' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    background-size: 14px !important;
+    padding-right: 35px !important;
+    cursor: pointer;
+}
+
+.ajuste-indicador select:focus,
+.ajuste-indicador select:active {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23EB9933' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+}
+
+.modo-escuro .ajuste-indicador select {
+    background-color: #292929 !important;
+    color: #fff !important;
+}
+/* BOTÕES PARA ZERAR INDICADORES DO FINANCEIRO */
+
+.btn-zerar-indicador {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0 12px;
+    padding: 6px 13px;
+    border: 1px solid #EB9933;
+    border-radius: 7px;
+    background: transparent;
+    color: #EB9933;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-zerar-indicador:hover {
+    background: #EB9933;
+    color: #FFFFFF;
+}
+
+.btn-zerar-indicador:focus-visible {
+    outline: 2px solid #EB9933;
+    outline-offset: 3px;
+}
+
+body.modo-escuro .btn-zerar-indicador {
+    color: #EB9933;
+    border-color: #EB9933;
+}
+
+body.modo-escuro .btn-zerar-indicador:hover {
+    background: #EB9933;
+    color: #FFFFFF;
+}
+/* Setinhas dos seletores de cálculo financeiro */
+#receitaModo,
+#saldoModo {
+    color-scheme: light;
+    color: #34483A;
+    background-color: #FFFFFF;
+    border: 1px solid #D8D8D8;
+}
+
+#receitaModo option,
+#saldoModo option {
+    color: #34483A;
+    background-color: #FFFFFF;
+}
+
+body.modo-escuro #receitaModo,
+body.modo-escuro #saldoModo {
+    color-scheme: dark;
+    color: #FFFFFF;
+    background-color: #292929;
+    border-color: #555555;
+}
+
+body.modo-escuro #receitaModo option,
+body.modo-escuro #saldoModo option {
+    color: #FFFFFF;
+    background-color: #292929;
+}
+/* Setas personalizadas dos seletores financeiros */
+#receitaModo,
+#saldoModo {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    color: #34483A !important;
+    background-color: #FFFFFF !important;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2334483A' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") !important;
+
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    background-size: 16px !important;
+
+    padding-right: 38px !important;
+    cursor: pointer;
+}
+
+body.modo-escuro #receitaModo,
+body.modo-escuro #saldoModo {
+    color: #FFFFFF !important;
+    background-color: #292929 !important;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") !important;
+}
+
+#receitaModo option,
+#saldoModo option {
+    background: #FFFFFF;
+    color: #34483A;
+}
+
+body.modo-escuro #receitaModo option,
+body.modo-escuro #saldoModo option {
+    background: #292929;
+    color: #FFFFFF;
+}
+/* Setinhas dos campos de valor manual */
+#receitaValorManual,
+#saldoValorManual {
+    color-scheme: light;
+}
+
+body.modo-escuro #receitaValorManual,
+body.modo-escuro #saldoValorManual {
+    color-scheme: dark;
+}
+#receitaValorManual::-webkit-inner-spin-button,
+#saldoValorManual::-webkit-inner-spin-button {
+    opacity: 1 !important;
+    filter: invert(35%) sepia(15%) saturate(800%) hue-rotate(80deg) !important;
+    cursor: pointer;
+}
+
+body.modo-escuro #receitaValorManual::-webkit-inner-spin-button,
+body.modo-escuro #saldoValorManual::-webkit-inner-spin-button {
+    filter: invert(1) !important;
+    opacity: 1 !important;
+}

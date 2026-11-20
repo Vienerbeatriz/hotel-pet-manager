@@ -1,8 +1,26 @@
+
+// CHAVES DO LOCALSTORAGE
+
 const CONFIG_KEY = "hotelPetConfiguracoes";
+const RESERVAS_KEY = "hotelPetReservas";
+const CLIENTES_KEY = "hotelPetClientes";
+const PETS_KEY = "hotelPetAnimais";
+const BANHO_KEY = "petsitterAgendaBanho";
+const VET_KEY = "petsitterAgendaVet";
+const DESPESAS_KEY = "hotelPetDespesas";
 
-/* APLICAÇÃO DO TEMA */
+// FUNÇÕES GERAIS
 
-function obterConfiguracoes() {
+function carregarLista(chave) {
+    try {
+        const dados = JSON.parse(localStorage.getItem(chave));
+        return Array.isArray(dados) ? dados : [];
+    } catch {
+        return [];
+    }
+}
+
+function carregarConfiguracoes() {
     try {
         return JSON.parse(localStorage.getItem(CONFIG_KEY)) || {};
     } catch {
@@ -10,137 +28,371 @@ function obterConfiguracoes() {
     }
 }
 
+function moeda(valor) {
+    return Number(valor || 0).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+function escaparHTML(valor) {
+    return String(valor ?? "").replace(/[&<>"']/g, caractere => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[caractere]);
+}
+
+function obterDataLocal() {
+    const agora = new Date();
+
+    const ano = agora.getFullYear();
+    const mes = String(agora.getMonth() + 1).padStart(2, "0");
+    const dia = String(agora.getDate()).padStart(2, "0");
+
+    return `${ano}-${mes}-${dia}`;
+}
+
+function dataFormatada(data) {
+    if (!data) return "-";
+
+    const partes = String(data).split("-");
+
+    if (partes.length !== 3) return "-";
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+function registroCancelado(item) {
+    const status = String(item.status || "")
+        .trim()
+        .toLowerCase();
+
+    return status === "cancelado" ||
+           status === "cancelada";
+}
+
+// TEMA CLARO E ESCURO
+
 function aplicarTema() {
-    const config = obterConfiguracoes();
-    const escuro = config.modoEscuro === true;
+    const config = carregarConfiguracoes();
 
-    document.body.classList.toggle("modo-escuro", escuro);
+    const modoEscuro =
+        config.modoEscuro === true ||
+        config.tema === "escuro";
 
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    document.body.classList.toggle("modo-escuro", modoEscuro);
 
-    if (metaTheme) {
-        metaTheme.setAttribute(
+    const metaTema = document.querySelector(
+        'meta[name="theme-color"]'
+    );
+
+    if (metaTema) {
+        metaTema.setAttribute(
             "content",
-            escuro ? "#202923" : "#EB9933"
+            modoEscuro ? "#202923" : "#EB9933"
         );
     }
 }
 
-/* APLICA O TEMA ASSIM QUE O SCRIPT É CARREGADO */
-
-aplicarTema();
-
-/* NOME DO ESTABELECIMENTO */
+// NOME DINÂMICO DO HOTEL
 
 function atualizarNomeHotel() {
-    const config = obterConfiguracoes();
-    const nome = config.nome || "Hotel Pet Manager";
+    const config = carregarConfiguracoes();
+
+    const nome =
+        config.nomeHotel ||
+        config.nomeEstabelecimento ||
+        config.nome ||
+        "Petsitter";
 
     document.querySelectorAll(".nomeHotelDinamico").forEach(elemento => {
         elemento.textContent = nome;
     });
 }
 
-/* RELÓGIO */
+// RELÓGIO E DATA
 
 function atualizarRelogio() {
     const relogio = document.getElementById("relogioDigital");
     const dataAtual = document.getElementById("dataAtual");
 
-    if (!relogio || !dataAtual) return;
-
     const agora = new Date();
 
-    relogio.textContent = agora.toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-    });
+    if (relogio) {
+        relogio.textContent = agora.toLocaleTimeString("pt-BR");
+    }
 
-    const data = agora.toLocaleDateString("pt-BR", {
-        weekday: "long",
-        day: "2-digit",
-        month: "long",
-        year: "numeric"
-    });
-
-    dataAtual.textContent =
-        data.charAt(0).toUpperCase() + data.slice(1);
+    if (dataAtual) {
+        dataAtual.textContent = agora.toLocaleDateString("pt-BR", {
+            weekday: "long",
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        });
+    }
 }
 
-/* MENU LATERAL */
+// DASHBOARD
+
+function atualizarDashboard() {
+    const reservas = carregarLista(RESERVAS_KEY);
+    const clientes = carregarLista(CLIENTES_KEY);
+    const banho = carregarLista(BANHO_KEY);
+    const vet = carregarLista(VET_KEY);
+
+    const hoje = obterDataLocal();
+
+    atualizarPetsHospedados(reservas, hoje);
+    atualizarReservasFuturas(reservas, hoje);
+    atualizarClientes(clientes);
+    atualizarReceitaMes(reservas, banho, vet, hoje);
+    atualizarMovimentacoes(banho, vet, hoje);
+}
+
+// PETS HOSPEDADOS
+
+function atualizarPetsHospedados(reservas, hoje) {
+    const elemento = document.getElementById("petsHospedados");
+
+    if (!elemento) return;
+
+    const hospedagensAtivas = reservas.filter(reserva => {
+        if (registroCancelado(reserva)) return false;
+
+        const entrada = reserva.entrada;
+        const saida = reserva.saida;
+
+        return entrada && saida &&
+            entrada <= hoje &&
+            saida >= hoje;
+    });
+
+    const petsUnicos = new Set(
+        hospedagensAtivas.map(reserva =>
+            reserva.petId ||
+            reserva.petNome ||
+            reserva.nomePet ||
+            reserva.id
+        )
+    );
+
+    elemento.textContent = petsUnicos.size;
+}
+
+// RESERVAS FUTURAS
+
+function atualizarReservasFuturas(reservas, hoje) {
+    const elemento = document.getElementById("reservasFuturas");
+
+    if (!elemento) return;
+
+    const futuras = reservas.filter(reserva => {
+        if (registroCancelado(reserva)) return false;
+
+        return reserva.entrada && reserva.entrada > hoje;
+    });
+
+    elemento.textContent = futuras.length;
+}
+
+// CLIENTES CADASTRADOS
+
+function atualizarClientes(clientes) {
+    const elemento = document.getElementById("clientesCadastrados");
+
+    if (!elemento) return;
+
+    elemento.textContent = clientes.length;
+}
+
+// RECEITA DO MÊS
+
+function atualizarReceitaMes(reservas, banho, vet, hoje) {
+    const elemento = document.getElementById("receitaMes");
+
+    if (!elemento) return;
+
+    const mesAtual = hoje.substring(0, 7);
+
+    let total = 0;
+
+    reservas.forEach(reserva => {
+        if (registroCancelado(reserva)) return;
+
+        const dataReferencia = reserva.entrada || "";
+
+        if (!dataReferencia.startsWith(mesAtual)) return;
+
+        total += Math.max(0, Number(reserva.valorPago) || 0);
+    });
+
+    banho.forEach(item => {
+        if (registroCancelado(item)) return;
+        if (!item.formaPagamento) return;
+        if (!String(item.data || "").startsWith(mesAtual)) return;
+
+        total += Math.max(0, Number(item.valor) || 0);
+    });
+
+    vet.forEach(item => {
+        if (registroCancelado(item)) return;
+        if (!item.formaPagamento) return;
+        if (!String(item.data || "").startsWith(mesAtual)) return;
+
+        total += Math.max(0, Number(item.valor) || 0);
+    });
+
+    elemento.textContent = moeda(total);
+}
+
+// PRÓXIMAS MOVIMENTAÇÕES
+// MOSTRA SOMENTE BANHO E VETERINÁRIO
+
+function atualizarMovimentacoes(banho, vet, hoje) {
+    const container = document.getElementById("movimentacoesDashboard");
+
+    if (!container) return;
+
+    const movimentacoes = [];
+
+    // AGENDAMENTOS DE BANHO
+
+    banho.forEach(item => {
+        if (registroCancelado(item)) return;
+        if (!item.data || item.data < hoje) return;
+
+        movimentacoes.push({
+            data: item.data,
+            horario: item.horario || "",
+            titulo: "Serviço de banho",
+            descricao:
+                item.petNome ||
+                item.nomePet ||
+                "Pet não identificado",
+            icone: "🛁"
+        });
+    });
+
+    // AGENDAMENTOS VETERINÁRIOS
+
+    vet.forEach(item => {
+        if (registroCancelado(item)) return;
+        if (!item.data || item.data < hoje) return;
+
+        movimentacoes.push({
+            data: item.data,
+            horario: item.horario || "",
+            titulo: "Atendimento veterinário",
+            descricao:
+                item.petNome ||
+                item.nomePet ||
+                "Pet não identificado",
+            icone: "🩺"
+        });
+    });
+
+    // ORGANIZA POR DATA E HORÁRIO
+
+    movimentacoes.sort((a, b) => {
+        const dataA = `${a.data} ${a.horario}`;
+        const dataB = `${b.data} ${b.horario}`;
+
+        return dataA.localeCompare(dataB);
+    });
+
+    const proximas = movimentacoes.slice(0, 6);
+
+    if (proximas.length === 0) {
+        container.innerHTML = `
+            <p class="empty-state">
+                Nenhum agendamento futuro de banho ou veterinário.
+            </p>
+        `;
+        return;
+    }
+
+    container.innerHTML = proximas.map(item => `
+        <div class="movimentacao-item">
+            <div class="movimentacao-icone">
+                ${item.icone}
+            </div>
+
+            <div class="movimentacao-info">
+                <strong>${escaparHTML(item.titulo)}</strong>
+                <span>${escaparHTML(item.descricao)}</span>
+            </div>
+
+            <div class="movimentacao-data">
+                <strong>${dataFormatada(item.data)}</strong>
+                ${item.horario ? `
+                    <span>${escaparHTML(item.horario)}</span>
+                ` : ""}
+            </div>
+        </div>
+    `).join("");
+}
+
+// MENU MOBILE
 
 function configurarMenu() {
-    const botaoAbrir = document.getElementById("abrirMenu");
-    const fundo = document.getElementById("menuFundo");
+    const botaoMenu = document.getElementById("abrirMenu");
+    const fundoMenu = document.getElementById("menuFundo");
 
-    if (!botaoAbrir || !fundo) return;
-
-    if (botaoAbrir.dataset.menuConfigurado === "true") return;
-
-    botaoAbrir.dataset.menuConfigurado = "true";
-
-    function abrirMenu() {
-        document.body.classList.add("menu-aberto");
-        botaoAbrir.setAttribute("aria-expanded", "true");
-    }
+    if (!botaoMenu || !fundoMenu) return;
 
     function fecharMenu() {
         document.body.classList.remove("menu-aberto");
-        botaoAbrir.setAttribute("aria-expanded", "false");
+        botaoMenu.setAttribute("aria-expanded", "false");
     }
 
-    function alternarMenu() {
-        const menuAberto = document.body.classList.contains("menu-aberto");
+    botaoMenu.addEventListener("click", () => {
+        const aberto = document.body.classList.toggle("menu-aberto");
 
-        if (menuAberto) {
-            fecharMenu();
-        } else {
-            abrirMenu();
-        }
-    }
-
-    botaoAbrir.addEventListener("click", alternarMenu);
-    fundo.addEventListener("click", fecharMenu);
-
-    document.addEventListener("keydown", evento => {
-        if (evento.key === "Escape") {
-            fecharMenu();
-        }
+        botaoMenu.setAttribute("aria-expanded", String(aberto));
     });
+
+    fundoMenu.addEventListener("click", fecharMenu);
 
     document.querySelectorAll(".sidebar nav a").forEach(link => {
         link.addEventListener("click", fecharMenu);
     });
 }
 
-/* ATUALIZAÇÃO GERAL */
+// INICIALIZAÇÃO
 
-function atualizarAplicacao() {
-    configurarMenu();
-    atualizarNomeHotel();
+function iniciarAplicacao() {
     aplicarTema();
+    atualizarNomeHotel();
     atualizarRelogio();
+    atualizarDashboard();
+    configurarMenu();
 }
 
-atualizarAplicacao();
+iniciarAplicacao();
+
+// ATUALIZA O RELÓGIO A CADA SEGUNDO
 
 setInterval(atualizarRelogio, 1000);
 
-window.addEventListener("storage", () => {
-    atualizarNomeHotel();
+// ATUALIZA OS DADOS AO VOLTAR PARA A PÁGINA
+
+window.addEventListener("pageshow", () => {
     aplicarTema();
+    atualizarNomeHotel();
+    atualizarDashboard();
 });
 
-window.addEventListener("pageshow", atualizarAplicacao);
+// ATUALIZA QUANDO OUTRA ABA ALTERA OS DADOS
 
-window.addEventListener(
-    "hotelPetConfiguracoesAtualizadas",
-    () => {
-        atualizarNomeHotel();
-        aplicarTema();
-    }
-);
+window.addEventListener("storage", () => {
+    aplicarTema();
+    atualizarNomeHotel();
+    atualizarDashboard();
+});
 
-console.log("Petsitter iniciado com sucesso!");
+// ATUALIZA PERIODICAMENTE OS INDICADORES
+
+setInterval(atualizarDashboard, 5000);

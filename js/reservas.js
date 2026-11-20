@@ -2,6 +2,7 @@
 const PET_KEY = "hotelPetAnimais";
 const CLIENT_KEY = "hotelPetClientes";
 const RESERVATION_KEY = "hotelPetReservas";
+const HISTORICO_RESERVAS_KEY = "hotelPetHistoricoFinanceiroReservas";
 
 const form = document.getElementById("reservationForm");
 const petSelect = document.getElementById("reservaPet");
@@ -351,13 +352,14 @@ function atualizarFormaPagamento() {
 
     grupoParcelas.classList.toggle("visivel", credito);
 
-    parcelasInput.required = credito && Number(valorPagoInput.value) > 0;
+    parcelasInput.required = credito;
 
     atualizarPreviewParcelas();
 }
 
 function atualizarPreviewParcelas() {
     const valorPago = Number(valorPagoInput.value) || 0;
+    const valorTotal = obterTotalDoFormulario();
     const parcelas = Number(parcelasInput.value) || 1;
 
     if (formaPagamentoInput.value !== "Cartão de crédito") {
@@ -365,7 +367,8 @@ function atualizarPreviewParcelas() {
         return;
     }
 
-    const valorParcela = valorPago / parcelas;
+    const valorBase = valorPago > 0 ? valorPago : valorTotal;
+    const valorParcela = valorBase / parcelas;
 
     valorParcelaPreview.textContent =
         `Valor por parcela: ${formatarMoeda(valorParcela)}`;
@@ -470,7 +473,6 @@ function salvarNovaReserva(evento) {
 
     if (
         formaPagamento === "Cartão de crédito" &&
-        valorPago > 0 &&
         (parcelas < 1 || parcelas > 12)
     ) {
         alert("Selecione uma quantidade válida de parcelas.");
@@ -480,6 +482,7 @@ function salvarNovaReserva(evento) {
 
     const novaReserva = {
         id: Date.now(),
+        dataReserva: obterHoje(),
 
         petId: pet.id,
         petNome: pet.nome,
@@ -496,10 +499,14 @@ function salvarNovaReserva(evento) {
 
         valorPago,
 
-        formaPagamento: valorPago > 0 ? formaPagamento : "",
+        dataPagamento: valorPago > 0 && formaPagamento
+            ? obterHoje()
+            : "",
+
+        formaPagamento: formaPagamento,
 
         parcelasPagamento:
-            formaPagamento === "Cartão de crédito" && valorPago > 0
+            formaPagamento === "Cartão de crédito"
                 ? parcelas
                 : 1,
 
@@ -547,14 +554,74 @@ function excluirReserva(id) {
 
     if (!confirmar) return;
 
-    const anteriores = reservas;
+    const reserva = reservas.find(item =>
+        String(item.id) === String(id)
+    );
 
-    reservas = reservas.filter(reserva =>
-        String(reserva.id) !== String(id)
+    if (!reserva) return;
+
+    const reservasAnteriores = [...reservas];
+    const historicoAnterior = lerDados(HISTORICO_RESERVAS_KEY);
+
+    const valorPago = obterValorPago(reserva);
+
+    // Preserva os pagamentos recebidos antes da exclusão.
+    if (valorPago > 0) {
+        const jaArquivada = historicoAnterior.some(item =>
+            String(item.id) === String(reserva.id)
+        );
+
+        if (!jaArquivada) {
+            const registroFinanceiro = {
+                id: reserva.id,
+                dataReserva: reserva.dataReserva || "",
+                petNome: reserva.petNome || "Pet",
+                tutorNome: reserva.tutorNome || "Não informado",
+                valorTotal: obterValorTotal(reserva),
+                valorPago: valorPago,
+                dataPagamento: reserva.dataPagamento || "",
+                formaPagamento: reserva.formaPagamento || "",
+                parcelasPagamento: Math.max(
+                    1,
+                    Number(reserva.parcelasPagamento) || 1
+                ),
+                dataArquivamento: obterHoje()
+            };
+
+            try {
+                localStorage.setItem(
+                    HISTORICO_RESERVAS_KEY,
+                    JSON.stringify([
+                        ...historicoAnterior,
+                        registroFinanceiro
+                    ])
+                );
+            } catch (erro) {
+                console.error(erro);
+                alert(
+                    "Não foi possível preservar o histórico financeiro. A reserva não foi excluída."
+                );
+                return;
+            }
+        }
+    }
+
+    reservas = reservas.filter(item =>
+        String(item.id) !== String(id)
     );
 
     if (!salvarReservas()) {
-        reservas = anteriores;
+        reservas = reservasAnteriores;
+
+        try {
+            localStorage.setItem(
+                HISTORICO_RESERVAS_KEY,
+                JSON.stringify(historicoAnterior)
+            );
+        } catch (erro) {
+            console.error(erro);
+        }
+
         return;
     }
 
@@ -625,29 +692,10 @@ function criarCartaoReserva(reserva, hoje) {
 
     const resumo = criarElemento("div", "reservation-card-summary");
 
-    adicionarInformacao(
-        resumo,
-        "Entrada",
-        formatarData(reserva.entrada)
-    );
-
-    adicionarInformacao(
-        resumo,
-        "Saída",
-        formatarData(reserva.saida)
-    );
-
-    adicionarInformacao(
-        resumo,
-        "Valor total",
-        formatarMoeda(obterValorTotal(reserva))
-    );
-
-    adicionarInformacao(
-        resumo,
-        "Pagamento",
-        pagamento
-    );
+    adicionarInformacao(resumo, "Entrada", formatarData(reserva.entrada));
+    adicionarInformacao(resumo, "Saída", formatarData(reserva.saida));
+    adicionarInformacao(resumo, "Valor total", formatarMoeda(obterValorTotal(reserva)));
+    adicionarInformacao(resumo, "Pagamento", pagamento);
 
     const detalhes = criarElemento("div", "reservation-card-details");
     detalhes.hidden = true;
@@ -675,9 +723,7 @@ function criarCartaoReserva(reserva, hoje) {
     adicionarInformacao(
         grade,
         "Valor restante",
-        formatarMoeda(
-            obterValorTotal(reserva) - obterValorPago(reserva)
-        )
+        formatarMoeda(obterValorTotal(reserva) - obterValorPago(reserva))
     );
 
     adicionarInformacao(
@@ -689,30 +735,15 @@ function criarCartaoReserva(reserva, hoje) {
     adicionarInformacao(
         grade,
         "Parcelas",
-        reserva.formaPagamento === "Cartão de crédito" &&
-        obterValorPago(reserva) > 0
+        reserva.formaPagamento === "Cartão de crédito"
             ? `${Number(reserva.parcelasPagamento) || 1}x`
             : "-"
     );
 
-    adicionarInformacao(
-        grade,
-        "Status da reserva",
-        reserva.status || "-"
-    );
+    adicionarInformacao(grade, "Status da reserva", reserva.status || "-");
+    adicionarInformacao(grade, "Status do pagamento", pagamento);
 
-    adicionarInformacao(
-        grade,
-        "Status do pagamento",
-        pagamento
-    );
-
-    detalhes.appendChild(grade);
-
-    const observacoes = criarElemento(
-        "div",
-        "reservation-observations"
-    );
+    const observacoes = criarElemento("div", "reservation-observations");
 
     observacoes.append(
         criarElemento("strong", "", "Observações"),
@@ -723,7 +754,7 @@ function criarCartaoReserva(reserva, hoje) {
         )
     );
 
-    detalhes.appendChild(observacoes);
+    detalhes.append(grade, observacoes);
 
     const acoes = criarElemento("div", "reservation-card-actions");
 
@@ -823,11 +854,7 @@ cards.addEventListener("click", evento => {
     const foto = evento.target.closest(".pet-foto-ampliavel");
 
     if (foto) {
-        abrirFotoReserva(
-            foto.src,
-            foto.alt
-        );
-
+        abrirFotoReserva(foto.src, foto.alt);
         return;
     }
 
@@ -866,11 +893,7 @@ cards.addEventListener("keydown", evento => {
         (evento.key === "Enter" || evento.key === " ")
     ) {
         evento.preventDefault();
-
-        abrirFotoReserva(
-            foto.src,
-            foto.alt
-        );
+        abrirFotoReserva(foto.src, foto.alt);
     }
 });
 

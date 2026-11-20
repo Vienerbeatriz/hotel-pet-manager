@@ -9,7 +9,6 @@
     <title>Financeiro | Petsitter</title>
 
     <link rel="stylesheet" href="css/style.css?v=6">
-
 </head>
 
 <body>
@@ -29,8 +28,6 @@
 </script>
 
 <div class="layout">
-
-    <!-- MENU LATERAL -->
 
     <aside class="sidebar">
 
@@ -62,8 +59,6 @@
 
     <div class="menu-fundo" id="menuFundo"></div>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-
     <main class="main-content">
 
         <header class="topbar">
@@ -91,46 +86,127 @@
 
         </header>
 
-        <!-- BOAS-VINDAS -->
+        <!-- INDICADORES FINANCEIROS -->
 
         <section class="welcome">
-
             <div>
                 <h2>Controle financeiro 💰</h2>
                 <p>
-                    Acompanhe os recebimentos, valores pendentes
-                    e despesas do hotel.
+                    Acompanhe os recebimentos, valores pendentes,
+                    serviços realizados e despesas do hotel.
                 </p>
             </div>
-
         </section>
 
-        <!-- INDICADORES FINANCEIROS -->
-
         <section class="stats">
+
+            <!-- RECEITA RECEBIDA -->
 
             <div class="stat-card">
                 <span>💰</span>
                 <p>Receita recebida</p>
                 <h2 id="totalRecebido">R$ 0,00</h2>
+
+                <button
+                    type="button"
+                    class="btn-zerar-indicador"
+                    data-zerar-indicador="receita"
+                >
+                    Zerar
+                </button>
+
+                <div class="ajuste-indicador">
+                    <label for="receitaModo">Cálculo da receita</label>
+
+                    <select id="receitaModo">
+                        <option value="automatico">Automático</option>
+                        <option value="manual">Manual</option>
+                    </select>
+
+                    <div id="receitaManualArea" hidden>
+                        <input
+                            type="number"
+                            id="receitaValorManual"
+                            min="0"
+                            step="0.01"
+                            placeholder="Valor manual (R$)"
+                        >
+
+                        <button type="button" id="receitaAplicar">
+                            Aplicar valor
+                        </button>
+                    </div>
+                </div>
             </div>
+
+            <!-- VALORES PENDENTES -->
 
             <div class="stat-card">
                 <span>⏳</span>
                 <p>Valores a receber</p>
                 <h2 id="totalPendente">R$ 0,00</h2>
+
+                <button
+                    type="button"
+                    class="btn-zerar-indicador"
+                    data-zerar-indicador="pendente"
+                >
+                    Zerar
+                </button>
             </div>
+
+            <!-- DESPESAS -->
 
             <div class="stat-card">
                 <span>🧾</span>
                 <p>Total de despesas</p>
                 <h2 id="totalDespesas">R$ 0,00</h2>
+
+                <button
+                    type="button"
+                    class="btn-zerar-indicador"
+                    data-zerar-indicador="despesas"
+                >
+                    Zerar
+                </button>
             </div>
+
+            <!-- SALDO ATUAL -->
 
             <div class="stat-card">
                 <span>📊</span>
                 <p>Saldo atual</p>
                 <h2 id="saldoAtual">R$ 0,00</h2>
+
+                <button
+                    type="button"
+                    class="btn-zerar-indicador"
+                    data-zerar-indicador="saldo"
+                >
+                    Zerar
+                </button>
+
+                <div class="ajuste-indicador">
+                    <label for="saldoModo">Cálculo do saldo</label>
+
+                    <select id="saldoModo">
+                        <option value="automatico">Automático</option>
+                        <option value="manual">Manual</option>
+                    </select>
+
+                    <div id="saldoManualArea" hidden>
+                        <input
+                            type="number"
+                            id="saldoValorManual"
+                            step="0.01"
+                            placeholder="Valor manual (R$)"
+                        >
+
+                        <button type="button" id="saldoAplicar">
+                            Aplicar valor
+                        </button>
+                    </div>
+                </div>
             </div>
 
         </section>
@@ -140,26 +216,103 @@
         <section class="client-list panel">
 
             <div class="list-header">
-
                 <div>
                     <h2>💳 Pagamentos das hospedagens</h2>
                     <p>
-                        Valores calculados automaticamente pelas reservas.
+                        Valores recebidos e pendentes calculados pelas reservas.
                     </p>
                 </div>
 
-                <span id="pagamentosCount">0 reservas</span>
+                <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+                    <span id="pagamentosCount">0 reservas</span>
 
+                    <button
+                        type="button"
+                        id="btnVerArquivados"
+                        class="btn-primary"
+                        style="display:none;"
+                    >
+                        Ver arquivados
+                    </button>
+                </div>
             </div>
 
-            <!-- CARTÕES DE PAGAMENTOS -->
-
             <div id="pagamentosCards" class="financeiro-cards">
-
                 <p class="empty-table">
                     Nenhuma reserva cadastrada.
                 </p>
+            </div>
 
+            <!-- RESERVAS ARQUIVADAS -->
+
+            <div
+                id="arquivadosArea"
+                style="display:none; width:100%; margin-top:20px;"
+            >
+                <h3 style="margin-bottom:15px;">
+                    📁 Reservas arquivadas
+                </h3>
+
+                <button
+                    type="button"
+                    id="btnExcluirArquivados"
+                    class="btn-excluir"
+                    style="margin-bottom:15px;"
+                >
+                    🗑️ Excluir todos os arquivados
+                </button>
+
+                <div
+                    id="arquivadosCards"
+                    class="financeiro-cards"
+                    style="display:flex; flex-direction:column; gap:15px; width:100%;"
+                ></div>
+            </div>
+
+        </section>
+
+        <!-- SERVIÇOS DE BANHO -->
+
+        <section class="client-list panel">
+
+            <div class="list-header">
+                <div>
+                    <h2>🛁 Serviços de banho</h2>
+                    <p>
+                        Histórico dos serviços registrados na agenda de banho.
+                    </p>
+                </div>
+
+                <span id="banhoCount">0 serviços</span>
+            </div>
+
+            <div id="banhoCards" class="financeiro-cards">
+                <p class="empty-table">
+                    Nenhum serviço de banho cadastrado.
+                </p>
+            </div>
+
+        </section>
+
+        <!-- ATENDIMENTOS VETERINÁRIOS -->
+
+        <section class="client-list panel">
+
+            <div class="list-header">
+                <div>
+                    <h2>🩺 Atendimentos veterinários</h2>
+                    <p>
+                        Histórico dos procedimentos registrados na agenda veterinária.
+                    </p>
+                </div>
+
+                <span id="vetCount">0 atendimentos</span>
+            </div>
+
+            <div id="vetCards" class="financeiro-cards">
+                <p class="empty-table">
+                    Nenhum atendimento veterinário cadastrado.
+                </p>
             </div>
 
         </section>
@@ -169,12 +322,10 @@
         <section class="client-form panel">
 
             <div class="list-header">
-
                 <div>
                     <h2>➕ Cadastrar despesa</h2>
                     <p>Registre os gastos do hotel.</p>
                 </div>
-
             </div>
 
             <form id="despesaForm">
@@ -182,9 +333,7 @@
                 <div class="form-grid">
 
                     <div class="form-group">
-                        <label for="despesaDescricao">
-                            Descrição
-                        </label>
+                        <label for="despesaDescricao">Descrição</label>
 
                         <input
                             type="text"
@@ -195,9 +344,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="despesaCategoria">
-                            Categoria
-                        </label>
+                        <label for="despesaCategoria">Categoria</label>
 
                         <select id="despesaCategoria" required>
                             <option value="">Selecione</option>
@@ -211,9 +358,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="despesaData">
-                            Data
-                        </label>
+                        <label for="despesaData">Data</label>
 
                         <input
                             type="date"
@@ -223,9 +368,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="despesaValor">
-                            Valor (R$)
-                        </label>
+                        <label for="despesaValor">Valor (R$)</label>
 
                         <input
                             type="number"
@@ -240,11 +383,9 @@
                 </div>
 
                 <div class="form-actions">
-
                     <button type="submit" class="btn-primary">
                         Adicionar despesa
                     </button>
-
                 </div>
 
             </form>
@@ -256,29 +397,21 @@
         <section class="client-list panel">
 
             <div class="list-header">
-
                 <div>
                     <h2>🧾 Despesas cadastradas</h2>
                     <p>Histórico de gastos registrados.</p>
                 </div>
 
                 <span id="despesasCount">0 despesas</span>
-
             </div>
 
-            <!-- CARTÕES DE DESPESAS -->
-
             <div id="despesasCards" class="despesas-cards">
-
                 <p class="empty-table">
                     Nenhuma despesa cadastrada.
                 </p>
-
             </div>
 
         </section>
-
-        <!-- RODAPÉ -->
 
         <footer>
             <span class="nomeHotelDinamico">Petsitter</span> © 2026
@@ -288,9 +421,7 @@
 
 </div>
 
-<!-- JAVASCRIPT -->
-
-<script src="js/financeiro.js?v=2"></script>
+<script src="js/financeiro.js?v=8"></script>
 <script src="js/app.js?v=5"></script>
 
 </body>
