@@ -1,4 +1,3 @@
-
 const PET_KEY = "hotelPetAnimais";
 const CLIENT_KEY = "hotelPetClientes";
 const RESERVATION_KEY = "hotelPetReservas";
@@ -10,10 +9,13 @@ const tutorInput = document.getElementById("reservaTutor");
 const entradaInput = document.getElementById("dataEntrada");
 const saidaInput = document.getElementById("dataSaida");
 const duracaoInput = document.getElementById("duracaoReserva");
-const tipoCobranca = document.getElementById("tipoCobranca");
+const tipoDiariaInput = document.getElementById("tipoDiaria");
+const outroTipoDiariaInput = document.getElementById("outroTipoDiaria");
+const grupoOutroTipoDiaria = document.getElementById("grupoOutroTipoDiaria");
 const valorInput = document.getElementById("valorReserva");
-const labelValor = document.getElementById("labelValor");
 const totalInput = document.getElementById("totalReserva");
+const tipoDescontoInput = document.getElementById("tipoDesconto");
+const valorDescontoInput = document.getElementById("valorDesconto");
 const valorPagoInput = document.getElementById("valorPago");
 const statusInput = document.getElementById("statusReserva");
 const observacoesInput = document.getElementById("observacoesReserva");
@@ -22,6 +24,7 @@ const contador = document.getElementById("reservationCount");
 const filtro = document.getElementById("filtroReservas");
 
 const formaPagamentoInput = document.getElementById("formaPagamento");
+const bancoPagamentoInput = document.getElementById("bancoPagamento");
 const grupoParcelas = document.getElementById("grupoParcelas");
 const parcelasInput = document.getElementById("parcelasPagamento");
 const valorParcelaPreview = document.getElementById("valorParcelaPreview");
@@ -185,16 +188,91 @@ function criarElemento(tag, classe, texto) {
 }
 
 // ==============================
+// TIPO DE DIÁRIA PERSONALIZADO
+// ==============================
+
+function atualizarTipoDiaria() {
+    if (!tipoDiariaInput || !grupoOutroTipoDiaria || !outroTipoDiariaInput) {
+        return;
+    }
+
+    const selecionouOutro = tipoDiariaInput.value === "Outro";
+
+    grupoOutroTipoDiaria.style.display = selecionouOutro
+        ? "block"
+        : "none";
+
+    outroTipoDiariaInput.required = selecionouOutro;
+
+    if (!selecionouOutro) {
+        outroTipoDiariaInput.value = "";
+    }
+}
+
+tipoDiariaInput.addEventListener("change", atualizarTipoDiaria);
+
+// ==============================
+// CÁLCULO DE DESCONTO
+// ==============================
+
+function calcularDesconto(subtotal, tipo, valor) {
+    subtotal = Math.max(0, Number(subtotal) || 0);
+    valor = Math.max(0, Number(valor) || 0);
+
+    if (!tipo || valor <= 0 || subtotal <= 0) {
+        return 0;
+    }
+
+    if (tipo === "porcentagem") {
+        return Math.min(subtotal, subtotal * valor / 100);
+    }
+
+    if (tipo === "valor") {
+        return Math.min(subtotal, valor);
+    }
+
+    return 0;
+}
+
+function obterSubtotalDoFormulario() {
+    const dias = calcularDias(
+        entradaInput.value,
+        saidaInput.value
+    );
+
+    const valorDiaria = Number(valorInput.value) || 0;
+
+    if (dias <= 0) return 0;
+
+    return valorDiaria * dias;
+}
+
+function obterDescontoFormulario() {
+    const subtotal = obterSubtotalDoFormulario();
+    const tipo = tipoDescontoInput.value;
+    const valor = Number(valorDescontoInput.value) || 0;
+
+    return calcularDesconto(subtotal, tipo, valor);
+}
+
+function obterTotalDoFormulario() {
+    const subtotal = obterSubtotalDoFormulario();
+    const desconto = obterDescontoFormulario();
+
+    return Math.max(0, subtotal - desconto);
+}
+
+// ==============================
 // VALORES DA RESERVA
 // ==============================
 
-function obterValorTotal(reserva) {
+function obterSubtotalReserva(reserva) {
     if (
-        reserva.valorTotal !== undefined &&
-        reserva.valorTotal !== null &&
-        reserva.valorTotal !== ""
+        reserva.subtotal !== undefined &&
+        reserva.subtotal !== null &&
+        reserva.subtotal !== ""
     ) {
-        return Math.max(0, Number(reserva.valorTotal) || 0);
+        return Math.max(0, Number(reserva.subtotal) || 0);
     }
 
     const dias = calcularDias(reserva.entrada, reserva.saida);
@@ -208,6 +286,36 @@ function obterValorTotal(reserva) {
     ) || 0;
 
     return Math.max(0, diaria * dias);
+}
+
+function obterDescontoReserva(reserva) {
+    if (
+        reserva.descontoAplicado !== undefined &&
+        reserva.descontoAplicado !== null
+    ) {
+        return Math.max(0, Number(reserva.descontoAplicado) || 0);
+    }
+
+    return calcularDesconto(
+        obterSubtotalReserva(reserva),
+        reserva.descontoTipo,
+        reserva.descontoInformado
+    );
+}
+
+function obterValorTotal(reserva) {
+    if (
+        reserva.valorTotal !== undefined &&
+        reserva.valorTotal !== null &&
+        reserva.valorTotal !== ""
+    ) {
+        return Math.max(0, Number(reserva.valorTotal) || 0);
+    }
+
+    const subtotal = obterSubtotalReserva(reserva);
+    const desconto = obterDescontoReserva(reserva);
+
+    return Math.max(0, subtotal - desconto);
 }
 
 function obterValorPago(reserva) {
@@ -240,6 +348,7 @@ function carregarDados() {
         ...reserva,
         valorPago: Math.max(0, Number(reserva.valorPago) || 0),
         formaPagamento: reserva.formaPagamento || "",
+        bancoPagamento: reserva.bancoPagamento || "",
         parcelasPagamento: Math.max(
             1,
             Number(reserva.parcelasPagamento) || 1
@@ -306,21 +415,6 @@ function atualizarDuracao() {
     atualizarTotal();
 }
 
-function obterTotalDoFormulario() {
-    const dias = calcularDias(
-        entradaInput.value,
-        saidaInput.value
-    );
-
-    const valor = Number(valorInput.value) || 0;
-
-    if (dias <= 0) return 0;
-
-    return tipoCobranca.value === "diaria"
-        ? valor * dias
-        : valor;
-}
-
 function atualizarTotal() {
     const total = obterTotalDoFormulario();
 
@@ -334,14 +428,8 @@ entradaInput.addEventListener("change", atualizarDuracao);
 saidaInput.addEventListener("change", atualizarDuracao);
 valorInput.addEventListener("input", atualizarTotal);
 
-tipoCobranca.addEventListener("change", () => {
-    labelValor.textContent =
-        tipoCobranca.value === "diaria"
-            ? "Valor por diária (R$)"
-            : "Valor total da hospedagem (R$)";
-
-    atualizarTotal();
-});
+tipoDescontoInput.addEventListener("change", atualizarTotal);
+valorDescontoInput.addEventListener("input", atualizarTotal);
 
 // ==============================
 // FORMA DE PAGAMENTO
@@ -430,7 +518,7 @@ function salvarNovaReserva(evento) {
     const saida = saidaInput.value;
     const dias = calcularDias(entrada, saida);
 
-    const valor = Number(valorInput.value);
+    const valorDiaria = Number(valorInput.value);
     const valorPago = Number(valorPagoInput.value) || 0;
 
     if (!entrada || !saida || dias <= 0) {
@@ -439,17 +527,71 @@ function salvarNovaReserva(evento) {
     }
 
     if (
-        !Number.isFinite(valor) ||
-        valor < 0 ||
+        !Number.isFinite(valorDiaria) ||
+        valorDiaria < 0 ||
         valorInput.value.trim() === ""
     ) {
-        alert("Informe um valor válido para a hospedagem.");
+        alert("Informe um valor válido para a diária.");
         return;
     }
 
-    const valorTotal = tipoCobranca.value === "diaria"
-        ? valor * dias
-        : valor;
+    if (!tipoDiariaInput.value) {
+        alert("Selecione o tipo de diária.");
+        tipoDiariaInput.focus();
+        return;
+    }
+
+    let tipoDiaria = tipoDiariaInput.value;
+
+    if (tipoDiaria === "Outro") {
+        tipoDiaria = outroTipoDiariaInput.value.trim();
+
+        if (!tipoDiaria) {
+            alert("Digite o nome do novo tipo de diária.");
+            outroTipoDiariaInput.focus();
+            return;
+        }
+    }
+
+    // ==============================
+    // VALIDAR E CALCULAR DESCONTO
+    // ==============================
+
+    const subtotal = valorDiaria * dias;
+    const descontoTipo = tipoDescontoInput.value;
+    const descontoInformado = Number(valorDescontoInput.value) || 0;
+
+    if (!Number.isFinite(descontoInformado) || descontoInformado < 0) {
+        alert("Informe um desconto válido.");
+        valorDescontoInput.focus();
+        return;
+    }
+
+    if (
+        descontoInformado > 0 &&
+        !descontoTipo
+    ) {
+        alert("Selecione o tipo de desconto.");
+        tipoDescontoInput.focus();
+        return;
+    }
+
+    if (
+        descontoTipo === "porcentagem" &&
+        descontoInformado > 100
+    ) {
+        alert("O desconto percentual não pode ultrapassar 100%.");
+        valorDescontoInput.focus();
+        return;
+    }
+
+    const descontoFinal = calcularDesconto(
+        subtotal,
+        descontoTipo,
+        descontoInformado
+    );
+
+    const valorTotal = Math.max(0, subtotal - descontoFinal);
 
     if (!Number.isFinite(valorPago) || valorPago < 0) {
         alert("Informe um valor pago válido.");
@@ -457,7 +599,8 @@ function salvarNovaReserva(evento) {
     }
 
     if (valorPago > valorTotal) {
-        alert("O valor pago não pode ser maior que o valor total da reserva.");
+        alert("O valor pago não pode ser maior que o valor total da reserva com desconto.");
+        valorPagoInput.focus();
         return;
     }
 
@@ -492,9 +635,19 @@ function salvarNovaReserva(evento) {
         saida,
         dias,
 
-        tipoCobranca: tipoCobranca.value,
-        valorInformado: valor,
-        diaria: tipoCobranca.value === "diaria" ? valor : 0,
+        tipoDiaria,
+
+        tipoCobranca: "diaria",
+
+        valorInformado: valorDiaria,
+        diaria: valorDiaria,
+
+        subtotal,
+
+        descontoTipo,
+        descontoInformado,
+        descontoAplicado: descontoFinal,
+
         valorTotal,
 
         valorPago,
@@ -503,7 +656,11 @@ function salvarNovaReserva(evento) {
             ? obterHoje()
             : "",
 
-        formaPagamento: formaPagamento,
+        formaPagamento,
+
+        bancoPagamento: bancoPagamentoInput
+            ? bancoPagamentoInput.value
+            : "",
 
         parcelasPagamento:
             formaPagamento === "Cartão de crédito"
@@ -525,12 +682,12 @@ function salvarNovaReserva(evento) {
 
     tutorInput.value = "";
     duracaoInput.value = "0 dias";
-    totalInput.value = "R$ 0,00";
 
     valorPagoInput.value = "0";
     valorPagoInput.max = "";
 
-    labelValor.textContent = "Valor por diária (R$)";
+    atualizarTipoDiaria();
+    atualizarTotal();
 
     grupoParcelas.classList.remove("visivel");
     parcelasInput.required = false;
@@ -565,7 +722,6 @@ function excluirReserva(id) {
 
     const valorPago = obterValorPago(reserva);
 
-    // Preserva os pagamentos recebidos antes da exclusão.
     if (valorPago > 0) {
         const jaArquivada = historicoAnterior.some(item =>
             String(item.id) === String(reserva.id)
@@ -577,14 +733,24 @@ function excluirReserva(id) {
                 dataReserva: reserva.dataReserva || "",
                 petNome: reserva.petNome || "Pet",
                 tutorNome: reserva.tutorNome || "Não informado",
+
+                subtotal: obterSubtotalReserva(reserva),
+                descontoTipo: reserva.descontoTipo || "",
+                descontoInformado: Number(reserva.descontoInformado) || 0,
+                descontoAplicado: obterDescontoReserva(reserva),
+
                 valorTotal: obterValorTotal(reserva),
                 valorPago: valorPago,
+
                 dataPagamento: reserva.dataPagamento || "",
                 formaPagamento: reserva.formaPagamento || "",
+                bancoPagamento: reserva.bancoPagamento || "",
+
                 parcelasPagamento: Math.max(
                     1,
                     Number(reserva.parcelasPagamento) || 1
                 ),
+
                 dataArquivamento: obterHoje()
             };
 
@@ -710,8 +876,53 @@ function criarCartaoReserva(reserva, hoje) {
 
     adicionarInformacao(
         grade,
-        "Cobrança",
-        reserva.tipoCobranca === "total" ? "Valor total" : "Por diária"
+        "Tipo de diária",
+        reserva.tipoDiaria || (
+            reserva.tipoCobranca === "total"
+                ? "Valor total (reserva antiga)"
+                : "Comum"
+        )
+    );
+
+    adicionarInformacao(
+        grade,
+        "Valor da diária",
+        formatarMoeda(
+            reserva.diaria ??
+            reserva.valorInformado ??
+            0
+        )
+    );
+
+    adicionarInformacao(
+        grade,
+        "Subtotal",
+        formatarMoeda(obterSubtotalReserva(reserva))
+    );
+
+    const descontoAplicado = obterDescontoReserva(reserva);
+
+    let descricaoDesconto = "Sem desconto";
+
+    if (descontoAplicado > 0) {
+        if (reserva.descontoTipo === "porcentagem") {
+            descricaoDesconto =
+                `${Number(reserva.descontoInformado)}% (${formatarMoeda(descontoAplicado)})`;
+        } else {
+            descricaoDesconto = formatarMoeda(descontoAplicado);
+        }
+    }
+
+    adicionarInformacao(
+        grade,
+        "Desconto aplicado",
+        descricaoDesconto
+    );
+
+    adicionarInformacao(
+        grade,
+        "Valor final",
+        formatarMoeda(obterValorTotal(reserva))
     );
 
     adicionarInformacao(
@@ -730,6 +941,12 @@ function criarCartaoReserva(reserva, hoje) {
         grade,
         "Forma de pagamento",
         reserva.formaPagamento || "Não informado"
+    );
+
+    adicionarInformacao(
+        grade,
+        "Banco do pagamento",
+        reserva.bancoPagamento || "Não informado"
     );
 
     adicionarInformacao(
@@ -904,5 +1121,7 @@ cards.addEventListener("keydown", evento => {
 form.addEventListener("submit", salvarNovaReserva);
 filtro.addEventListener("change", atualizarCards);
 
+atualizarTipoDiaria();
 atualizarFormaPagamento();
+atualizarTotal();
 carregarDados();

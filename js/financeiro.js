@@ -1,4 +1,3 @@
-
 const CHAVE_RESERVAS = "hotelPetReservas";
 const CHAVE_DESPESAS = "hotelPetDespesas";
 const CHAVE_BANHO = "petsitterAgendaBanho";
@@ -6,6 +5,9 @@ const CHAVE_VET = "petsitterAgendaVet";
 const CHAVE_PETS = "hotelPetAnimais";
 const CHAVE_HISTORICO_RESERVAS = "hotelPetHistoricoFinanceiroReservas";
 const CHAVE_AJUSTES_FINANCEIROS = "hotelPetAjustesFinanceiros";
+
+const CHAVE_FUNCIONARIOS = "petsitterFuncionarios";
+const CHAVE_REGISTROS_FUNCIONARIOS = "petsitterRegistrosFuncionarios";
 
 const despesaForm = document.getElementById("despesaForm");
 
@@ -46,6 +48,9 @@ let reservas = carregarLista(CHAVE_RESERVAS);
 let despesas = carregarLista(CHAVE_DESPESAS);
 let servicosBanho = carregarLista(CHAVE_BANHO);
 let atendimentosVet = carregarLista(CHAVE_VET);
+
+let funcionarios = carregarLista(CHAVE_FUNCIONARIOS);
+let registrosFuncionarios = carregarLista(CHAVE_REGISTROS_FUNCIONARIOS);
 
 function salvarDespesas() {
     localStorage.setItem(CHAVE_DESPESAS, JSON.stringify(despesas));
@@ -802,13 +807,10 @@ function calcularValoresFinanceiros() {
         String(reserva.id)
     );
 
-    // Todos os registros arquivados, inclusive os sem pagamento.
     const historicoArquivado = historicoReservas.filter(registro =>
         !idsReservasAtivas.includes(String(registro.id))
     );
 
-    // Mantém também a lista de registros com pagamento
-    // para compatibilidade com a exibição do histórico.
     const historicoValido = historicoArquivado.filter(registro =>
         Number(registro.valorPago) > 0
     );
@@ -821,9 +823,6 @@ function calcularValoresFinanceiros() {
     const receitaBanho = calcularReceitaServicos(servicosBanho);
     const receitaVet = calcularReceitaServicos(atendimentosVet);
 
-    // IMPORTANTE:
-    // Reservas arquivadas não entram novamente na receita.
-    // Seus valores continuam preservados apenas no histórico.
     const receitaAutomatica =
         receitaReservasAtivas +
         receitaBanho +
@@ -948,6 +947,7 @@ function atualizarFinanceiro() {
     atualizarCartoesBanho();
     atualizarCartoesVet();
     atualizarCartoesDespesas();
+    atualizarFuncionarios();
 }
 
 // ==============================
@@ -961,8 +961,6 @@ function atualizarCartoesPagamentos(historicoArquivado) {
     pagamentosCards.style.flexDirection = "column";
     pagamentosCards.style.width = "100%";
     pagamentosCards.style.gap = "15px";
-
-    // PAGAMENTOS ATIVOS
 
     if (reservas.length === 0) {
         pagamentosCards.innerHTML = `
@@ -1045,8 +1043,6 @@ function atualizarCartoesPagamentos(historicoArquivado) {
             `;
         }).join("");
     }
-
-    // RESERVAS ARQUIVADAS
 
     if (
         !btnVerArquivados ||
@@ -1161,15 +1157,12 @@ if (btnExcluirArquivados) {
     btnExcluirArquivados.addEventListener("click", () => {
         const historico = carregarLista(CHAVE_HISTORICO_RESERVAS);
 
-        // Atualiza a lista de reservas ativas antes da exclusão.
         const reservasAtuais = carregarLista(CHAVE_RESERVAS);
 
         const idsAtivos = reservasAtuais.map(reserva =>
             String(reserva.id)
         );
 
-        // Identifica todos os registros arquivados,
-        // inclusive os que têm valor recebido igual a zero.
         const arquivados = historico.filter(registro =>
             !idsAtivos.includes(String(registro.id))
         );
@@ -1188,8 +1181,6 @@ if (btnExcluirArquivados) {
         if (!confirmar) return;
 
         try {
-            // Mantém no histórico apenas os registros que correspondem
-            // a reservas que ainda estão ativas.
             const historicoAtualizado = historico.filter(registro =>
                 idsAtivos.includes(String(registro.id))
             );
@@ -1478,14 +1469,527 @@ function excluirDespesa(indice) {
 }
 
 // ==============================
+// FUNCIONÁRIOS E COMISSÕES
+// ==============================
+
+const btnFuncionarios = document.getElementById("btnFuncionarios");
+const funcionariosArea = document.getElementById("funcionariosArea");
+
+const funcionarioForm = document.getElementById("funcionarioForm");
+const funcionarioId = document.getElementById("funcionarioId");
+const funcionarioNome = document.getElementById("funcionarioNome");
+const funcionarioComissao = document.getElementById("funcionarioComissao");
+
+const funcionariosCards = document.getElementById("funcionariosCards");
+
+const tituloFormFuncionario = document.getElementById("tituloFormFuncionario");
+const btnSalvarFuncionario = document.getElementById("btnSalvarFuncionario");
+const btnCancelarEdicaoFuncionario = document.getElementById("btnCancelarEdicaoFuncionario");
+
+const registroFuncionarioForm = document.getElementById("registroFuncionarioForm");
+const registroFuncionario = document.getElementById("registroFuncionario");
+const registroData = document.getElementById("registroData");
+const registroSetor = document.getElementById("registroSetor");
+const registroValor = document.getElementById("registroValor");
+
+const registrosFuncionariosCards = document.getElementById("registrosFuncionariosCards");
+const totalComissoes = document.getElementById("totalComissoes");
+
+// ==============================
+// ABRIR E FECHAR FUNCIONÁRIOS
+// ==============================
+
+if (btnFuncionarios && funcionariosArea) {
+    btnFuncionarios.addEventListener("click", () => {
+        funcionariosArea.hidden = !funcionariosArea.hidden;
+
+        btnFuncionarios.textContent = funcionariosArea.hidden
+            ? "👥 Funcionários"
+            : "✖ Fechar funcionários";
+
+        if (!funcionariosArea.hidden) {
+            atualizarFuncionarios();
+        }
+    });
+}
+
+// ==============================
+// DATA ATUAL
+// ==============================
+
+function obterDataHoje() {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoje.getDate()).padStart(2, "0");
+
+    return `${ano}-${mes}-${dia}`;
+}
+
+if (registroData && !registroData.value) {
+    registroData.value = obterDataHoje();
+}
+
+// ==============================
+// SALVAR FUNCIONÁRIO
+// ==============================
+
+function salvarFuncionarios() {
+    localStorage.setItem(
+        CHAVE_FUNCIONARIOS,
+        JSON.stringify(funcionarios)
+    );
+}
+
+function salvarRegistrosFuncionarios() {
+    localStorage.setItem(
+        CHAVE_REGISTROS_FUNCIONARIOS,
+        JSON.stringify(registrosFuncionarios)
+    );
+}
+
+// ==============================
+// CADASTRAR E EDITAR FUNCIONÁRIO
+// ==============================
+
+if (funcionarioForm) {
+    funcionarioForm.addEventListener("submit", event => {
+        event.preventDefault();
+
+        const nome = funcionarioNome.value.trim();
+        const comissao = Number(funcionarioComissao.value);
+        const idEdicao = funcionarioId.value;
+
+        if (!nome) {
+            alert("Informe o nome do funcionário.");
+            return;
+        }
+
+        if (
+            funcionarioComissao.value.trim() === "" ||
+            !Number.isFinite(comissao) ||
+            comissao < 0 ||
+            comissao > 100
+        ) {
+            alert("Informe uma comissão entre 0% e 100%.");
+            return;
+        }
+
+        try {
+            if (idEdicao) {
+                const funcionario = funcionarios.find(item =>
+                    String(item.id) === String(idEdicao)
+                );
+
+                if (!funcionario) {
+                    alert("Funcionário não encontrado.");
+                    return;
+                }
+
+                funcionario.nome = nome;
+                funcionario.comissao = comissao;
+
+                salvarFuncionarios();
+
+                alert("Funcionário atualizado com sucesso!");
+            } else {
+                funcionarios.push({
+                    id: Date.now(),
+                    nome,
+                    comissao
+                });
+
+                salvarFuncionarios();
+
+                alert("Funcionário cadastrado com sucesso!");
+            }
+
+            limparFormularioFuncionario();
+            atualizarFuncionarios();
+
+        } catch (erro) {
+            console.error("Erro ao salvar funcionário:", erro);
+            alert("Não foi possível salvar o funcionário.");
+        }
+    });
+}
+
+function limparFormularioFuncionario() {
+    if (!funcionarioForm) return;
+
+    funcionarioForm.reset();
+
+    funcionarioId.value = "";
+
+    tituloFormFuncionario.textContent = "Cadastrar funcionário";
+    btnSalvarFuncionario.textContent = "Cadastrar funcionário";
+
+    btnCancelarEdicaoFuncionario.hidden = true;
+}
+
+if (btnCancelarEdicaoFuncionario) {
+    btnCancelarEdicaoFuncionario.addEventListener("click", () => {
+        limparFormularioFuncionario();
+    });
+}
+
+// ==============================
+// EDITAR E EXCLUIR FUNCIONÁRIO
+// ==============================
+
+if (funcionariosCards) {
+    funcionariosCards.addEventListener("click", event => {
+        const botaoEditar = event.target.closest(".btn-editar-funcionario");
+        const botaoExcluir = event.target.closest(".btn-excluir-funcionario");
+
+        if (botaoEditar) {
+            const id = botaoEditar.dataset.id;
+
+            const funcionario = funcionarios.find(item =>
+                String(item.id) === String(id)
+            );
+
+            if (!funcionario) return;
+
+            funcionarioId.value = funcionario.id;
+            funcionarioNome.value = funcionario.nome;
+            funcionarioComissao.value = funcionario.comissao;
+
+            tituloFormFuncionario.textContent = "Editar funcionário";
+            btnSalvarFuncionario.textContent = "Salvar alterações";
+            btnCancelarEdicaoFuncionario.hidden = false;
+
+            funcionarioNome.focus();
+
+            return;
+        }
+
+        if (botaoExcluir) {
+            const id = botaoExcluir.dataset.id;
+
+            const funcionario = funcionarios.find(item =>
+                String(item.id) === String(id)
+            );
+
+            if (!funcionario) return;
+
+            const confirmar = confirm(
+                `Deseja excluir o funcionário ${funcionario.nome}?\n\n` +
+                "Os registros de trabalho e as comissões anteriores serão preservados."
+            );
+
+            if (!confirmar) return;
+
+            funcionarios = funcionarios.filter(item =>
+                String(item.id) !== String(id)
+            );
+
+            salvarFuncionarios();
+            limparFormularioFuncionario();
+            atualizarFuncionarios();
+        }
+    });
+}
+
+// ==============================
+// REGISTRAR DIA TRABALHADO
+// ==============================
+
+if (registroFuncionarioForm) {
+    registroFuncionarioForm.addEventListener("submit", event => {
+        event.preventDefault();
+
+        const idFuncionario = registroFuncionario.value;
+        const data = registroData.value;
+        const setor = registroSetor.value;
+        const valor = Number(registroValor.value);
+
+        const funcionario = funcionarios.find(item =>
+            String(item.id) === String(idFuncionario)
+        );
+
+        if (!funcionario) {
+            alert("Selecione um funcionário cadastrado.");
+            return;
+        }
+
+        if (!obterDataPagamento(data)) {
+            alert("Informe uma data válida.");
+            return;
+        }
+
+        if (!setor) {
+            alert("Selecione o setor em que o funcionário trabalhou.");
+            return;
+        }
+
+        if (
+            registroValor.value.trim() === "" ||
+            !Number.isFinite(valor) ||
+            valor <= 0
+        ) {
+            alert("Informe um valor de serviço válido.");
+            return;
+        }
+
+        const porcentagem = Number(funcionario.comissao) || 0;
+        const valorComissao = valor * (porcentagem / 100);
+
+        const novoRegistro = {
+            id: Date.now(),
+            funcionarioId: funcionario.id,
+            funcionarioNome: funcionario.nome,
+            data,
+            setor,
+            valorServico: valor,
+            comissaoPorcentagem: porcentagem,
+            valorComissao
+        };
+
+        try {
+            registrosFuncionarios.push(novoRegistro);
+            salvarRegistrosFuncionarios();
+
+            registroFuncionarioForm.reset();
+            registroData.value = obterDataHoje();
+
+            atualizarFuncionarios();
+
+            alert("Trabalho registrado com sucesso!");
+        } catch (erro) {
+            console.error("Erro ao registrar trabalho:", erro);
+
+            registrosFuncionarios = registrosFuncionarios.filter(item =>
+                String(item.id) !== String(novoRegistro.id)
+            );
+
+            alert("Não foi possível registrar o trabalho.");
+        }
+    });
+}
+
+// ==============================
+// EXCLUIR REGISTRO DE TRABALHO
+// ==============================
+
+if (registrosFuncionariosCards) {
+    registrosFuncionariosCards.addEventListener("click", event => {
+        const botao = event.target.closest(
+            ".btn-excluir-registro-funcionario"
+        );
+
+        if (!botao) return;
+
+        const id = botao.dataset.id;
+
+        const confirmar = confirm(
+            "Deseja excluir este registro de trabalho?"
+        );
+
+        if (!confirmar) return;
+
+        registrosFuncionarios = registrosFuncionarios.filter(item =>
+            String(item.id) !== String(id)
+        );
+
+        salvarRegistrosFuncionarios();
+        atualizarFuncionarios();
+    });
+}
+
+// ==============================
+// ATUALIZAR ÁREA DE FUNCIONÁRIOS
+// ==============================
+
+function atualizarFuncionarios() {
+    funcionarios = carregarLista(CHAVE_FUNCIONARIOS);
+    registrosFuncionarios = carregarLista(CHAVE_REGISTROS_FUNCIONARIOS);
+
+    atualizarSelectFuncionarios();
+    atualizarCartoesFuncionarios();
+    atualizarRegistrosFuncionarios();
+}
+
+// ==============================
+// ATUALIZAR SELECT DE FUNCIONÁRIOS
+// ==============================
+
+function atualizarSelectFuncionarios() {
+    if (!registroFuncionario) return;
+
+    const valorSelecionado = registroFuncionario.value;
+
+    registroFuncionario.innerHTML = `
+        <option value="">Selecione o funcionário</option>
+
+        ${funcionarios.map(funcionario => `
+            <option value="${escaparHTML(funcionario.id)}">
+                ${escaparHTML(funcionario.nome)}
+            </option>
+        `).join("")}
+    `;
+
+    if (funcionarios.some(item =>
+        String(item.id) === String(valorSelecionado)
+    )) {
+        registroFuncionario.value = valorSelecionado;
+    }
+}
+
+// ==============================
+// CARTÕES DE FUNCIONÁRIOS
+// ==============================
+
+function atualizarCartoesFuncionarios() {
+    if (!funcionariosCards) return;
+
+    if (funcionarios.length === 0) {
+        funcionariosCards.innerHTML = `
+            <p class="mensagem-vazia">
+                Nenhum funcionário cadastrado.
+            </p>
+        `;
+        return;
+    }
+
+    funcionariosCards.innerHTML = funcionarios.map(funcionario => `
+        <div class="financeiro-card">
+
+            <div class="financeiro-card-topo">
+                <h3>${escaparHTML(funcionario.nome)}</h3>
+
+                <strong style="color:#EB9933;">
+                    ${Number(funcionario.comissao).toLocaleString("pt-BR")}% de comissão
+                </strong>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:15px;">
+
+                <button
+                    type="button"
+                    class="btn-primary btn-editar-funcionario"
+                    data-id="${escaparHTML(funcionario.id)}"
+                >
+                    Editar
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-excluir btn-excluir-funcionario"
+                    data-id="${escaparHTML(funcionario.id)}"
+                >
+                    Excluir
+                </button>
+
+            </div>
+
+        </div>
+    `).join("");
+}
+
+// ==============================
+// HISTÓRICO E TOTAL DE COMISSÕES
+// ==============================
+
+function atualizarRegistrosFuncionarios() {
+    if (!registrosFuncionariosCards) return;
+
+    const total = registrosFuncionarios.reduce((soma, registro) => {
+        return soma + (Number(registro.valorComissao) || 0);
+    }, 0);
+
+    if (totalComissoes) {
+        totalComissoes.textContent = moeda(total);
+    }
+
+    if (registrosFuncionarios.length === 0) {
+        registrosFuncionariosCards.innerHTML = `
+            <p class="mensagem-vazia">
+                Nenhum trabalho registrado.
+            </p>
+        `;
+        return;
+    }
+
+    const registrosOrdenados = [...registrosFuncionarios].sort((a, b) =>
+        String(b.data || "").localeCompare(String(a.data || ""))
+    );
+
+    registrosFuncionariosCards.innerHTML = registrosOrdenados.map(registro => `
+        <div class="financeiro-card">
+
+            <div class="financeiro-card-topo">
+                <div>
+                    <h3>${escaparHTML(registro.funcionarioNome)}</h3>
+
+                    <small style="color:#777;">
+                        ${escaparHTML(registro.setor)}
+                    </small>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-excluir btn-excluir-registro-funcionario"
+                    data-id="${escaparHTML(registro.id)}"
+                >
+                    Excluir
+                </button>
+            </div>
+
+            <div class="financeiro-valores">
+
+                <div class="financeiro-valor-item">
+                    <span>Data trabalhada</span>
+                    <strong>${dataFormatada(registro.data)}</strong>
+                </div>
+
+                <div class="financeiro-valor-item">
+                    <span>Setor</span>
+                    <strong>${escaparHTML(registro.setor)}</strong>
+                </div>
+
+                <div class="financeiro-valor-item">
+                    <span>Valor do serviço</span>
+                    <strong>${moeda(registro.valorServico)}</strong>
+                </div>
+
+                <div class="financeiro-valor-item">
+                    <span>Comissão aplicada</span>
+                    <strong>
+                        ${Number(registro.comissaoPorcentagem).toLocaleString("pt-BR")}%
+                    </strong>
+                </div>
+
+                <div class="financeiro-valor-item">
+                    <span>Comissão gerada</span>
+                    <strong style="color:#EB9933;">
+                        ${moeda(registro.valorComissao)}
+                    </strong>
+                </div>
+
+            </div>
+        </div>
+    `).join("");
+}
+
+// ==============================
 // ATUALIZAÇÕES AUTOMÁTICAS
 // ==============================
 
-window.addEventListener("storage", atualizarFinanceiro);
+window.addEventListener("storage", () => {
+    atualizarFinanceiro();
+    atualizarFuncionarios();
+});
 
-window.addEventListener("pageshow", atualizarFinanceiro);
+window.addEventListener("pageshow", () => {
+    atualizarFinanceiro();
+    atualizarFuncionarios();
+});
 
-document.addEventListener("DOMContentLoaded", atualizarFinanceiro);
+document.addEventListener("DOMContentLoaded", () => {
+    atualizarFinanceiro();
+    atualizarFuncionarios();
+});
 
 // ==============================
 // INICIALIZAÇÃO
@@ -1494,4 +1998,6 @@ document.addEventListener("DOMContentLoaded", atualizarFinanceiro);
 configurarAjustesFinanceiros();
 configurarEventosAjustes();
 configurarBotoesZerar();
+
 atualizarFinanceiro();
+atualizarFuncionarios();

@@ -1,13 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#EB9933">
-
     <title>Financeiro | Petsitter</title>
-
     <link rel="stylesheet" href="css/style.css?v=6">
 </head>
 
@@ -30,7 +27,6 @@
 <div class="layout">
 
     <aside class="sidebar">
-
         <div class="logo logo-petsitter">
             <img
                 src="img/logo-petsitter-transparente.png"
@@ -54,7 +50,6 @@
             <span class="nomeHotelDinamico">Petsitter</span>
             <small>Gestão inteligente</small>
         </div>
-
     </aside>
 
     <div class="menu-fundo" id="menuFundo"></div>
@@ -62,7 +57,6 @@
     <main class="main-content">
 
         <header class="topbar">
-
             <button
                 class="menu-toggle"
                 id="abrirMenu"
@@ -83,10 +77,7 @@
                     <small>Gerenciamento</small>
                 </div>
             </div>
-
         </header>
-
-        <!-- INDICADORES FINANCEIROS -->
 
         <section class="welcome">
             <div>
@@ -98,9 +89,9 @@
             </div>
         </section>
 
-        <section class="stats">
+        <!-- INDICADORES FINANCEIROS -->
 
-            <!-- RECEITA RECEBIDA -->
+        <section class="stats">
 
             <div class="stat-card">
                 <span>💰</span>
@@ -111,9 +102,7 @@
                     type="button"
                     class="btn-zerar-indicador"
                     data-zerar-indicador="receita"
-                >
-                    Zerar
-                </button>
+                >Zerar</button>
 
                 <div class="ajuste-indicador">
                     <label for="receitaModo">Cálculo da receita</label>
@@ -131,15 +120,12 @@
                             step="0.01"
                             placeholder="Valor manual (R$)"
                         >
-
                         <button type="button" id="receitaAplicar">
                             Aplicar valor
                         </button>
                     </div>
                 </div>
             </div>
-
-            <!-- VALORES PENDENTES -->
 
             <div class="stat-card">
                 <span>⏳</span>
@@ -150,12 +136,8 @@
                     type="button"
                     class="btn-zerar-indicador"
                     data-zerar-indicador="pendente"
-                >
-                    Zerar
-                </button>
+                >Zerar</button>
             </div>
-
-            <!-- DESPESAS -->
 
             <div class="stat-card">
                 <span>🧾</span>
@@ -166,12 +148,8 @@
                     type="button"
                     class="btn-zerar-indicador"
                     data-zerar-indicador="despesas"
-                >
-                    Zerar
-                </button>
+                >Zerar</button>
             </div>
-
-            <!-- SALDO ATUAL -->
 
             <div class="stat-card">
                 <span>📊</span>
@@ -182,9 +160,7 @@
                     type="button"
                     class="btn-zerar-indicador"
                     data-zerar-indicador="saldo"
-                >
-                    Zerar
-                </button>
+                >Zerar</button>
 
                 <div class="ajuste-indicador">
                     <label for="saldoModo">Cálculo do saldo</label>
@@ -201,7 +177,6 @@
                             step="0.01"
                             placeholder="Valor manual (R$)"
                         >
-
                         <button type="button" id="saldoAplicar">
                             Aplicar valor
                         </button>
@@ -209,6 +184,202 @@
                 </div>
             </div>
 
+        </section>
+
+        <!-- FUNCIONÁRIOS -->
+
+        <section class="client-list panel">
+
+            <div class="list-header">
+                <div>
+                    <h2>👥 Funcionários</h2>
+                    <p>
+                        Cadastre funcionários, defina comissões e registre
+                        os dias trabalhados.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    id="btnFuncionarios"
+                    class="btn-primary"
+                >
+                    👥 Funcionários
+                </button>
+            </div>
+
+            <div id="funcionariosArea" hidden style="margin-top:20px;">
+
+                <div class="client-form" style="padding:0; margin-bottom:25px;">
+                    <h3 id="tituloFormFuncionario">Cadastrar funcionário</h3>
+
+                    <form id="funcionarioForm">
+                        <input type="hidden" id="funcionarioId">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label for="funcionarioNome">
+                                    Nome do funcionário
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="funcionarioNome"
+                                    placeholder="Nome completo"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="funcionarioComissao">
+                                    Comissão (%)
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="funcionarioComissao"
+                                    min="0"
+                                    max="100"
+                                    step="0.01"
+                                    placeholder="Ex.: 10"
+                                    required
+                                >
+                            </div>
+
+                        </div>
+
+                        <div class="form-actions">
+                            <button
+                                type="submit"
+                                class="btn-primary"
+                                id="btnSalvarFuncionario"
+                            >
+                                Cadastrar funcionário
+                            </button>
+
+                            <button
+                                type="button"
+                                id="btnCancelarEdicaoFuncionario"
+                                class="btn-excluir"
+                                hidden
+                            >
+                                Cancelar edição
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div style="margin-bottom:25px;">
+                    <h3>Funcionários cadastrados</h3>
+
+                    <div
+                        id="funcionariosCards"
+                        class="financeiro-cards"
+                        style="margin-top:15px;"
+                    >
+                        <p class="empty-table">
+                            Nenhum funcionário cadastrado.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="client-form" style="padding:0; margin-bottom:25px;">
+                    <h3>📅 Registrar dia trabalhado</h3>
+
+                    <form id="registroFuncionarioForm">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label for="registroFuncionario">
+                                    Funcionário
+                                </label>
+
+                                <select id="registroFuncionario" required>
+                                    <option value="">
+                                        Selecione o funcionário
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="registroData">
+                                    Data do trabalho
+                                </label>
+
+                                <input
+                                    type="date"
+                                    id="registroData"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="registroSetor">Setor</label>
+
+                                <select id="registroSetor" required>
+                                    <option value="">Selecione o setor</option>
+                                    <option value="Veterinário">Veterinário</option>
+                                    <option value="Hospedagem">Hospedagem</option>
+                                    <option value="Banho">Banho</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="registroValor">
+                                    Valor do serviço (R$)
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="registroValor"
+                                    min="0.01"
+                                    step="0.01"
+                                    placeholder="0,00"
+                                    required
+                                >
+                            </div>
+
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">
+                                Registrar trabalho
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                <div style="margin-bottom:15px;">
+                    <h3>💰 Resumo das comissões</h3>
+
+                    <h2
+                        id="totalComissoes"
+                        style="color:#EB9933; margin-top:8px;"
+                    >R$ 0,00</h2>
+
+                    <p style="color:#777; font-size:13px;">
+                        Total de comissões registradas.
+                    </p>
+                </div>
+
+                <div>
+                    <h3>Histórico de trabalhos</h3>
+
+                    <div
+                        id="registrosFuncionariosCards"
+                        class="financeiro-cards"
+                        style="margin-top:15px;"
+                    >
+                        <p class="empty-table">
+                            Nenhum trabalho registrado.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
         </section>
 
         <!-- PAGAMENTOS DAS HOSPEDAGENS -->
@@ -242,8 +413,6 @@
                     Nenhuma reserva cadastrada.
                 </p>
             </div>
-
-            <!-- RESERVAS ARQUIVADAS -->
 
             <div
                 id="arquivadosArea"
@@ -359,12 +528,7 @@
 
                     <div class="form-group">
                         <label for="despesaData">Data</label>
-
-                        <input
-                            type="date"
-                            id="despesaData"
-                            required
-                        >
+                        <input type="date" id="despesaData" required>
                     </div>
 
                     <div class="form-group">
@@ -418,10 +582,10 @@
         </footer>
 
     </main>
-
 </div>
 
-<script src="js/financeiro.js?v=8"></script>
+<script src="js/financeiro.js?v=9"></script>
 <script src="js/app.js?v=9"></script>
+
 </body>
 </html>

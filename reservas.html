@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -163,17 +162,28 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="tipoCobranca">Como informar o valor?</label>
-                        <select id="tipoCobranca" required>
-                            <option value="diaria">Valor por diária</option>
-                            <option value="total">Valor total da hospedagem</option>
+                        <label for="tipoDiaria">Tipo de diária</label>
+                        <select id="tipoDiaria" required>
+                            <option value="Comum">Comum</option>
+                            <option value="Natal">Natal</option>
+                            <option value="Ano Novo">Ano Novo</option>
+                            <option value="Quarto com Pet Sitter">Quarto com Pet Sitter</option>
+                            <option value="Quarto comum">Quarto comum</option>
+                            <option value="Outro">Outro</option>
                         </select>
                     </div>
 
+                    <div class="form-group" id="grupoOutroTipoDiaria" style="display: none;">
+                        <label for="outroTipoDiaria">Digite o tipo de diária</label>
+                        <input
+                            type="text"
+                            id="outroTipoDiaria"
+                            placeholder="Ex.: Feriado especial"
+                        >
+                    </div>
+
                     <div class="form-group">
-                        <label for="valorReserva" id="labelValor">
-                            Valor por diária (R$)
-                        </label>
+                        <label for="valorReserva">Valor da diária (R$)</label>
                         <input
                             type="number"
                             id="valorReserva"
@@ -185,12 +195,32 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="totalReserva">Valor total</label>
+                        <label for="totalReserva">Valor total da hospedagem</label>
                         <input
                             type="text"
                             id="totalReserva"
                             value="R$ 0,00"
                             readonly
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipoDesconto">Tipo de desconto</label>
+                        <select id="tipoDesconto">
+                            <option value="">Sem desconto</option>
+                            <option value="valor">Desconto em R$</option>
+                            <option value="porcentagem">Desconto em %</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valorDesconto">Valor do desconto</label>
+                        <input
+                            type="number"
+                            id="valorDesconto"
+                            min="0"
+                            step="0.01"
+                            placeholder="0,00"
                         >
                     </div>
 
@@ -214,6 +244,23 @@
                             <option value="Dinheiro">Dinheiro</option>
                             <option value="Cartão de crédito">Cartão de crédito</option>
                             <option value="Cartão de débito">Cartão de débito</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bancoPagamento">Banco do pagamento</label>
+                        <select id="bancoPagamento">
+                            <option value="">Selecione o banco</option>
+                            <option value="Nubank">Nubank</option>
+                            <option value="Inter">Banco Inter</option>
+                            <option value="Itaú">Itaú</option>
+                            <option value="Bradesco">Bradesco</option>
+                            <option value="Banco do Brasil">Banco do Brasil</option>
+                            <option value="Santander">Santander</option>
+                            <option value="Caixa Econômica Federal">Caixa Econômica Federal</option>
+                            <option value="Mercado Pago">Mercado Pago</option>
+                            <option value="PicPay">PicPay</option>
+                            <option value="Outro">Outro</option>
                         </select>
                     </div>
 
@@ -306,7 +353,7 @@
 
 </div>
 
-<script src="js/reservas.js?v=3"></script>
+<script src="js/reservas.js?v=6"></script>
 <script src="js/app.js?v=9"></script>
 
 </body>

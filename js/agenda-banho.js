@@ -15,6 +15,9 @@ const servicoSelect = document.getElementById("agendaServico");
 const porteSelect = document.getElementById("agendaPorte");
 const valorInput = document.getElementById("agendaValor");
 
+const tipoDescontoInput = document.getElementById("agendaTipoDesconto");
+const valorDescontoInput = document.getElementById("agendaValorDesconto");
+
 const avisoConfigPrecos = document.getElementById("avisoConfigPrecos");
 
 const filtroData = document.getElementById("filtroData");
@@ -24,6 +27,7 @@ const filtroBusca = document.getElementById("filtroBusca");
 const labelClassificacao = document.getElementById("labelClassificacao");
 
 const formaPagamentoInput = document.getElementById("agendaFormaPagamento");
+const bancoPagamentoInput = document.getElementById("agendaBancoPagamento");
 const grupoParcelas = document.getElementById("grupoParcelas");
 const parcelasInput = document.getElementById("agendaParcelas");
 
@@ -189,6 +193,7 @@ function formatarData(data) {
 
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
+
 function obterDataLocalHoje() {
     const hoje = new Date();
 
@@ -198,6 +203,7 @@ function obterDataLocalHoje() {
         String(hoje.getDate()).padStart(2, "0")
     ].join("-");
 }
+
 function obterNomeServico(servico) {
     const nomes = {
         banho: "Banho",
@@ -236,6 +242,72 @@ function normalizarTexto(texto) {
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase()
         .trim();
+}
+
+// ==============================
+// CÁLCULO DE DESCONTO
+// ==============================
+
+function calcularDesconto(subtotal, tipo, informado) {
+    subtotal = Number(subtotal) || 0;
+    informado = Number(informado) || 0;
+
+    if (subtotal <= 0 || informado <= 0) {
+        return 0;
+    }
+
+    if (tipo === "fixo") {
+        return Math.min(informado, subtotal);
+    }
+
+    if (tipo === "porcentagem") {
+        const porcentagem = Math.min(informado, 100);
+        return subtotal * (porcentagem / 100);
+    }
+
+    return 0;
+}
+
+function obterSubtotalAgendamento(item) {
+    if (item.subtotal !== undefined && item.subtotal !== null) {
+        return Number(item.subtotal) || 0;
+    }
+
+    // Compatibilidade com agendamentos antigos.
+    return Number(item.valor) || 0;
+}
+
+function obterDescontoAgendamento(item) {
+    if (item.descontoAplicado !== undefined) {
+        return Number(item.descontoAplicado) || 0;
+    }
+
+    return 0;
+}
+
+function obterTotalAgendamento(item) {
+    if (item.valor !== undefined && item.valor !== null) {
+        return Number(item.valor) || 0;
+    }
+
+    return Math.max(
+        0,
+        obterSubtotalAgendamento(item) - obterDescontoAgendamento(item)
+    );
+}
+
+function obterDescricaoDesconto(item) {
+    const desconto = obterDescontoAgendamento(item);
+
+    if (desconto <= 0) {
+        return "Sem desconto";
+    }
+
+    if (item.descontoTipo === "porcentagem") {
+        return `${Number(item.descontoInformado)}% (${formatarMoeda(desconto)})`;
+    }
+
+    return formatarMoeda(desconto);
 }
 
 // ==============================
@@ -556,16 +628,54 @@ agendaForm.addEventListener("submit", function(event) {
         return;
     }
 
-    const valor = Number(valorInput.value);
+    const subtotal = Number(valorInput.value);
 
     if (
-        !Number.isFinite(valor) ||
-        valor < 0 ||
+        !Number.isFinite(subtotal) ||
+        subtotal < 0 ||
         valorInput.value.trim() === ""
     ) {
         alert("Informe um valor válido para o serviço.");
         return;
     }
+
+    const tipoDesconto = tipoDescontoInput.value;
+    const descontoInformado = Number(valorDescontoInput.value) || 0;
+
+    if (
+        valorDescontoInput.value.trim() !== "" &&
+        (
+            !Number.isFinite(Number(valorDescontoInput.value)) ||
+            Number(valorDescontoInput.value) < 0
+        )
+    ) {
+        alert("Informe um valor de desconto válido.");
+        valorDescontoInput.focus();
+        return;
+    }
+
+    if (descontoInformado > 0 && !tipoDesconto) {
+        alert("Selecione o tipo de desconto.");
+        tipoDescontoInput.focus();
+        return;
+    }
+
+    if (
+        tipoDesconto === "porcentagem" &&
+        descontoInformado > 100
+    ) {
+        alert("O desconto percentual não pode ultrapassar 100%.");
+        valorDescontoInput.focus();
+        return;
+    }
+
+    const descontoAplicado = calcularDesconto(
+        subtotal,
+        tipoDesconto,
+        descontoInformado
+    );
+
+    const valorFinal = Math.max(0, subtotal - descontoAplicado);
 
     const data = document.getElementById("agendaData").value;
     const horario = document.getElementById("agendaHorario").value;
@@ -576,6 +686,10 @@ agendaForm.addEventListener("submit", function(event) {
     }
 
     const formaPagamento = formaPagamentoInput.value;
+    const bancoPagamento = bancoPagamentoInput
+        ? bancoPagamentoInput.value
+        : "";
+
     const parcelas = Number(parcelasInput.value) || 1;
 
     if (
@@ -587,7 +701,7 @@ agendaForm.addEventListener("submit", function(event) {
         return;
     }
 
-    const novoAgendamento = {dataPagamento: formaPagamento && valor > 0 ? obterDataLocalHoje() : "",
+    const novoAgendamento = {
         id: Date.now().toString(),
 
         tutorId: tutor.id,
@@ -601,11 +715,20 @@ agendaForm.addEventListener("submit", function(event) {
 
         data,
         horario,
-        valor,
+
+        // Dados financeiros
+        subtotal,
+        descontoTipo: descontoInformado > 0 ? tipoDesconto : "",
+        descontoInformado: descontoInformado > 0 ? descontoInformado : 0,
+        descontoAplicado,
+
+        // O valor principal fica com o total final.
+        valor: valorFinal,
 
         formaPagamento: formaPagamento || "",
+        bancoPagamento: bancoPagamento || "",
 
-        dataPagamento: formaPagamento && valor > 0
+        dataPagamento: formaPagamento && valorFinal > 0
             ? obterDataLocalHoje()
             : "",
 
@@ -759,7 +882,21 @@ function criarCartao(item) {
     adicionarInformacao(resumo, "Data", formatarData(item.data));
     adicionarInformacao(resumo, "Horário", item.horario);
     adicionarInformacao(resumo, "Serviço", obterNomeServico(item.servico));
-    adicionarInformacao(resumo, "Valor", formatarMoeda(item.valor));
+    adicionarInformacao(
+        resumo,
+        "Subtotal",
+        formatarMoeda(obterSubtotalAgendamento(item))
+    );
+    adicionarInformacao(
+        resumo,
+        "Desconto",
+        obterDescricaoDesconto(item)
+    );
+    adicionarInformacao(
+        resumo,
+        "Valor final",
+        formatarMoeda(obterTotalAgendamento(item))
+    );
 
     const detalhes = criarElemento("div", "banho-card-detalhes");
     detalhes.hidden = true;
@@ -767,11 +904,19 @@ function criarCartao(item) {
     const grade = criarElemento("div", "banho-info-grid");
 
     adicionarInformacao(grade, "Classificação", obterClassificacao(item));
+
     adicionarInformacao(
         grade,
         "Forma de pagamento",
         item.formaPagamento || "Ainda não foi pago"
     );
+
+    adicionarInformacao(
+        grade,
+        "Banco do pagamento",
+        item.bancoPagamento || "Não informado"
+    );
+
     adicionarInformacao(
         grade,
         "Parcelas",
@@ -779,6 +924,7 @@ function criarCartao(item) {
             ? `${Number(item.parcelasPagamento) || 1}x`
             : "-"
     );
+
     adicionarInformacao(grade, "Status", item.status || "Agendado");
 
     detalhes.appendChild(grade);

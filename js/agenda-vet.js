@@ -15,8 +15,12 @@ const outroInput = document.getElementById("vetOutro");
 const grupoOutro = document.getElementById("grupoOutro");
 
 const formaPagamentoInput = document.getElementById("vetFormaPagamento");
+const bancoPagamentoInput = document.getElementById("vetBancoPagamento");
 const grupoParcelas = document.getElementById("grupoParcelas");
 const parcelasInput = document.getElementById("vetParcelas");
+
+const tipoDescontoInput = document.getElementById("vetTipoDesconto");
+const valorDescontoInput = document.getElementById("vetValorDesconto");
 
 const filtroData = document.getElementById("filtroData");
 const filtroBusca = document.getElementById("filtroBusca");
@@ -391,6 +395,41 @@ function adicionarDetalheTexto(container, titulo, texto, classe = "") {
 }
 
 // ==============================
+// DESCONTOS
+// ==============================
+
+function calcularDesconto(subtotal, tipo, informado) {
+    subtotal = Math.max(0, Number(subtotal) || 0);
+    informado = Math.max(0, Number(informado) || 0);
+
+    if (tipo === "fixo") {
+        return Math.min(subtotal, informado);
+    }
+
+    if (tipo === "porcentagem") {
+        return subtotal * Math.min(100, informado) / 100;
+    }
+
+    return 0;
+}
+
+function obterSubtotalAtendimento(item) {
+    if (item.subtotal !== undefined && item.subtotal !== null) {
+        return Math.max(0, Number(item.subtotal) || 0);
+    }
+
+    return Math.max(0, Number(item.valor) || 0);
+}
+
+function obterDescontoAtendimento(item) {
+    return Math.max(0, Number(item.descontoAplicado) || 0);
+}
+
+function obterTotalAtendimento(item) {
+    return Math.max(0, Number(item.valor) || 0);
+}
+
+// ==============================
 // CLIENTES E PETS
 // ==============================
 
@@ -585,7 +624,44 @@ vetForm.addEventListener("submit", function(event) {
         return;
     }
 
+    const tipoDesconto = tipoDescontoInput?.value || "";
+    const descontoTexto = valorDescontoInput?.value.trim() || "";
+    const descontoInformado = descontoTexto === ""
+        ? 0
+        : Number(descontoTexto);
+
+    if (!Number.isFinite(descontoInformado) || descontoInformado < 0) {
+        alert("Informe um desconto válido.");
+        valorDescontoInput?.focus();
+        return;
+    }
+
+    if (descontoInformado > 0 && !tipoDesconto) {
+        alert("Selecione o tipo de desconto.");
+        tipoDescontoInput?.focus();
+        return;
+    }
+
+    if (tipoDesconto === "porcentagem" && descontoInformado > 100) {
+        alert("O desconto percentual não pode ultrapassar 100%.");
+        valorDescontoInput.focus();
+        return;
+    }
+
+    const descontoAplicado = calcularDesconto(
+        valor,
+        tipoDesconto,
+        descontoInformado
+    );
+
+    const valorFinal = Math.max(0, valor - descontoAplicado);
+
     const formaPagamento = formaPagamentoInput.value;
+
+    const bancoPagamento = bancoPagamentoInput
+        ? bancoPagamentoInput.value
+        : "";
+
     const parcelas = Number(parcelasInput.value) || 1;
 
     if (
@@ -614,14 +690,23 @@ vetForm.addEventListener("submit", function(event) {
 
         data,
         horario,
-        valor,
+
+        subtotal: valor,
+        descontoTipo: tipoDesconto,
+        descontoInformado,
+        descontoAplicado,
+
+        valor: valorFinal,
 
         formaPagamento: formaPagamento || "",
+        bancoPagamento: bancoPagamento || "",
 
         parcelasPagamento:
             formaPagamento === "Cartão de crédito" ? parcelas : 1,
 
-        dataPagamento: formaPagamento && valor > 0 ? obterDataLocalHoje() : "",
+        dataPagamento: formaPagamento && valorFinal > 0
+            ? obterDataLocalHoje()
+            : "",
 
         status: document.getElementById("vetStatus").value,
 
@@ -745,7 +830,37 @@ function criarCartaoAtendimento(item) {
     adicionarInformacao(resumo, "Data", formatarData(item.data));
     adicionarInformacao(resumo, "Horário", item.horario || "-");
     adicionarInformacao(resumo, "Exame / procedimento", item.procedimento || "-");
-    adicionarInformacao(resumo, "Valor", formatarMoeda(item.valor));
+
+    // VALOR: todas as informações ficam agrupadas no mesmo card.
+    const blocoValor = criarElemento("div", "vet-info-item vet-info-valor");
+
+    blocoValor.appendChild(
+        criarElemento("span", "vet-info-label", "Valor")
+    );
+
+    const subtotal = obterSubtotalAtendimento(item);
+    const desconto = obterDescontoAtendimento(item);
+    const total = obterTotalAtendimento(item);
+
+    const valores = criarElemento("div", "vet-info-value vet-valores-detalhados");
+
+    valores.appendChild(
+        criarElemento("span", "vet-valor-subtotal",
+            `Subtotal: ${formatarMoeda(subtotal)}`)
+    );
+
+    valores.appendChild(
+        criarElemento("span", "vet-valor-desconto",
+            `Desconto: ${formatarMoeda(desconto)}`)
+    );
+
+    valores.appendChild(
+        criarElemento("strong", "vet-valor-final",
+            `Valor final: ${formatarMoeda(total)}`)
+    );
+
+    blocoValor.appendChild(valores);
+    resumo.appendChild(blocoValor);
 
     const detalhes = criarElemento("div", "vet-card-detalhes");
     detalhes.hidden = true;
@@ -755,10 +870,17 @@ function criarCartaoAtendimento(item) {
     adicionarInformacao(grade, "Categoria", item.categoria);
     adicionarInformacao(grade, "Veterinário", item.veterinario);
     adicionarInformacao(grade, "Clínica / laboratório", item.clinica);
+
     adicionarInformacao(
         grade,
         "Forma de pagamento",
         item.formaPagamento || "Não informado"
+    );
+
+    adicionarInformacao(
+        grade,
+        "Banco do pagamento",
+        item.bancoPagamento || "Não informado"
     );
 
     if (item.formaPagamento === "Cartão de crédito") {
