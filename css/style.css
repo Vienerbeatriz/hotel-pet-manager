@@ -3387,3 +3387,58 @@ body.modo-escuro .status-pendente {
         gap: 10px;
     }
 }
+/* CORREÇÃO: IDENTIFICAÇÃO DOS CAMPOS NO CELULAR - VETERINÁRIA */
+@media (max-width: 600px) {
+    .vet-card-resumo .vet-info-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        min-width: 0;
+    }
+
+    .vet-card-resumo .vet-info-label {
+        display: block !important;
+        visibility: visible !important;
+        font-size: 12px;
+        font-weight: 700;
+        color: #52765C;
+    }
+
+    .vet-card-resumo .vet-info-value {
+        display: block;
+        font-size: 14px;
+        overflow-wrap: anywhere;
+    }
+}
+
+/* CORREÇÃO DOS NOMES DOS CAMPOS NOS CARTÕES - CELULAR */
+@media (max-width: 600px) {
+
+    .vet-card-resumo .vet-info-item,
+    .banho-card-resumo .banho-info-item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        gap: 5px !important;
+        min-width: 0;
+    }
+
+    .vet-card-resumo .vet-info-label,
+    .banho-card-resumo .banho-info-label {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+    }
+
+    .vet-card-resumo .vet-info-value,
+    .banho-card-resumo .banho-info-value {
+        display: block !important;
+        visibility: visible !important;
+        font-size: 14px !important;
+        overflow-wrap: anywhere;
+    }
+}
