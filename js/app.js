@@ -341,20 +341,27 @@ function configurarMenu() {
     const botaoMenu = document.getElementById("abrirMenu");
     const fundoMenu = document.getElementById("menuFundo");
 
-    if (!botaoMenu || !fundoMenu) return;
+    if (!botaoMenu || !fundoMenu) {
+        console.error("Botão ou fundo do menu não encontrado.");
+        return;
+    }
 
     function fecharMenu() {
         document.body.classList.remove("menu-aberto");
         botaoMenu.setAttribute("aria-expanded", "false");
     }
 
-    botaoMenu.addEventListener("click", () => {
-        const aberto = document.body.classList.toggle("menu-aberto");
+    botaoMenu.onclick = function () {
+        document.body.classList.toggle("menu-aberto");
+
+        const aberto = document.body.classList.contains("menu-aberto");
 
         botaoMenu.setAttribute("aria-expanded", String(aberto));
-    });
 
-    fundoMenu.addEventListener("click", fecharMenu);
+        console.log("Menu:", aberto ? "aberto" : "fechado");
+    };
+
+    fundoMenu.onclick = fecharMenu;
 
     document.querySelectorAll(".sidebar nav a").forEach(link => {
         link.addEventListener("click", fecharMenu);
