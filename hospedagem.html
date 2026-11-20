@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,9 +8,10 @@
 
     <title>Hospedagens | Petsitter</title>
 
-    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body>
+
 <script>
     try {
         const configTema = JSON.parse(
@@ -23,6 +25,7 @@
         console.error("Erro ao carregar o tema:", erro);
     }
 </script>
+
 <div class="layout">
 
     <aside class="sidebar">
@@ -128,22 +131,10 @@
                 <span id="hospedagemCount">0 reservas</span>
             </div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Animal</th>
-                            <th>Tutor</th>
-                            <th>Entrada</th>
-                            <th>Saída</th>
-                            <th>Duração</th>
-                            <th>Valor total</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="hospedagemTable"></tbody>
-                </table>
+            <div id="hospedagemCards" class="hospedagem-cards">
+                <p class="empty-table">
+                    Nenhuma hospedagem ou reserva encontrada.
+                </p>
             </div>
 
         </section>
@@ -156,7 +147,7 @@
 
 </div>
 
-<script src="js/hospedagem.js"></script>
+<script src="js/hospedagem.js?v=2"></script>
 <script src="js/app.js?v=5"></script>
 
 </body>

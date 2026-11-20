@@ -4,8 +4,8 @@ const CHAVE_DESPESAS = "hotelPetDespesas";
 
 const despesaForm = document.getElementById("despesaForm");
 
-const pagamentosTable = document.getElementById("pagamentosTable");
-const despesasTable = document.getElementById("despesasTable");
+const pagamentosCards = document.getElementById("pagamentosCards");
+const despesasCards = document.getElementById("despesasCards");
 
 function carregarLista(chave) {
     try {
@@ -33,8 +33,21 @@ function moeda(valor) {
 function dataFormatada(data) {
     if (!data) return "-";
 
-    return new Date(data + "T12:00:00")
-        .toLocaleDateString("pt-BR");
+    const partes = data.split("-");
+
+    if (partes.length !== 3) return "-";
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+function escaparHTML(valor) {
+    return String(valor ?? "").replace(/[&<>"']/g, caractere => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[caractere]);
 }
 
 function obterValoresPagamento(reserva) {
@@ -61,7 +74,6 @@ function obterValoresPagamento(reserva) {
 }
 
 function atualizarFinanceiro() {
-    // Atualiza os dados para refletir as reservas mais recentes
     reservas = carregarLista(CHAVE_RESERVAS);
     despesas = carregarLista(CHAVE_DESPESAS);
 
@@ -82,126 +94,146 @@ function atualizarFinanceiro() {
 
     const saldo = recebido - totalDespesas;
 
-    document.getElementById("totalRecebido").textContent =
-        moeda(recebido);
+    document.getElementById("totalRecebido").textContent = moeda(recebido);
+    document.getElementById("totalPendente").textContent = moeda(aReceber);
+    document.getElementById("totalDespesas").textContent = moeda(totalDespesas);
+    document.getElementById("saldoAtual").textContent = moeda(saldo);
 
-    document.getElementById("totalPendente").textContent =
-        moeda(aReceber);
-
-    document.getElementById("totalDespesas").textContent =
-        moeda(totalDespesas);
-
-    document.getElementById("saldoAtual").textContent =
-        moeda(saldo);
-
-    atualizarTabelaPagamentos();
-    atualizarTabelaDespesas();
+    atualizarCartoesPagamentos();
+    atualizarCartoesDespesas();
 }
 
-function atualizarTabelaPagamentos() {
-    pagamentosTable.innerHTML = "";
+function atualizarCartoesPagamentos() {
+    pagamentosCards.innerHTML = "";
 
     document.getElementById("pagamentosCount").textContent =
-        `${reservas.length} ${
-            reservas.length === 1 ? "reserva" : "reservas"
-        }`;
+        `${reservas.length} ${reservas.length === 1 ? "reserva" : "reservas"}`;
 
     if (reservas.length === 0) {
-        pagamentosTable.innerHTML = `
-            <tr>
-                <td colspan="6" class="empty-table">
-                    Nenhuma reserva cadastrada.
-                </td>
-            </tr>
+        pagamentosCards.innerHTML = `
+            <p class="empty-table">
+                Nenhuma reserva cadastrada.
+            </p>
         `;
         return;
     }
 
     reservas.forEach(reserva => {
         const pagamento = obterValoresPagamento(reserva);
-        const linha = document.createElement("tr");
 
-        const valores = [
-            reserva.petNome || "-",
-            reserva.tutorNome || "-",
-            moeda(pagamento.total),
-            moeda(pagamento.pago),
-            moeda(pagamento.restante)
-        ];
+        const statusClasse = pagamento.status.toLowerCase();
 
-        valores.forEach(valor => {
-            const celula = document.createElement("td");
-            celula.textContent = valor;
-            linha.appendChild(celula);
-        });
+        const card = document.createElement("article");
+        card.className = "financeiro-card";
 
-        const celulaStatus = document.createElement("td");
-        celulaStatus.textContent = pagamento.status;
-        celulaStatus.style.fontWeight = "bold";
+        card.innerHTML = `
+            <div class="financeiro-card-header">
+                <div class="financeiro-card-identificacao">
+                    <div class="financeiro-card-icone">🐶</div>
 
-        if (pagamento.status === "Pago") {
-            celulaStatus.style.color = "#52765C";
-        } else if (pagamento.status === "Parcial") {
-            celulaStatus.style.color = "#4976A5";
-        } else {
-            celulaStatus.style.color = "#B47B2C";
-        }
+                    <div>
+                        <h3>${escaparHTML(reserva.petNome || "Pet não identificado")}</h3>
+                        <p>Tutor: ${escaparHTML(reserva.tutorNome || "-")}</p>
+                    </div>
+                </div>
 
-        linha.appendChild(celulaStatus);
-        pagamentosTable.appendChild(linha);
+                <span class="financeiro-status status-${statusClasse}">
+                    ${pagamento.status}
+                </span>
+            </div>
+
+            <div class="financeiro-valores">
+                <div class="financeiro-valor-item">
+                    <span>Valor total</span>
+                    <strong>${moeda(pagamento.total)}</strong>
+                </div>
+
+                <div class="financeiro-valor-item">
+                    <span>Valor recebido</span>
+                    <strong class="valor-recebido">${moeda(pagamento.pago)}</strong>
+                </div>
+
+                <div class="financeiro-valor-item">
+                    <span>Falta receber</span>
+                    <strong class="valor-pendente">${moeda(pagamento.restante)}</strong>
+                </div>
+            </div>
+
+            <div class="financeiro-card-progresso">
+                <div class="financeiro-progresso-fundo">
+                    <div
+                        class="financeiro-progresso-preenchido"
+                        style="width: ${pagamento.total > 0
+                            ? Math.min(100, pagamento.pago / pagamento.total * 100)
+                            : 0}%"
+                    ></div>
+                </div>
+
+                <small>
+                    ${pagamento.total > 0
+                        ? Math.round(pagamento.pago / pagamento.total * 100)
+                        : 0}% recebido
+                </small>
+            </div>
+        `;
+
+        pagamentosCards.appendChild(card);
     });
 }
 
-function atualizarTabelaDespesas() {
-    despesasTable.innerHTML = "";
+function atualizarCartoesDespesas() {
+    despesasCards.innerHTML = "";
 
     document.getElementById("despesasCount").textContent =
-        `${despesas.length} ${
-            despesas.length === 1 ? "despesa" : "despesas"
-        }`;
+        `${despesas.length} ${despesas.length === 1 ? "despesa" : "despesas"}`;
 
     if (despesas.length === 0) {
-        despesasTable.innerHTML = `
-            <tr>
-                <td colspan="5" class="empty-table">
-                    Nenhuma despesa cadastrada.
-                </td>
-            </tr>
+        despesasCards.innerHTML = `
+            <p class="empty-table">
+                Nenhuma despesa cadastrada.
+            </p>
         `;
         return;
     }
 
     despesas.forEach(despesa => {
-        const linha = document.createElement("tr");
+        const card = document.createElement("article");
+        card.className = "despesa-card";
 
-        const valores = [
-            despesa.descricao,
-            despesa.categoria,
-            dataFormatada(despesa.data),
-            moeda(despesa.valor)
-        ];
+        card.innerHTML = `
+            <div class="despesa-card-header">
+                <div class="despesa-card-icone">🧾</div>
 
-        valores.forEach(valor => {
-            const celula = document.createElement("td");
-            celula.textContent = valor;
-            linha.appendChild(celula);
-        });
+                <div class="despesa-card-identificacao">
+                    <h3>${escaparHTML(despesa.descricao)}</h3>
+                    <span>${escaparHTML(despesa.categoria)}</span>
+                </div>
+            </div>
 
-        const celulaAcao = document.createElement("td");
-        const botao = document.createElement("button");
+            <div class="despesa-card-informacoes">
+                <div>
+                    <span>Data</span>
+                    <strong>${dataFormatada(despesa.data)}</strong>
+                </div>
 
-        botao.type = "button";
-        botao.textContent = "Excluir";
-        botao.className = "btn-delete";
+                <div>
+                    <span>Valor</span>
+                    <strong class="despesa-valor">${moeda(despesa.valor)}</strong>
+                </div>
+            </div>
 
-        botao.addEventListener("click", () => {
-            excluirDespesa(despesa.id);
-        });
+            <div class="despesa-card-acoes">
+                <button
+                    type="button"
+                    class="btn-delete"
+                    data-excluir-despesa="${escaparHTML(despesa.id)}"
+                >
+                    Excluir despesa
+                </button>
+            </div>
+        `;
 
-        celulaAcao.appendChild(botao);
-        linha.appendChild(celulaAcao);
-
-        despesasTable.appendChild(linha);
+        despesasCards.appendChild(card);
     });
 }
 
@@ -213,7 +245,13 @@ function cadastrarDespesa(evento) {
     const data = document.getElementById("despesaData").value;
     const valor = Number(document.getElementById("despesaValor").value);
 
-    if (!descricao || !categoria || !data || !Number.isFinite(valor) || valor <= 0) {
+    if (
+        !descricao ||
+        !categoria ||
+        !data ||
+        !Number.isFinite(valor) ||
+        valor <= 0
+    ) {
         alert("Preencha todos os campos com informações válidas.");
         return;
     }
@@ -250,11 +288,19 @@ function excluirDespesa(id) {
     atualizarFinanceiro();
 }
 
+despesasCards.addEventListener("click", evento => {
+    const botao = evento.target.closest("[data-excluir-despesa]");
+
+    if (!botao) return;
+
+    excluirDespesa(botao.dataset.excluirDespesa);
+});
+
 despesaForm.addEventListener("submit", cadastrarDespesa);
 
 atualizarFinanceiro();
 
-// Atualiza os valores quando houver mudanças nas reservas em outra página.
 window.addEventListener("storage", atualizarFinanceiro);
+window.addEventListener("pageshow", atualizarFinanceiro);
 
 setInterval(atualizarFinanceiro, 5000);

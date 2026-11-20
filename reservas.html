@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,7 +8,7 @@
 
     <title>Reservas | Petsitter</title>
 
-    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="css/style.css?v=6">
 
     <style>
         .pagamento-extra {
@@ -30,6 +31,7 @@
     </style>
 </head>
 <body>
+
 <script>
     try {
         const configTema = JSON.parse(
@@ -43,6 +45,7 @@
         console.error("Erro ao carregar o tema:", erro);
     }
 </script>
+
 <div class="layout">
 
     <aside class="sidebar">
@@ -230,6 +233,7 @@
                             <option value="11">11x</option>
                             <option value="12">12x</option>
                         </select>
+
                         <p class="pagamento-info" id="valorParcelaPreview">
                             Valor por parcela: R$ 0,00
                         </p>
@@ -277,6 +281,7 @@
 
             <div class="form-group" style="max-width: 280px; margin-bottom: 20px;">
                 <label for="filtroReservas">Filtrar reservas</label>
+
                 <select id="filtroReservas">
                     <option value="todas">Todas as reservas</option>
                     <option value="futuras">Reservas futuras</option>
@@ -285,28 +290,10 @@
                 </select>
             </div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Animal</th>
-                            <th>Tutor</th>
-                            <th>Entrada</th>
-                            <th>Saída</th>
-                            <th>Duração</th>
-                            <th>Valor informado como</th>
-                            <th>Valor total</th>
-                            <th>Valor pago</th>
-                            <th>Forma de pagamento</th>
-                            <th>Parcelas</th>
-                            <th>Pagamento</th>
-                            <th>Status da reserva</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="reservationTable"></tbody>
-                </table>
+            <div id="reservationCards" class="reservation-cards">
+                <p class="empty-table">
+                    Nenhuma reserva cadastrada ainda.
+                </p>
             </div>
 
         </section>
@@ -319,7 +306,7 @@
 
 </div>
 
-<script src="js/reservas.js?v=2"></script>
+<script src="js/reservas.js?v=3"></script>
 <script src="js/app.js?v=5"></script>
 
 </body>

@@ -4,7 +4,7 @@ const PET_KEY = "hotelPetAnimais";
 const VET_KEY = "petsitterAgendaVet";
 
 const vetForm = document.getElementById("vetForm");
-const vetTable = document.getElementById("vetTable");
+const vetCards = document.getElementById("vetCards");
 
 const tutorSelect = document.getElementById("vetTutor");
 const petSelect = document.getElementById("vetPet");
@@ -258,18 +258,50 @@ function formatarData(data) {
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
-function criarCelula(texto) {
-    const celula = document.createElement("td");
-    celula.textContent = texto || "-";
-    return celula;
-}
-
 function normalizarTexto(texto) {
     return String(texto || "")
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase()
         .trim();
+}
+
+function criarElemento(tag, classe, texto) {
+    const elemento = document.createElement(tag);
+
+    if (classe) elemento.className = classe;
+    if (texto !== undefined) elemento.textContent = texto;
+
+    return elemento;
+}
+
+function adicionarInformacao(container, titulo, valor) {
+    const item = criarElemento("div", "vet-info-item");
+
+    const label = criarElemento("span", "vet-info-label", titulo);
+    const conteudo = criarElemento("strong", "vet-info-value", valor || "-");
+
+    item.append(label, conteudo);
+    container.appendChild(item);
+}
+
+function adicionarDetalheTexto(container, titulo, texto, classe = "") {
+    if (!texto) return;
+
+    const bloco = criarElemento(
+        "div",
+        `vet-card-texto ${classe}`.trim()
+    );
+
+    bloco.appendChild(
+        criarElemento("strong", "vet-card-texto-titulo", titulo)
+    );
+
+    bloco.appendChild(
+        criarElemento("p", "vet-card-texto-conteudo", texto)
+    );
+
+    container.appendChild(bloco);
 }
 
 // ==============================
@@ -553,18 +585,145 @@ vetForm.addEventListener("reset", function() {
 });
 
 // ==============================
-// BOTÕES
+// CRIAR CARTÃO
 // ==============================
 
-function criarBotao(texto, classe, id) {
-    const botao = document.createElement("button");
+function criarCartaoAtendimento(item) {
+    const card = criarElemento("article", "vet-card");
 
-    botao.type = "button";
-    botao.textContent = texto;
-    botao.className = classe;
-    botao.dataset.id = id;
+    const cabecalho = criarElemento("div", "vet-card-header");
+    const principal = criarElemento("div", "vet-card-principal");
 
-    return botao;
+    const pet = pets.find(
+        p => String(p.id) === String(item.petId)
+    );
+
+    const foto = criarElemento("img", "vet-card-foto");
+    foto.src = pet?.foto || "img/logo-petsitter-transparente.png";
+    foto.alt = `Foto de ${item.petNome || "pet"}`;
+
+    foto.onerror = function() {
+        this.onerror = null;
+        this.src = "img/logo-petsitter-transparente.png";
+    };
+
+    const identificacao = criarElemento("div", "vet-card-identificacao");
+
+    identificacao.appendChild(
+        criarElemento("h4", "vet-card-nome", item.petNome || "Pet")
+    );
+
+    identificacao.appendChild(
+        criarElemento("p", "vet-card-tutor", `Tutor: ${item.tutorNome || "-"}`)
+    );
+
+    identificacao.appendChild(
+        criarElemento("span", "vet-card-categoria", item.categoria || "Atendimento")
+    );
+
+    principal.append(foto, identificacao);
+
+    const status = criarElemento("span", "vet-status");
+    const statusAtual = item.status || "Agendado";
+
+    status.textContent = statusAtual;
+
+    if (statusAtual === "Concluído") {
+        status.classList.add("vet-status-concluido");
+    } else if (statusAtual === "Cancelado") {
+        status.classList.add("vet-status-cancelado");
+    } else {
+        status.classList.add("vet-status-agendado");
+    }
+
+    cabecalho.append(principal, status);
+
+    const resumo = criarElemento("div", "vet-card-resumo");
+
+    adicionarInformacao(resumo, "Data", formatarData(item.data));
+    adicionarInformacao(resumo, "Horário", item.horario || "-");
+    adicionarInformacao(resumo, "Exame / procedimento", item.procedimento || "-");
+    adicionarInformacao(resumo, "Valor", formatarMoeda(item.valor));
+
+    const detalhes = criarElemento("div", "vet-card-detalhes");
+    detalhes.hidden = true;
+
+    const grade = criarElemento("div", "vet-info-grid");
+
+    adicionarInformacao(grade, "Categoria", item.categoria);
+    adicionarInformacao(grade, "Veterinário", item.veterinario);
+    adicionarInformacao(grade, "Clínica / laboratório", item.clinica);
+    adicionarInformacao(
+        grade,
+        "Forma de pagamento",
+        item.formaPagamento || "Não informado"
+    );
+
+    if (item.formaPagamento === "Cartão de crédito") {
+        adicionarInformacao(
+            grade,
+            "Parcelamento",
+            `${Number(item.parcelasPagamento) || 1}x`
+        );
+    }
+
+    detalhes.appendChild(grade);
+
+    adicionarDetalheTexto(
+        detalhes,
+        "Resultado ou laudo",
+        item.resultado,
+        "vet-card-resultado"
+    );
+
+    adicionarDetalheTexto(
+        detalhes,
+        "Observações",
+        item.observacoes,
+        "vet-card-observacoes"
+    );
+
+    const acoes = criarElemento("div", "vet-card-acoes");
+
+    const botaoDetalhes = criarElemento(
+        "button",
+        "btn-detalhes-vet",
+        "Ler mais"
+    );
+
+    botaoDetalhes.type = "button";
+    botaoDetalhes.dataset.acao = "detalhes";
+
+    const botaoStatus = criarElemento(
+        "button",
+        "btn-status",
+        "Alterar status"
+    );
+
+    botaoStatus.type = "button";
+    botaoStatus.dataset.acao = "status";
+    botaoStatus.dataset.id = item.id;
+
+    const botaoExcluir = criarElemento(
+        "button",
+        "btn-excluir-agenda",
+        "Excluir"
+    );
+
+    botaoExcluir.type = "button";
+    botaoExcluir.dataset.acao = "excluir";
+    botaoExcluir.dataset.id = item.id;
+
+    botaoDetalhes.addEventListener("click", () => {
+        detalhes.hidden = !detalhes.hidden;
+        botaoDetalhes.textContent = detalhes.hidden ? "Ler mais" : "Ler menos";
+    });
+
+    acoes.append(botaoDetalhes, botaoStatus, botaoExcluir);
+
+    card.append(cabecalho, resumo, detalhes, acoes);
+
+    return card;
 }
 
 // ==============================
@@ -572,12 +731,18 @@ function criarBotao(texto, classe, id) {
 // ==============================
 
 function atualizarAgenda() {
-    vetTable.innerHTML = "";
+    vetCards.innerHTML = "";
 
     atendimentos = carregarDados(VET_KEY);
 
     if (!Array.isArray(atendimentos)) {
         atendimentos = [];
+    }
+
+    pets = carregarDados(PET_KEY);
+
+    if (!Array.isArray(pets)) {
+        pets = [];
     }
 
     const dataSelecionada = filtroData.value;
@@ -596,88 +761,32 @@ function atualizarAgenda() {
                 item.categoria,
                 item.procedimento,
                 item.veterinario,
-                item.clinica
+                item.clinica,
+                item.resultado,
+                item.observacoes
             ].join(" "));
 
             return texto.includes(busca);
         })
         .sort((a, b) => {
-            const dataA = `${a.data} ${a.horario}`;
-            const dataB = `${b.data} ${b.horario}`;
+            const dataA = `${a.data || ""} ${a.horario || ""}`;
+            const dataB = `${b.data || ""} ${b.horario || ""}`;
 
             return dataA.localeCompare(dataB);
         });
 
     if (filtrados.length === 0) {
-        const linha = document.createElement("tr");
-        const celula = document.createElement("td");
+        const vazio = criarElemento(
+            "p",
+            "empty-table",
+            "Nenhum atendimento encontrado."
+        );
 
-        celula.colSpan = 11;
-        celula.className = "empty-table";
-        celula.textContent = "Nenhum atendimento encontrado.";
-
-        linha.appendChild(celula);
-        vetTable.appendChild(linha);
+        vetCards.appendChild(vazio);
     }
 
     filtrados.forEach(item => {
-        const linha = document.createElement("tr");
-
-        linha.appendChild(criarCelula(formatarData(item.data)));
-        linha.appendChild(criarCelula(item.horario));
-        linha.appendChild(criarCelula(item.petNome));
-        linha.appendChild(criarCelula(item.tutorNome));
-        linha.appendChild(criarCelula(item.categoria));
-        linha.appendChild(criarCelula(item.procedimento));
-        linha.appendChild(criarCelula(item.veterinario));
-        linha.appendChild(criarCelula(formatarMoeda(item.valor)));
-
-        const pagamento = item.formaPagamento || "Não informado";
-
-        const parcelas =
-            item.formaPagamento === "Cartão de crédito"
-                ? ` (${Number(item.parcelasPagamento) || 1}x)`
-                : "";
-
-        linha.appendChild(criarCelula(pagamento + parcelas));
-
-        const celulaStatus = document.createElement("td");
-        const status = document.createElement("span");
-
-        status.className = "status-agenda";
-
-        if (item.status === "Concluído") {
-            status.classList.add("status-concluido");
-        } else if (item.status === "Cancelado") {
-            status.classList.add("status-cancelado");
-        } else {
-            status.classList.add("status-agendado");
-        }
-
-        status.textContent = item.status || "Agendado";
-
-        celulaStatus.appendChild(status);
-        linha.appendChild(celulaStatus);
-
-        const celulaAcoes = document.createElement("td");
-        celulaAcoes.className = "acoes-agenda";
-
-        const botaoStatus = criarBotao(
-            "Alterar status",
-            "btn-status",
-            item.id
-        );
-
-        const botaoExcluir = criarBotao(
-            "Excluir",
-            "btn-excluir-agenda",
-            item.id
-        );
-
-        celulaAcoes.append(botaoStatus, botaoExcluir);
-        linha.appendChild(celulaAcoes);
-
-        vetTable.appendChild(linha);
+        vetCards.appendChild(criarCartaoAtendimento(item));
     });
 
     atualizarResumo();
@@ -689,7 +798,7 @@ function atualizarAgenda() {
 
 function atualizarResumo() {
     const pendentes = atendimentos.filter(
-        item => item.status === "Agendado"
+        item => (item.status || "Agendado") === "Agendado"
     );
 
     const concluidos = atendimentos.filter(
@@ -710,25 +819,29 @@ function atualizarResumo() {
 // ALTERAR STATUS E EXCLUIR
 // ==============================
 
-vetTable.addEventListener("click", function(event) {
-    const botaoStatus = event.target.closest(".btn-status");
-    const botaoExcluir = event.target.closest(".btn-excluir-agenda");
+vetCards.addEventListener("click", function(event) {
+    const botao = event.target.closest("button[data-acao]");
 
-    if (botaoStatus) {
+    if (!botao) return;
+
+    const acao = botao.dataset.acao;
+    const id = botao.dataset.id;
+
+    if (acao === "status") {
         const item = atendimentos.find(
-            atendimento =>
-                String(atendimento.id) === String(botaoStatus.dataset.id)
+            atendimento => String(atendimento.id) === String(id)
         );
 
         if (!item) return;
 
         const opcoes = ["Agendado", "Concluído", "Cancelado"];
+        const statusAtual = item.status || "Agendado";
 
-        const atual = opcoes.indexOf(item.status);
+        const atual = opcoes.indexOf(statusAtual);
         const proximo = opcoes[(atual + 1) % opcoes.length];
 
         const confirmar = confirm(
-            `Deseja alterar o status de "${item.status}" para "${proximo}"?`
+            `Deseja alterar o status de "${statusAtual}" para "${proximo}"?`
         );
 
         if (!confirmar) return;
@@ -745,7 +858,7 @@ vetTable.addEventListener("click", function(event) {
         return;
     }
 
-    if (botaoExcluir) {
+    if (acao === "excluir") {
         const confirmar = confirm(
             "Deseja realmente excluir este atendimento?"
         );
@@ -755,7 +868,7 @@ vetTable.addEventListener("click", function(event) {
         const anteriores = atendimentos;
 
         atendimentos = atendimentos.filter(
-            item => String(item.id) !== String(botaoExcluir.dataset.id)
+            item => String(item.id) !== String(id)
         );
 
         if (!salvarAtendimentos()) {
@@ -776,6 +889,26 @@ vetTable.addEventListener("click", function(event) {
 filtroData.addEventListener("change", atualizarAgenda);
 filtroStatus.addEventListener("change", atualizarAgenda);
 filtroBusca.addEventListener("input", atualizarAgenda);
+
+// ==============================
+// ATUALIZAÇÃO DE DADOS
+// ==============================
+
+window.addEventListener("storage", function(event) {
+    if (
+        event.key === CLIENT_KEY ||
+        event.key === PET_KEY ||
+        event.key === VET_KEY
+    ) {
+        atualizarClientes();
+        atualizarAgenda();
+    }
+});
+
+window.addEventListener("pageshow", function() {
+    atualizarClientes();
+    atualizarAgenda();
+});
 
 // ==============================
 // INICIALIZAÇÃO

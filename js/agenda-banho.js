@@ -6,7 +6,7 @@ const AGENDA_KEY = "petsitterAgendaBanho";
 const PRECOS_KEY = "petsitterPrecosBanho";
 
 const agendaForm = document.getElementById("agendaForm");
-const agendaTable = document.getElementById("agendaTable");
+const agendaCards = document.getElementById("agendaCards");
 
 const tutorSelect = document.getElementById("agendaTutor");
 const petSelect = document.getElementById("agendaPet");
@@ -27,23 +27,17 @@ const formaPagamentoInput = document.getElementById("agendaFormaPagamento");
 const grupoParcelas = document.getElementById("grupoParcelas");
 const parcelasInput = document.getElementById("agendaParcelas");
 
-// ==============================
-// CONFIGURAÇÃO DOS PREÇOS
-// ==============================
-
 const camposPrecos = {
     banho: {
         pequeno: "banhoPequeno",
         medio: "banhoMedio",
         grande: "banhoGrande"
     },
-
     tosa: {
         pequeno: "tosaPequeno",
         medio: "tosaMedio",
         grande: "tosaGrande"
     },
-
     pelo: {
         curto: "peloPequeno",
         medio: "peloMedio",
@@ -52,23 +46,9 @@ const camposPrecos = {
 };
 
 const precosPadrao = {
-    banho: {
-        pequeno: 0,
-        medio: 0,
-        grande: 0
-    },
-
-    tosa: {
-        pequeno: 0,
-        medio: 0,
-        grande: 0
-    },
-
-    pelo: {
-        curto: 0,
-        medio: 0,
-        longo: 0
-    }
+    banho: { pequeno: 0, medio: 0, grande: 0 },
+    tosa: { pequeno: 0, medio: 0, grande: 0 },
+    pelo: { curto: 0, medio: 0, longo: 0 }
 };
 
 // ==============================
@@ -94,11 +74,7 @@ if (!Array.isArray(agendamentos)) agendamentos = [];
 
 function salvarAgendamentos() {
     try {
-        localStorage.setItem(
-            AGENDA_KEY,
-            JSON.stringify(agendamentos)
-        );
-
+        localStorage.setItem(AGENDA_KEY, JSON.stringify(agendamentos));
         return true;
     } catch (erro) {
         console.error(erro);
@@ -109,11 +85,7 @@ function salvarAgendamentos() {
 
 function salvarPrecosStorage() {
     try {
-        localStorage.setItem(
-            PRECOS_KEY,
-            JSON.stringify(precos)
-        );
-
+        localStorage.setItem(PRECOS_KEY, JSON.stringify(precos));
         return true;
     } catch (erro) {
         console.error(erro);
@@ -137,7 +109,6 @@ function formatarData(data) {
     if (!data) return "-";
 
     const partes = data.split("-");
-
     if (partes.length !== 3) return data;
 
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
@@ -150,7 +121,7 @@ function obterNomeServico(servico) {
         pelo: "Tipo de pelo"
     };
 
-    return nomes[servico] || servico;
+    return nomes[servico] || servico || "-";
 }
 
 function obterNomePorte(classificacao) {
@@ -174,8 +145,6 @@ function normalizarPorte(porte) {
         .toLowerCase()
         .trim();
 }
-
-// Normaliza os textos para facilitar as pesquisas.
 
 function normalizarTexto(texto) {
     return String(texto || "")
@@ -204,10 +173,8 @@ function atualizarClientes() {
 
     clientes.forEach(cliente => {
         const opcao = document.createElement("option");
-
         opcao.value = cliente.id;
         opcao.textContent = cliente.nome;
-
         tutorSelect.appendChild(opcao);
     });
 }
@@ -233,10 +200,8 @@ function atualizarPetsDoTutor() {
 
     petsDoTutor.forEach(pet => {
         const opcao = document.createElement("option");
-
         opcao.value = pet.id;
         opcao.textContent = pet.nome;
-
         petSelect.appendChild(opcao);
     });
 
@@ -258,7 +223,6 @@ tutorSelect.addEventListener("change", atualizarPetsDoTutor);
 
 function carregarPrecos() {
     const salvos = carregarDados(PRECOS_KEY, precosPadrao);
-
     const peloSalvo = salvos.pelo || {};
 
     precos = {
@@ -266,22 +230,14 @@ function carregarPrecos() {
             ...precosPadrao.banho,
             ...(salvos.banho || {})
         },
-
         tosa: {
             ...precosPadrao.tosa,
             ...(salvos.tosa || {})
         },
-
         pelo: {
-            curto: Number(
-                peloSalvo.curto ?? peloSalvo.pequeno ?? 0
-            ),
-
+            curto: Number(peloSalvo.curto ?? peloSalvo.pequeno ?? 0),
             medio: Number(peloSalvo.medio ?? 0),
-
-            longo: Number(
-                peloSalvo.longo ?? peloSalvo.grande ?? 0
-            )
+            longo: Number(peloSalvo.longo ?? peloSalvo.grande ?? 0)
         }
     };
 
@@ -291,9 +247,7 @@ function carregarPrecos() {
             const campo = document.getElementById(id);
 
             if (campo) {
-                campo.value = Number(
-                    precos[servico][classificacao] || 0
-                );
+                campo.value = Number(precos[servico][classificacao] || 0);
             }
         }
     }
@@ -304,9 +258,7 @@ function carregarPrecos() {
 function todosPrecosConfigurados() {
     for (const servico in camposPrecos) {
         for (const classificacao in camposPrecos[servico]) {
-            const valor = Number(
-                precos[servico][classificacao]
-            );
+            const valor = Number(precos[servico][classificacao]);
 
             if (!Number.isFinite(valor) || valor <= 0) {
                 return false;
@@ -359,7 +311,6 @@ for (const servico in camposPrecos) {
 }
 
 document.getElementById("salvarPrecos").addEventListener("click", function() {
-
     const novosPrecos = {
         banho: {},
         tosa: {},
@@ -368,7 +319,6 @@ document.getElementById("salvarPrecos").addEventListener("click", function() {
 
     for (const servico in camposPrecos) {
         for (const classificacao in camposPrecos[servico]) {
-
             const id = camposPrecos[servico][classificacao];
             const campo = document.getElementById(id);
             const valor = Number(campo.value);
@@ -378,10 +328,7 @@ document.getElementById("salvarPrecos").addEventListener("click", function() {
                 !Number.isFinite(valor) ||
                 valor <= 0
             ) {
-                alert(
-                    "Preencha os nove valores com preços maiores que zero."
-                );
-
+                alert("Preencha os nove valores com preços maiores que zero.");
                 campo.focus();
                 return;
             }
@@ -391,7 +338,6 @@ document.getElementById("salvarPrecos").addEventListener("click", function() {
     }
 
     const precosAnteriores = precos;
-
     precos = novosPrecos;
 
     if (!salvarPrecosStorage()) {
@@ -435,43 +381,23 @@ function atualizarOpcoesClassificacao() {
     atualizarValorAutomatico();
 }
 
-// ==============================
-// VALOR AUTOMÁTICO
-// ==============================
-
 function obterPrecoAtual() {
     const servico = servicoSelect.value;
     const classificacao = porteSelect.value;
 
     if (!servico || !classificacao) return null;
 
-    return Number(
-        precos?.[servico]?.[classificacao] ?? 0
-    );
+    return Number(precos?.[servico]?.[classificacao] ?? 0);
 }
 
 function atualizarValorAutomatico() {
     const valor = obterPrecoAtual();
 
-    if (valor === null) {
-        valorInput.value = "";
-        return;
-    }
-
-    valorInput.value = valor.toFixed(2);
+    valorInput.value = valor === null ? "" : valor.toFixed(2);
 }
 
-servicoSelect.addEventListener(
-    "change",
-    atualizarOpcoesClassificacao
-);
-
-porteSelect.addEventListener(
-    "change",
-    atualizarValorAutomatico
-);
-
-// Ao selecionar um pet, preenche o porte automaticamente.
+servicoSelect.addEventListener("change", atualizarOpcoesClassificacao);
+porteSelect.addEventListener("change", atualizarValorAutomatico);
 
 petSelect.addEventListener("change", function() {
     const pet = pets.find(
@@ -479,7 +405,6 @@ petSelect.addEventListener("change", function() {
     );
 
     if (!pet || !pet.porte) return;
-
     if (servicoSelect.value === "pelo") return;
 
     const porte = normalizarPorte(pet.porte);
@@ -499,7 +424,6 @@ function atualizarFormaPagamento() {
         formaPagamentoInput.value === "Cartão de crédito";
 
     grupoParcelas.classList.toggle("visivel", credito);
-
     parcelasInput.disabled = !credito;
 
     if (!credito) {
@@ -507,17 +431,13 @@ function atualizarFormaPagamento() {
     }
 }
 
-formaPagamentoInput.addEventListener(
-    "change",
-    atualizarFormaPagamento
-);
+formaPagamentoInput.addEventListener("change", atualizarFormaPagamento);
 
 // ==============================
 // CADASTRAR AGENDAMENTO
 // ==============================
 
 agendaForm.addEventListener("submit", function(event) {
-
     event.preventDefault();
 
     clientes = carregarDados(CLIENT_KEY);
@@ -595,17 +515,14 @@ agendaForm.addEventListener("submit", function(event) {
         servico: servicoSelect.value,
         porte: porteSelect.value,
 
-        data: data,
-        horario: horario,
-
-        valor: valor,
+        data,
+        horario,
+        valor,
 
         formaPagamento: formaPagamento || "",
 
         parcelasPagamento:
-            formaPagamento === "Cartão de crédito"
-                ? parcelas
-                : 1,
+            formaPagamento === "Cartão de crédito" ? parcelas : 1,
 
         status: document.getElementById("agendaStatus").value,
 
@@ -624,7 +541,6 @@ agendaForm.addEventListener("submit", function(event) {
     }
 
     atualizarAgenda();
-
     agendaForm.reset();
 
     atualizarOpcoesClassificacao();
@@ -639,8 +555,6 @@ agendaForm.addEventListener("submit", function(event) {
     alert("Agendamento cadastrado com sucesso! 🛁");
 });
 
-// Atualiza os campos depois de limpar o formulário.
-
 agendaForm.addEventListener("reset", function() {
     setTimeout(() => {
         atualizarOpcoesClassificacao();
@@ -654,29 +568,178 @@ agendaForm.addEventListener("reset", function() {
 });
 
 // ==============================
-// LISTAGEM
+// ELEMENTOS DOS CARTÕES
 // ==============================
 
-function criarCelula(texto) {
-    const celula = document.createElement("td");
-    celula.textContent = texto ?? "-";
+function criarElemento(tag, classe, texto) {
+    const elemento = document.createElement(tag);
 
-    return celula;
+    if (classe) elemento.className = classe;
+    if (texto !== undefined) elemento.textContent = texto;
+
+    return elemento;
 }
 
-function criarBotao(texto, classe, id) {
-    const botao = document.createElement("button");
+function adicionarInformacao(container, titulo, valor) {
+    const item = criarElemento("div", "banho-info-item");
 
-    botao.type = "button";
-    botao.textContent = texto;
-    botao.className = classe;
-    botao.dataset.id = id;
+    item.append(
+        criarElemento("span", "banho-info-label", titulo),
+        criarElemento("strong", "banho-info-value", valor || "-")
+    );
 
-    return botao;
+    container.appendChild(item);
 }
+
+function obterClassificacao(item) {
+    let classificacao = item.porte;
+
+    if (item.servico === "pelo") {
+        const antigas = {
+            pequeno: "curto",
+            medio: "medio",
+            grande: "longo"
+        };
+
+        classificacao = antigas[item.porte] || item.porte;
+    }
+
+    return obterNomePorte(classificacao);
+}
+
+function criarCartao(item) {
+    const card = criarElemento("article", "banho-card");
+
+    const pet = pets.find(
+        registro => String(registro.id) === String(item.petId)
+    );
+
+    const cabecalho = criarElemento("div", "banho-card-header");
+    const principal = criarElemento("div", "banho-card-principal");
+
+    const foto = criarElemento("img", "banho-card-foto");
+    foto.alt = item.petNome || "Pet";
+
+    foto.src = pet?.foto || "img/logo-petsitter-transparente.png";
+
+    foto.onerror = () => {
+        foto.onerror = null;
+        foto.src = "img/logo-petsitter-transparente.png";
+    };
+
+    const identificacao = criarElemento("div", "banho-card-identificacao");
+
+    identificacao.append(
+        criarElemento("h3", "banho-card-nome", item.petNome || "Pet sem nome"),
+        criarElemento("p", "banho-card-tutor", `Tutor: ${item.tutorNome || "-"}`)
+    );
+
+    principal.append(foto, identificacao);
+
+    const statusClasse = {
+        "Agendado": "banho-status-agendado",
+        "Concluído": "banho-status-concluido",
+        "Cancelado": "banho-status-cancelado"
+    };
+
+    const status = criarElemento(
+        "span",
+        `banho-status ${statusClasse[item.status] || "banho-status-agendado"}`,
+        item.status || "Agendado"
+    );
+
+    cabecalho.append(principal, status);
+
+    const resumo = criarElemento("div", "banho-card-resumo");
+
+    adicionarInformacao(resumo, "Data", formatarData(item.data));
+    adicionarInformacao(resumo, "Horário", item.horario);
+    adicionarInformacao(resumo, "Serviço", obterNomeServico(item.servico));
+    adicionarInformacao(resumo, "Valor", formatarMoeda(item.valor));
+
+    const detalhes = criarElemento("div", "banho-card-detalhes");
+    detalhes.hidden = true;
+
+    const grade = criarElemento("div", "banho-info-grid");
+
+    adicionarInformacao(grade, "Classificação", obterClassificacao(item));
+    adicionarInformacao(
+        grade,
+        "Forma de pagamento",
+        item.formaPagamento || "Ainda não foi pago"
+    );
+    adicionarInformacao(
+        grade,
+        "Parcelas",
+        item.formaPagamento === "Cartão de crédito"
+            ? `${Number(item.parcelasPagamento) || 1}x`
+            : "-"
+    );
+    adicionarInformacao(grade, "Status", item.status || "Agendado");
+
+    detalhes.appendChild(grade);
+
+    const observacoes = criarElemento("div", "banho-observacoes");
+
+    observacoes.append(
+        criarElemento("strong", "", "Observações"),
+        criarElemento(
+            "p",
+            "",
+            item.observacoes || "Nenhuma observação registrada."
+        )
+    );
+
+    detalhes.appendChild(observacoes);
+
+    const acoes = criarElemento("div", "banho-card-acoes");
+
+    const botaoDetalhes = criarElemento(
+        "button",
+        "btn-detalhes-banho",
+        "Ler mais"
+    );
+
+    botaoDetalhes.type = "button";
+
+    botaoDetalhes.addEventListener("click", () => {
+        detalhes.hidden = !detalhes.hidden;
+        botaoDetalhes.textContent = detalhes.hidden
+            ? "Ler mais"
+            : "Mostrar menos";
+    });
+
+    const botaoStatus = criarElemento(
+        "button",
+        "btn-status",
+        "Alterar status"
+    );
+
+    botaoStatus.type = "button";
+    botaoStatus.dataset.id = item.id;
+
+    const botaoExcluir = criarElemento(
+        "button",
+        "btn-excluir-agenda",
+        "Excluir"
+    );
+
+    botaoExcluir.type = "button";
+    botaoExcluir.dataset.id = item.id;
+
+    acoes.append(botaoDetalhes, botaoStatus, botaoExcluir);
+
+    card.append(cabecalho, resumo, detalhes, acoes);
+
+    return card;
+}
+
+// ==============================
+// LISTAGEM E FILTROS
+// ==============================
 
 function atualizarAgenda() {
-    agendaTable.innerHTML = "";
+    agendaCards.innerHTML = "";
 
     agendamentos = carregarDados(AGENDA_KEY);
 
@@ -684,38 +747,25 @@ function atualizarAgenda() {
         agendamentos = [];
     }
 
+    pets = carregarDados(PET_KEY);
+
+    if (!Array.isArray(pets)) pets = [];
+
     const dataSelecionada = filtroData.value;
     const statusSelecionado = filtroStatus.value;
-
-    // Texto digitado na pesquisa.
-
-    const busca = normalizarTexto(
-        filtroBusca ? filtroBusca.value : ""
-    );
+    const busca = normalizarTexto(filtroBusca?.value || "");
 
     const filtrados = agendamentos
-        .filter(item => {
-            return !dataSelecionada || item.data === dataSelecionada;
-        })
-
-        .filter(item => {
-            return !statusSelecionado || item.status === statusSelecionado;
-        })
-
-        // Busca pelo nome do pet ou do tutor.
-
+        .filter(item => !dataSelecionada || item.data === dataSelecionada)
+        .filter(item => !statusSelecionado || item.status === statusSelecionado)
         .filter(item => {
             if (!busca) return true;
 
-            const nomePet = normalizarTexto(item.petNome);
-            const nomeTutor = normalizarTexto(item.tutorNome);
-
             return (
-                nomePet.includes(busca) ||
-                nomeTutor.includes(busca)
+                normalizarTexto(item.petNome).includes(busca) ||
+                normalizarTexto(item.tutorNome).includes(busca)
             );
         })
-
         .sort((a, b) => {
             const dataA = `${a.data} ${a.horario}`;
             const dataB = `${b.data} ${b.horario}`;
@@ -724,100 +774,18 @@ function atualizarAgenda() {
         });
 
     if (filtrados.length === 0) {
-        const linha = document.createElement("tr");
-        const celula = document.createElement("td");
-
-        celula.colSpan = 11;
-        celula.className = "empty-table";
-        celula.textContent = busca || dataSelecionada || statusSelecionado
+        const mensagem = busca || dataSelecionada || statusSelecionado
             ? "Nenhum agendamento encontrado para essa pesquisa."
             : "Nenhum agendamento cadastrado.";
 
-        linha.appendChild(celula);
-        agendaTable.appendChild(linha);
+        agendaCards.appendChild(
+            criarElemento("p", "empty-table", mensagem)
+        );
+    } else {
+        filtrados.forEach(item => {
+            agendaCards.appendChild(criarCartao(item));
+        });
     }
-
-    filtrados.forEach(item => {
-
-        const linha = document.createElement("tr");
-
-        linha.appendChild(criarCelula(formatarData(item.data)));
-        linha.appendChild(criarCelula(item.horario));
-        linha.appendChild(criarCelula(item.petNome));
-        linha.appendChild(criarCelula(item.tutorNome));
-        linha.appendChild(criarCelula(obterNomeServico(item.servico)));
-
-        // Compatibilidade com agendamentos antigos de tipo de pelo.
-
-        let classificacao = item.porte;
-
-        if (item.servico === "pelo") {
-            const classificacoesAntigas = {
-                pequeno: "curto",
-                medio: "medio",
-                grande: "longo"
-            };
-
-            classificacao =
-                classificacoesAntigas[item.porte] || item.porte;
-        }
-
-        linha.appendChild(criarCelula(obterNomePorte(classificacao)));
-        linha.appendChild(criarCelula(formatarMoeda(item.valor)));
-
-        // Forma de pagamento.
-
-        linha.appendChild(
-            criarCelula(item.formaPagamento || "Não informado")
-        );
-
-        // Parcelamento somente para cartão de crédito.
-
-        const parcelas =
-            item.formaPagamento === "Cartão de crédito"
-                ? `${Number(item.parcelasPagamento) || 1}x`
-                : "-";
-
-        linha.appendChild(criarCelula(parcelas));
-
-        const celulaStatus = document.createElement("td");
-        const status = document.createElement("span");
-
-        status.className = "status-agenda";
-
-        if (item.status === "Concluído") {
-            status.classList.add("status-concluido");
-        } else if (item.status === "Cancelado") {
-            status.classList.add("status-cancelado");
-        } else {
-            status.classList.add("status-agendado");
-        }
-
-        status.textContent = item.status;
-
-        celulaStatus.appendChild(status);
-        linha.appendChild(celulaStatus);
-
-        const celulaAcoes = document.createElement("td");
-        celulaAcoes.className = "acoes-agenda";
-
-        const botaoStatus = criarBotao(
-            "Alterar status",
-            "btn-status",
-            item.id
-        );
-
-        const botaoExcluir = criarBotao(
-            "Excluir",
-            "btn-excluir-agenda",
-            item.id
-        );
-
-        celulaAcoes.append(botaoStatus, botaoExcluir);
-        linha.appendChild(celulaAcoes);
-
-        agendaTable.appendChild(linha);
-    });
 
     atualizarResumo();
 }
@@ -849,25 +817,19 @@ function atualizarResumo() {
 // ALTERAR STATUS E EXCLUIR
 // ==============================
 
-agendaTable.addEventListener("click", function(event) {
-
+agendaCards.addEventListener("click", function(event) {
     const botaoStatus = event.target.closest(".btn-status");
     const botaoExcluir = event.target.closest(".btn-excluir-agenda");
 
     if (botaoStatus) {
-
         const item = agendamentos.find(
-            agendamento => String(agendamento.id) === String(botaoStatus.dataset.id)
+            agendamento =>
+                String(agendamento.id) === String(botaoStatus.dataset.id)
         );
 
         if (!item) return;
 
-        const opcoes = [
-            "Agendado",
-            "Concluído",
-            "Cancelado"
-        ];
-
+        const opcoes = ["Agendado", "Concluído", "Cancelado"];
         const atual = opcoes.indexOf(item.status);
         const proximo = opcoes[(atual + 1) % opcoes.length];
 
@@ -886,12 +848,10 @@ agendaTable.addEventListener("click", function(event) {
         }
 
         atualizarAgenda();
-
         return;
     }
 
     if (botaoExcluir) {
-
         const confirmar = confirm(
             "Deseja realmente excluir este agendamento?"
         );
@@ -910,7 +870,6 @@ agendaTable.addEventListener("click", function(event) {
         }
 
         atualizarAgenda();
-
         alert("Agendamento excluído com sucesso.");
     }
 });
@@ -922,11 +881,20 @@ agendaTable.addEventListener("click", function(event) {
 filtroData.addEventListener("change", atualizarAgenda);
 filtroStatus.addEventListener("change", atualizarAgenda);
 
-// Pesquisa instantânea por pet ou tutor.
-
 if (filtroBusca) {
     filtroBusca.addEventListener("input", atualizarAgenda);
 }
+
+// ==============================
+// ATUALIZAÇÃO DE DADOS
+// ==============================
+
+window.addEventListener("storage", event => {
+    if ([CLIENT_KEY, PET_KEY, AGENDA_KEY].includes(event.key)) {
+        atualizarClientes();
+        atualizarAgenda();
+    }
+});
 
 // ==============================
 // INICIALIZAÇÃO
@@ -937,3 +905,5 @@ carregarPrecos();
 atualizarOpcoesClassificacao();
 atualizarFormaPagamento();
 atualizarAgenda();
+
+console.log("Agenda de Banho iniciada com sucesso!");

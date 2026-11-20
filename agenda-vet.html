@@ -8,7 +8,7 @@
 
     <title>Agenda Veterinária | Petsitter</title>
 
-    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="css/style.css?v=6">
 
     <style>
         .pagina-intro {
@@ -126,81 +126,6 @@
             display: block;
         }
 
-        .status-agenda {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        .status-agendado {
-            background: #FFF0DA;
-            color: #B86C14;
-        }
-
-        .status-concluido {
-            background: #E2EBDD;
-            color: #52765C;
-        }
-
-        .status-cancelado {
-            background: #F4DEDA;
-            color: #A3473B;
-        }
-
-        .acoes-agenda {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .acoes-agenda button {
-            border: none;
-            border-radius: 7px;
-            padding: 8px 10px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: background 0.2s ease;
-            opacity: 1 !important;
-            filter: none !important;
-        }
-
-        /* BOTÃO ALTERAR STATUS */
-
-        .acoes-agenda button.btn-status,
-        .acoes-agenda button.btn-status:hover,
-        .acoes-agenda button.btn-status:focus,
-        .acoes-agenda button.btn-status:active,
-        .acoes-agenda button.btn-status:visited {
-            background: #FFF0DA !important;
-            background-color: #FFF0DA !important;
-            color: #B86C14 !important;
-            border: 1px solid #F3D7B2 !important;
-            box-shadow: none !important;
-            opacity: 1 !important;
-            filter: none !important;
-            outline: none;
-        }
-
-        /* BOTÃO EXCLUIR */
-
-        .acoes-agenda button.btn-excluir-agenda,
-        .acoes-agenda button.btn-excluir-agenda:hover,
-        .acoes-agenda button.btn-excluir-agenda:focus,
-        .acoes-agenda button.btn-excluir-agenda:active {
-            background: #F4DEDA !important;
-            background-color: #F4DEDA !important;
-            color: #A3473B !important;
-            border: 1px solid #EBC9C3 !important;
-            box-shadow: none !important;
-            opacity: 1 !important;
-            filter: none !important;
-            outline: none;
-        }
-
         .campo-ajuda {
             color: #999;
             font-size: 12px;
@@ -267,28 +192,11 @@
             background-color: #D98220;
             color: #FFFFFF;
         }
-
-        body.modo-escuro .acoes-agenda button.btn-status,
-        body.modo-escuro .acoes-agenda button.btn-status:hover,
-        body.modo-escuro .acoes-agenda button.btn-status:focus,
-        body.modo-escuro .acoes-agenda button.btn-status:active {
-            background: #FFF0DA !important;
-            background-color: #FFF0DA !important;
-            color: #B86C14 !important;
-        }
-
-        body.modo-escuro .acoes-agenda button.btn-excluir-agenda,
-        body.modo-escuro .acoes-agenda button.btn-excluir-agenda:hover,
-        body.modo-escuro .acoes-agenda button.btn-excluir-agenda:focus,
-        body.modo-escuro .acoes-agenda button.btn-excluir-agenda:active {
-            background: #F4DEDA !important;
-            background-color: #F4DEDA !important;
-            color: #A3473B !important;
-        }
     </style>
 </head>
 
 <body>
+
 <script>
     try {
         const configTema = JSON.parse(
@@ -302,7 +210,10 @@
         console.error("Erro ao carregar o tema:", erro);
     }
 </script>
+
 <div class="layout">
+
+    <!-- MENU LATERAL -->
 
     <aside class="sidebar">
 
@@ -334,6 +245,8 @@
 
     <div class="menu-fundo" id="menuFundo"></div>
 
+    <!-- CONTEÚDO PRINCIPAL -->
+
     <main class="main-content">
 
         <header class="topbar">
@@ -361,8 +274,11 @@
 
         </header>
 
+        <!-- INTRODUÇÃO -->
+
         <section class="pagina-intro">
             <h2>🧡 Saúde e cuidado em primeiro lugar</h2>
+
             <p>
                 Organize consultas, exames laboratoriais, exames de imagem,
                 procedimentos e acompanhamentos veterinários.
@@ -406,6 +322,7 @@
 
                     <div class="form-group">
                         <label for="vetTutor">Tutor responsável *</label>
+
                         <select id="vetTutor" required>
                             <option value="">Selecione um tutor</option>
                         </select>
@@ -413,6 +330,7 @@
 
                     <div class="form-group">
                         <label for="vetPet">Pet *</label>
+
                         <select id="vetPet" required disabled>
                             <option value="">Selecione um pet</option>
                         </select>
@@ -420,6 +338,7 @@
 
                     <div class="form-group">
                         <label for="vetCategoria">Categoria *</label>
+
                         <select id="vetCategoria" required>
                             <option value="">Selecione uma categoria</option>
                             <option value="Consulta">Consultas e acompanhamentos</option>
@@ -437,14 +356,20 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="vetProcedimento">Exame ou procedimento *</label>
+                        <label for="vetProcedimento">
+                            Exame ou procedimento *
+                        </label>
+
                         <select id="vetProcedimento" required disabled>
                             <option value="">Selecione primeiro a categoria</option>
                         </select>
                     </div>
 
                     <div class="form-group campo-oculto" id="grupoOutro">
-                        <label for="vetOutro">Descreva o exame ou procedimento *</label>
+                        <label for="vetOutro">
+                            Descreva o exame ou procedimento *
+                        </label>
+
                         <input
                             type="text"
                             id="vetOutro"
@@ -454,6 +379,7 @@
 
                     <div class="form-group">
                         <label for="vetVeterinario">Médico-veterinário</label>
+
                         <input
                             type="text"
                             id="vetVeterinario"
@@ -463,6 +389,7 @@
 
                     <div class="form-group">
                         <label for="vetClinica">Clínica ou laboratório</label>
+
                         <input
                             type="text"
                             id="vetClinica"
@@ -482,6 +409,7 @@
 
                     <div class="form-group">
                         <label for="vetValor">Valor (R$)</label>
+
                         <input
                             type="number"
                             id="vetValor"
@@ -493,6 +421,7 @@
 
                     <div class="form-group">
                         <label for="vetFormaPagamento">Forma de pagamento</label>
+
                         <select id="vetFormaPagamento">
                             <option value="">Ainda não foi pago</option>
                             <option value="PIX">PIX</option>
@@ -504,6 +433,7 @@
 
                     <div class="form-group campo-oculto" id="grupoParcelas">
                         <label for="vetParcelas">Parcelamento no crédito</label>
+
                         <select id="vetParcelas">
                             <option value="1">1x</option>
                             <option value="2">2x</option>
@@ -522,6 +452,7 @@
 
                     <div class="form-group">
                         <label for="vetStatus">Status</label>
+
                         <select id="vetStatus">
                             <option value="Agendado">Agendado</option>
                             <option value="Concluído">Concluído</option>
@@ -531,6 +462,7 @@
 
                     <div class="form-group full-width">
                         <label for="vetResultado">Resultado ou laudo</label>
+
                         <textarea
                             id="vetResultado"
                             rows="3"
@@ -540,6 +472,7 @@
 
                     <div class="form-group full-width">
                         <label for="vetObservacoes">Observações</label>
+
                         <textarea
                             id="vetObservacoes"
                             rows="3"
@@ -565,16 +498,21 @@
 
         </section>
 
-        <!-- LISTA DE ATENDIMENTOS -->
+        <!-- LISTA DE ATENDIMENTOS EM CARTÕES -->
 
         <section class="panel client-list">
 
             <div class="list-header">
                 <div>
-                    <h3 class="secao-titulo">📋 Atendimentos registrados</h3>
+                    <h3 class="secao-titulo">
+                        📋 Atendimentos registrados
+                    </h3>
+
                     <p>Consulte e gerencie a agenda veterinária.</p>
                 </div>
             </div>
+
+            <!-- FILTROS -->
 
             <div class="agenda-filtros">
 
@@ -600,36 +538,12 @@
 
             </div>
 
-            <div class="table-container">
+            <!-- CARTÕES -->
 
-                <table>
-
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Horário</th>
-                            <th>Pet</th>
-                            <th>Tutor</th>
-                            <th>Categoria</th>
-                            <th>Exame / procedimento</th>
-                            <th>Veterinário</th>
-                            <th>Valor</th>
-                            <th>Pagamento</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="vetTable">
-                        <tr>
-                            <td colspan="11" class="empty-table">
-                                Nenhum atendimento cadastrado.
-                            </td>
-                        </tr>
-                    </tbody>
-
-                </table>
-
+            <div id="vetCards" class="vet-cards">
+                <p class="empty-table">
+                    Nenhum atendimento cadastrado.
+                </p>
             </div>
 
         </section>
@@ -642,7 +556,9 @@
 
 </div>
 
-<script src="js/agenda-vet.js?v=2"></script>
+<!-- SCRIPTS -->
+
+<script src="js/agenda-vet.js?v=3"></script>
 <script src="js/app.js?v=5"></script>
 
 </body>

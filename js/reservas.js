@@ -16,7 +16,7 @@ const totalInput = document.getElementById("totalReserva");
 const valorPagoInput = document.getElementById("valorPago");
 const statusInput = document.getElementById("statusReserva");
 const observacoesInput = document.getElementById("observacoesReserva");
-const tabela = document.getElementById("reservationTable");
+const cards = document.getElementById("reservationCards");
 const contador = document.getElementById("reservationCount");
 const filtro = document.getElementById("filtroReservas");
 
@@ -96,6 +96,15 @@ function formatarMoeda(valor) {
     });
 }
 
+function criarElemento(tag, classe, texto) {
+    const elemento = document.createElement(tag);
+
+    if (classe) elemento.className = classe;
+    if (texto !== undefined) elemento.textContent = texto;
+
+    return elemento;
+}
+
 // ==============================
 // VALORES DA RESERVA
 // ==============================
@@ -148,9 +157,6 @@ function carregarDados() {
     pets = lerDados(PET_KEY);
     clientes = lerDados(CLIENT_KEY);
 
-    // Mantém as reservas anteriores e acrescenta os
-    // novos campos sem apagar os dados existentes.
-
     reservas = lerDados(RESERVATION_KEY).map(reserva => ({
         ...reserva,
         valorPago: Math.max(0, Number(reserva.valorPago) || 0),
@@ -162,7 +168,7 @@ function carregarDados() {
     }));
 
     carregarPets();
-    atualizarTabela();
+    atualizarCards();
 }
 
 function carregarPets() {
@@ -258,8 +264,6 @@ tipoCobranca.addEventListener("change", () => {
     atualizarTotal();
 });
 
-valorPagoInput.addEventListener("input", atualizarPreviewParcelas);
-
 // ==============================
 // FORMA DE PAGAMENTO
 // ==============================
@@ -294,6 +298,10 @@ formaPagamentoInput.addEventListener(
     atualizarFormaPagamento
 );
 
+valorPagoInput.addEventListener("input", () => {
+    atualizarFormaPagamento();
+});
+
 parcelasInput.addEventListener(
     "change",
     atualizarPreviewParcelas
@@ -320,7 +328,7 @@ function identificarSituacao(reserva, hoje) {
 }
 
 // ==============================
-// CADASTRAR RESERVA
+// CRIAR RESERVA
 // ==============================
 
 function salvarNovaReserva(evento) {
@@ -399,16 +407,16 @@ function salvarNovaReserva(evento) {
         petNome: pet.nome,
         tutorNome: tutor.nome,
 
-        entrada: entrada,
-        saida: saida,
-        dias: dias,
+        entrada,
+        saida,
+        dias,
 
         tipoCobranca: tipoCobranca.value,
         valorInformado: valor,
         diaria: tipoCobranca.value === "diaria" ? valor : 0,
-        valorTotal: valorTotal,
+        valorTotal,
 
-        valorPago: valorPago,
+        valorPago,
 
         formaPagamento: valorPago > 0 ? formaPagamento : "",
 
@@ -445,22 +453,9 @@ function salvarNovaReserva(evento) {
 
     valorParcelaPreview.textContent = "Valor por parcela: R$ 0,00";
 
-    atualizarTabela();
+    atualizarCards();
 
     alert("Reserva cadastrada com sucesso! 🧡");
-}
-
-// ==============================
-// CRIAÇÃO DE CÉLULAS
-// ==============================
-
-function criarCelula(linha, texto) {
-    const celula = document.createElement("td");
-    celula.textContent = texto ?? "-";
-
-    linha.appendChild(celula);
-
-    return celula;
 }
 
 // ==============================
@@ -485,14 +480,201 @@ function excluirReserva(id) {
         return;
     }
 
-    atualizarTabela();
+    atualizarCards();
 }
 
 // ==============================
-// TABELA DE RESERVAS
+// CARTÕES DE RESERVAS
 // ==============================
 
-function atualizarTabela() {
+function adicionarInformacao(container, titulo, valor) {
+    const item = criarElemento("div", "reservation-info-item");
+
+    const label = criarElemento("span", "reservation-info-label", titulo);
+    const texto = criarElemento("strong", "reservation-info-value", valor || "-");
+
+    item.append(label, texto);
+    container.appendChild(item);
+
+    return item;
+}
+
+function criarCartaoReserva(reserva, hoje) {
+    const card = criarElemento("article", "reservation-card");
+
+    const cabecalho = criarElemento("div", "reservation-card-header");
+
+    const principal = criarElemento("div", "reservation-card-principal");
+
+    const pet = pets.find(p =>
+        String(p.id) === String(reserva.petId)
+    );
+
+    const foto = criarElemento("img", "reservation-card-photo");
+    foto.alt = reserva.petNome || "Pet";
+
+    if (pet && pet.foto) {
+        foto.src = pet.foto;
+    } else {
+        foto.src = "img/logo-petsitter-transparente.png";
+    }
+
+    const identificacao = criarElemento("div", "reservation-card-identification");
+
+    identificacao.append(
+        criarElemento("h3", "reservation-card-name", reserva.petNome || "Pet sem nome"),
+        criarElemento("p", "reservation-card-tutor", `Tutor: ${reserva.tutorNome || "-"}`)
+    );
+
+    principal.append(foto, identificacao);
+
+    const situacao = identificarSituacao(reserva, hoje);
+    const pagamento = obterStatusPagamento(reserva);
+
+    const status = criarElemento(
+        "span",
+        `reservation-status reservation-status-${situacao.toLowerCase().replaceAll(" ", "-")}`,
+        situacao
+    );
+
+    cabecalho.append(principal, status);
+
+    const resumo = criarElemento("div", "reservation-card-summary");
+
+    adicionarInformacao(
+        resumo,
+        "Entrada",
+        formatarData(reserva.entrada)
+    );
+
+    adicionarInformacao(
+        resumo,
+        "Saída",
+        formatarData(reserva.saida)
+    );
+
+    adicionarInformacao(
+        resumo,
+        "Valor total",
+        formatarMoeda(obterValorTotal(reserva))
+    );
+
+    adicionarInformacao(
+        resumo,
+        "Pagamento",
+        pagamento
+    );
+
+    const detalhes = criarElemento("div", "reservation-card-details");
+    detalhes.hidden = true;
+
+    const grade = criarElemento("div", "reservation-info-grid");
+
+    adicionarInformacao(
+        grade,
+        "Duração",
+        `${calcularDias(reserva.entrada, reserva.saida)} dias`
+    );
+
+    adicionarInformacao(
+        grade,
+        "Cobrança",
+        reserva.tipoCobranca === "total" ? "Valor total" : "Por diária"
+    );
+
+    adicionarInformacao(
+        grade,
+        "Valor pago",
+        formatarMoeda(obterValorPago(reserva))
+    );
+
+    adicionarInformacao(
+        grade,
+        "Valor restante",
+        formatarMoeda(
+            obterValorTotal(reserva) - obterValorPago(reserva)
+        )
+    );
+
+    adicionarInformacao(
+        grade,
+        "Forma de pagamento",
+        reserva.formaPagamento || "Não informado"
+    );
+
+    adicionarInformacao(
+        grade,
+        "Parcelas",
+        reserva.formaPagamento === "Cartão de crédito" &&
+        obterValorPago(reserva) > 0
+            ? `${Number(reserva.parcelasPagamento) || 1}x`
+            : "-"
+    );
+
+    adicionarInformacao(
+        grade,
+        "Status da reserva",
+        reserva.status || "-"
+    );
+
+    adicionarInformacao(
+        grade,
+        "Status do pagamento",
+        pagamento
+    );
+
+    detalhes.appendChild(grade);
+
+    const observacoes = criarElemento(
+        "div",
+        "reservation-observations"
+    );
+
+    observacoes.append(
+        criarElemento("strong", "", "Observações"),
+        criarElemento(
+            "p",
+            "",
+            reserva.observacoes || "Nenhuma observação registrada."
+        )
+    );
+
+    detalhes.appendChild(observacoes);
+
+    const acoes = criarElemento("div", "reservation-card-actions");
+
+    const botaoDetalhes = criarElemento(
+        "button",
+        "btn-primary reservation-details-button",
+        "Ler mais"
+    );
+
+    botaoDetalhes.type = "button";
+    botaoDetalhes.dataset.action = "detalhes";
+
+    const botaoExcluir = criarElemento(
+        "button",
+        "btn-delete",
+        "Excluir reserva"
+    );
+
+    botaoExcluir.type = "button";
+    botaoExcluir.dataset.action = "excluir";
+
+    acoes.append(botaoDetalhes, botaoExcluir);
+
+    card.append(cabecalho, resumo, detalhes, acoes);
+
+    card.dataset.id = reserva.id;
+
+    return card;
+}
+
+// ==============================
+// ATUALIZAR CARTÕES E FILTROS
+// ==============================
+
+function atualizarCards() {
     const hoje = obterHoje();
 
     let reservasFiltradas = [...reservas];
@@ -528,103 +710,65 @@ function atualizarTabela() {
             reservasFiltradas.length === 1 ? "reserva" : "reservas"
         }`;
 
-    tabela.innerHTML = "";
+    cards.innerHTML = "";
 
     if (reservasFiltradas.length === 0) {
-        tabela.innerHTML = `
-            <tr>
-                <td colspan="13" class="empty-table">
-                    Nenhuma reserva encontrada neste filtro.
-                </td>
-            </tr>
-        `;
+        cards.appendChild(
+            criarElemento(
+                "p",
+                "empty-table",
+                "Nenhuma reserva encontrada neste filtro."
+            )
+        );
 
         return;
     }
 
     reservasFiltradas.forEach(reserva => {
-        const linha = document.createElement("tr");
-
-        const dias = calcularDias(reserva.entrada, reserva.saida);
-        const valorTotal = obterValorTotal(reserva);
-        const valorPago = obterValorPago(reserva);
-        const statusPagamento = obterStatusPagamento(reserva);
-
-        const tipoValor = reserva.tipoCobranca === "total"
-            ? "Valor total"
-            : "Por diária";
-
-        criarCelula(linha, reserva.petNome || "-");
-        criarCelula(linha, reserva.tutorNome || "-");
-        criarCelula(linha, formatarData(reserva.entrada));
-        criarCelula(linha, formatarData(reserva.saida));
-        criarCelula(linha, `${dias} ${dias === 1 ? "dia" : "dias"}`);
-        criarCelula(linha, tipoValor);
-        criarCelula(linha, formatarMoeda(valorTotal));
-        criarCelula(linha, formatarMoeda(valorPago));
-
-        criarCelula(
-            linha,
-            reserva.formaPagamento || "Não informado"
+        cards.appendChild(
+            criarCartaoReserva(reserva, hoje)
         );
-
-        const parcelas = reserva.formaPagamento === "Cartão de crédito" &&
-            valorPago > 0
-                ? `${Number(reserva.parcelasPagamento) || 1}x`
-                : "-";
-
-        criarCelula(linha, parcelas);
-
-        const celulaPagamento = criarCelula(linha, statusPagamento);
-        celulaPagamento.style.fontWeight = "bold";
-
-        if (statusPagamento === "Pago") {
-            celulaPagamento.style.color = "#52765C";
-        } else if (statusPagamento === "Parcial") {
-            celulaPagamento.style.color = "#4976A5";
-        } else {
-            celulaPagamento.style.color = "#B47B2C";
-        }
-
-        const situacao = identificarSituacao(reserva, hoje);
-
-        const celulaStatus = criarCelula(linha, situacao);
-        celulaStatus.style.fontWeight = "bold";
-
-        if (situacao === "Pendente") {
-            celulaStatus.style.color = "#B47B2C";
-        } else if (situacao === "Futura") {
-            celulaStatus.style.color = "#4976A5";
-        } else if (situacao === "Em andamento") {
-            celulaStatus.style.color = "#52765C";
-        } else {
-            celulaStatus.style.color = "#777777";
-        }
-
-        const celulaAcao = document.createElement("td");
-        const botaoExcluir = document.createElement("button");
-
-        botaoExcluir.type = "button";
-        botaoExcluir.textContent = "Excluir";
-        botaoExcluir.className = "btn-delete";
-
-        botaoExcluir.addEventListener("click", () => {
-            excluirReserva(reserva.id);
-        });
-
-        celulaAcao.appendChild(botaoExcluir);
-        linha.appendChild(celulaAcao);
-
-        tabela.appendChild(linha);
     });
 }
+
+// ==============================
+// EVENTOS DOS CARTÕES
+// ==============================
+
+cards.addEventListener("click", evento => {
+    const botao = evento.target.closest("button");
+
+    if (!botao) return;
+
+    const card = botao.closest(".reservation-card");
+
+    if (!card) return;
+
+    const id = card.dataset.id;
+
+    if (botao.dataset.action === "detalhes") {
+        const detalhes = card.querySelector(
+            ".reservation-card-details"
+        );
+
+        detalhes.hidden = !detalhes.hidden;
+
+        botao.textContent = detalhes.hidden
+            ? "Ler mais"
+            : "Mostrar menos";
+    }
+
+    if (botao.dataset.action === "excluir") {
+        excluirReserva(id);
+    }
+});
 
 // ==============================
 // EVENTOS E INICIALIZAÇÃO
 // ==============================
 
 form.addEventListener("submit", salvarNovaReserva);
-filtro.addEventListener("change", atualizarTabela);
+filtro.addEventListener("change", atualizarCards);
 
 atualizarFormaPagamento();
 carregarDados();

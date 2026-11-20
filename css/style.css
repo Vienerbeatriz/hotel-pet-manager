@@ -1910,3 +1910,1480 @@ body.modo-escuro .cliente-pet-foto {
         padding: 13px;
     }
 }
+
+/* ==================================
+   CARTÕES DE PETS
+================================== */
+
+.pet-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.pet-card {
+    background: #FFFAF3;
+    border: 1px solid #F0DCC3;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(80, 50, 20, 0.05);
+}
+
+.pet-card-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+}
+
+.pet-card-principal {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+}
+
+.pet-card-foto {
+    width: 125px;
+    height: 125px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFF0DA;
+    border-radius: 14px;
+    font-size: 48px;
+    overflow: hidden;
+}
+
+.pet-card-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pet-card-nome {
+    color: #754817;
+    margin-bottom: 8px;
+}
+
+.pet-card-especie,
+.pet-card-tutor {
+    color: #765F49;
+    margin: 5px 0;
+}
+
+.pet-card-detalhes {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid #F0DCC3;
+}
+
+.pet-card-detalhes[hidden] {
+    display: none;
+}
+
+.pet-card-detalhes h4 {
+    color: #D98220;
+    margin: 15px 0 12px;
+}
+
+.pet-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.pet-info-item {
+    background: #FFF0DA;
+    padding: 12px;
+    border-radius: 10px;
+    min-width: 0;
+}
+
+.pet-info-item small {
+    display: block;
+    color: #8A6845;
+    margin-bottom: 5px;
+}
+
+.pet-info-item strong {
+    color: #754817;
+    overflow-wrap: anywhere;
+}
+
+.pet-info-observacao {
+    background: #FFF0DA;
+    padding: 14px;
+    border-radius: 10px;
+    margin-top: 12px;
+}
+
+.pet-info-observacao strong {
+    color: #754817;
+}
+
+.pet-info-observacao p {
+    color: #765F49;
+    margin-top: 6px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.pet-card-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+    padding-top: 15px;
+    border-top: 1px solid #F0DCC3;
+}
+
+.pet-card-acoes button {
+    margin: 0;
+}
+
+/* MODO ESCURO */
+
+.modo-escuro .pet-card {
+    background: #292929;
+    border-color: #494949;
+}
+
+.modo-escuro .pet-card-nome,
+.modo-escuro .pet-info-item strong,
+.modo-escuro .pet-info-observacao strong {
+    color: #F4B65F;
+}
+
+.modo-escuro .pet-card-especie,
+.modo-escuro .pet-card-tutor,
+.modo-escuro .pet-info-observacao p {
+    color: #E2D6C8;
+}
+
+.modo-escuro .pet-card-detalhes {
+    border-color: #494949;
+}
+
+.modo-escuro .pet-info-item,
+.modo-escuro .pet-info-observacao,
+.modo-escuro .pet-card-foto {
+    background: #38332D;
+}
+
+.modo-escuro .pet-info-item small {
+    color: #D7B98F;
+}
+
+.modo-escuro .pet-card-acoes {
+    border-color: #494949;
+}
+
+/* CELULAR */
+
+@media (max-width: 650px) {
+
+    .pet-card {
+        padding: 14px;
+    }
+
+    .pet-card-principal {
+        gap: 12px;
+    }
+
+    .pet-card-foto {
+        width: 95px;
+        height: 95px;
+        font-size: 38px;
+    }
+
+    .pet-card-nome {
+        font-size: 18px;
+    }
+
+    .pet-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pet-card-acoes {
+        flex-direction: column;
+    }
+
+    .pet-card-acoes button {
+        width: 100%;
+    }
+}
+
+/* ==================================
+   CARTÕES DE RESERVAS
+================================== */
+
+.reservation-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+.reservation-card {
+    background: #FFFFFF;
+    border: 1px solid #F0DFC9;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 3px 12px rgba(90, 65, 35, 0.06);
+}
+
+.reservation-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.reservation-card-principal {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.reservation-card-photo {
+    width: 75px;
+    height: 75px;
+    border-radius: 14px;
+    object-fit: cover;
+    background: #FFF0DA;
+    border: 1px solid #F0DFC9;
+}
+
+.reservation-card-identification {
+    min-width: 0;
+}
+
+.reservation-card-name {
+    color: #34483A;
+    font-size: 19px;
+    margin-bottom: 5px;
+}
+
+.reservation-card-tutor {
+    color: #806548;
+    font-size: 13px;
+}
+
+.reservation-status {
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    background: #FFF0DA;
+    color: #A66B20;
+}
+
+.reservation-status-futura {
+    background: #E7F0FA;
+    color: #4976A5;
+}
+
+.reservation-status-em-andamento {
+    background: #E5F1E7;
+    color: #52765C;
+}
+
+.reservation-status-finalizada {
+    background: #EEEEEE;
+    color: #666666;
+}
+
+.reservation-status-pendente {
+    background: #FFF0DA;
+    color: #A66B20;
+}
+
+.reservation-card-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    padding: 16px;
+    background: #FFF9F1;
+    border-radius: 12px;
+}
+
+.reservation-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.reservation-info-label {
+    font-size: 12px;
+    color: #806548;
+}
+
+.reservation-info-value {
+    font-size: 14px;
+    color: #34483A;
+    overflow-wrap: anywhere;
+}
+
+.reservation-card-details[hidden] {
+    display: none;
+}
+
+.reservation-card-details {
+    padding-top: 18px;
+}
+
+.reservation-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    padding: 18px 0;
+    border-top: 1px solid #F0DFC9;
+}
+
+.reservation-observations {
+    padding: 14px;
+    border-radius: 10px;
+    background: #FFF9F1;
+    color: #34483A;
+    margin-top: 5px;
+}
+
+.reservation-observations strong {
+    display: block;
+    margin-bottom: 7px;
+}
+
+.reservation-observations p {
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.reservation-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.reservation-card-actions button {
+    min-width: 120px;
+}
+
+/* MODO ESCURO */
+
+.modo-escuro .reservation-card {
+    background: #29352D;
+    border-color: #46564A;
+}
+
+.modo-escuro .reservation-card-name,
+.modo-escuro .reservation-info-value,
+.modo-escuro .reservation-observations {
+    color: #F5F3EA;
+}
+
+.modo-escuro .reservation-card-tutor,
+.modo-escuro .reservation-info-label {
+    color: #D6C5AD;
+}
+
+.modo-escuro .reservation-card-summary,
+.modo-escuro .reservation-observations {
+    background: #35443A;
+}
+
+.modo-escuro .reservation-info-grid {
+    border-color: #46564A;
+}
+
+.modo-escuro .reservation-status-finalizada {
+    background: #414A43;
+    color: #DDDDDD;
+}
+
+.modo-escuro .reservation-status-futura {
+    background: #344B60;
+    color: #C6E0FA;
+}
+
+.modo-escuro .reservation-status-em-andamento {
+    background: #385341;
+    color: #D1EBD5;
+}
+
+.modo-escuro .reservation-status-pendente {
+    background: #5A452D;
+    color: #FFE0B0;
+}
+
+/* CELULAR */
+
+@media (max-width: 650px) {
+    .reservation-card {
+        padding: 15px;
+    }
+
+    .reservation-card-header {
+        align-items: flex-start;
+    }
+
+    .reservation-card-photo {
+        width: 62px;
+        height: 62px;
+    }
+
+    .reservation-card-name {
+        font-size: 16px;
+    }
+
+    .reservation-status {
+        font-size: 10px;
+        padding: 6px 9px;
+    }
+
+    .reservation-card-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .reservation-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .reservation-card-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .reservation-card-actions button {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+@media (max-width: 380px) {
+    .reservation-card-header {
+        flex-direction: column;
+    }
+
+    .reservation-status {
+        align-self: flex-start;
+    }
+}
+
+/* ==================================
+   CARTÕES DE HOSPEDAGEM
+================================== */
+
+.hospedagem-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+.hospedagem-card {
+    background: #FFFFFF;
+    border: 1px solid #F0DFC9;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 3px 12px rgba(90, 65, 35, 0.06);
+}
+
+.hospedagem-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.hospedagem-card-principal {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.hospedagem-card-foto {
+    width: 75px;
+    height: 75px;
+    border-radius: 14px;
+    object-fit: cover;
+    background: #FFF0DA;
+    border: 1px solid #F0DFC9;
+}
+
+.hospedagem-card-identificacao {
+    min-width: 0;
+}
+
+.hospedagem-card-nome {
+    color: #34483A;
+    font-size: 19px;
+    margin-bottom: 5px;
+}
+
+.hospedagem-card-tutor {
+    color: #806548;
+    font-size: 13px;
+}
+
+.hospedagem-status {
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.hospedagem-status-hospedado {
+    background: #E5F1E7;
+    color: #52765C;
+}
+
+.hospedagem-status-agendado {
+    background: #E7F0FA;
+    color: #4976A5;
+}
+
+.hospedagem-status-pendente {
+    background: #FFF0DA;
+    color: #A66B20;
+}
+
+.hospedagem-card-resumo {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    padding: 16px;
+    background: #FFF9F1;
+    border-radius: 12px;
+}
+
+.hospedagem-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.hospedagem-info-label {
+    font-size: 12px;
+    color: #806548;
+}
+
+.hospedagem-info-value {
+    font-size: 14px;
+    color: #34483A;
+    overflow-wrap: anywhere;
+}
+
+.hospedagem-card-detalhes[hidden] {
+    display: none;
+}
+
+.hospedagem-card-detalhes {
+    padding-top: 18px;
+}
+
+.hospedagem-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    padding: 18px 0;
+    border-top: 1px solid #F0DFC9;
+}
+
+.hospedagem-observacoes {
+    padding: 14px;
+    border-radius: 10px;
+    background: #FFF9F1;
+    color: #34483A;
+    margin-top: 5px;
+}
+
+.hospedagem-observacoes strong {
+    display: block;
+    margin-bottom: 7px;
+}
+
+.hospedagem-observacoes p {
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.hospedagem-card-acoes {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+}
+
+.hospedagem-card-acoes button {
+    min-width: 130px;
+}
+
+/* MODO ESCURO */
+
+.modo-escuro .hospedagem-card {
+    background: #29352D;
+    border-color: #46564A;
+}
+
+.modo-escuro .hospedagem-card-nome,
+.modo-escuro .hospedagem-info-value,
+.modo-escuro .hospedagem-observacoes {
+    color: #F5F3EA;
+}
+
+.modo-escuro .hospedagem-card-tutor,
+.modo-escuro .hospedagem-info-label {
+    color: #D6C5AD;
+}
+
+.modo-escuro .hospedagem-card-resumo,
+.modo-escuro .hospedagem-observacoes {
+    background: #35443A;
+}
+
+.modo-escuro .hospedagem-info-grid {
+    border-color: #46564A;
+}
+
+/* CELULAR */
+
+@media (max-width: 650px) {
+    .hospedagem-card {
+        padding: 15px;
+    }
+
+    .hospedagem-card-header {
+        align-items: flex-start;
+    }
+
+    .hospedagem-card-foto {
+        width: 62px;
+        height: 62px;
+    }
+
+    .hospedagem-card-nome {
+        font-size: 16px;
+    }
+
+    .hospedagem-status {
+        font-size: 10px;
+        padding: 6px 9px;
+    }
+
+    .hospedagem-card-resumo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .hospedagem-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .hospedagem-card-acoes button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 380px) {
+    .hospedagem-card-header {
+        flex-direction: column;
+    }
+
+    .hospedagem-status {
+        align-self: flex-start;
+    }
+}
+
+/* ==================================
+   CARTÕES - AGENDA DE BANHO
+================================== */
+
+.banho-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+.banho-card {
+    background: #FFFFFF;
+    border: 1px solid #F0DFC9;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 3px 12px rgba(90, 65, 35, 0.06);
+}
+
+.banho-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.banho-card-principal {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.banho-card-foto {
+    width: 72px;
+    height: 72px;
+    border-radius: 14px;
+    object-fit: cover;
+    background: #FFF0DA;
+    border: 1px solid #F0DFC9;
+}
+
+.banho-card-identificacao {
+    min-width: 0;
+}
+
+.banho-card-nome {
+    color: #34483A;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.banho-card-tutor {
+    color: #806548;
+    font-size: 13px;
+}
+
+.banho-status {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.banho-status-agendado {
+    background: #FFF0DA;
+    color: #B86C14;
+}
+
+.banho-status-concluido {
+    background: #E2EBDD;
+    color: #52765C;
+}
+
+.banho-status-cancelado {
+    background: #F4DEDA;
+    color: #A3473B;
+}
+
+.banho-card-resumo {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    padding: 16px;
+    background: #FFF9F1;
+    border-radius: 12px;
+}
+
+.banho-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.banho-info-label {
+    color: #806548;
+    font-size: 12px;
+}
+
+.banho-info-value {
+    color: #34483A;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.banho-card-detalhes[hidden] {
+    display: none;
+}
+
+.banho-card-detalhes {
+    padding-top: 18px;
+}
+
+.banho-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    padding: 18px 0;
+    border-top: 1px solid #F0DFC9;
+}
+
+.banho-observacoes {
+    background: #FFF9F1;
+    border-radius: 10px;
+    padding: 14px;
+    color: #34483A;
+}
+
+.banho-observacoes strong {
+    display: block;
+    margin-bottom: 7px;
+}
+
+.banho-observacoes p {
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.banho-card-acoes {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.banho-card-acoes button {
+    border: none;
+    border-radius: 8px;
+    padding: 9px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.btn-detalhes-banho {
+    background: #FFF0DA;
+    color: #B86C14;
+}
+
+.banho-card-acoes .btn-status {
+    background: #E2EBDD;
+    color: #52765C;
+}
+
+.banho-card-acoes .btn-excluir-agenda {
+    background: #F4DEDA;
+    color: #A3473B;
+}
+
+/* MODO ESCURO */
+
+body.modo-escuro .banho-card {
+    background: #2B362E;
+    border-color: #526957;
+}
+
+body.modo-escuro .banho-card-nome,
+body.modo-escuro .banho-info-value,
+body.modo-escuro .banho-observacoes {
+    color: #E5EDE5;
+}
+
+body.modo-escuro .banho-card-tutor,
+body.modo-escuro .banho-info-label {
+    color: #D6C5AD;
+}
+
+body.modo-escuro .banho-card-resumo,
+body.modo-escuro .banho-observacoes {
+    background: #202923;
+}
+
+body.modo-escuro .banho-info-grid {
+    border-color: #526957;
+}
+
+body.modo-escuro .btn-detalhes-banho {
+    background: #49321F;
+    color: #FFE0B5;
+}
+
+/* CELULAR */
+
+@media (max-width: 650px) {
+    .banho-card {
+        padding: 15px;
+    }
+
+    .banho-card-header {
+        align-items: flex-start;
+    }
+
+    .banho-card-foto {
+        width: 62px;
+        height: 62px;
+    }
+
+    .banho-card-nome {
+        font-size: 16px;
+    }
+
+    .banho-card-resumo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .banho-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .banho-card-acoes {
+        flex-direction: column;
+    }
+
+    .banho-card-acoes button {
+        width: 100%;
+        padding: 11px;
+    }
+}
+
+@media (max-width: 380px) {
+    .banho-card-header {
+        flex-direction: column;
+    }
+
+    .banho-status {
+        align-self: flex-start;
+    }
+}
+
+/* =====================================
+   CARTÕES - AGENDA VETERINÁRIA
+===================================== */
+
+.vet-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 15px;
+}
+
+.vet-card {
+    background: #FFFAF3;
+    border: 1px solid #F0DDC5;
+    border-radius: 15px;
+    padding: 18px;
+    min-width: 0;
+}
+
+.vet-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.vet-card-principal {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.vet-card-foto {
+    width: 65px;
+    height: 65px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #FFF0DA;
+    flex-shrink: 0;
+}
+
+.vet-card-identificacao {
+    min-width: 0;
+}
+
+.vet-card-nome {
+    color: #34483A;
+    font-size: 17px;
+    margin-bottom: 4px;
+    overflow-wrap: anywhere;
+}
+
+.vet-card-tutor {
+    color: #806548;
+    font-size: 13px;
+    margin-bottom: 6px;
+    overflow-wrap: anywhere;
+}
+
+.vet-card-categoria {
+    display: inline-block;
+    background: #FFF0DA;
+    color: #B86C14;
+    border-radius: 20px;
+    padding: 5px 9px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.vet-status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.vet-status-agendado {
+    background: #FFF0DA;
+    color: #B86C14;
+}
+
+.vet-status-concluido {
+    background: #E2EBDD;
+    color: #52765C;
+}
+
+.vet-status-cancelado {
+    background: #F4DEDA;
+    color: #A3473B;
+}
+
+.vet-card-resumo {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.vet-info-item {
+    background: #FFF4E6;
+    border-radius: 9px;
+    padding: 11px;
+    min-width: 0;
+}
+
+.vet-info-label {
+    display: block;
+    color: #92785D;
+    font-size: 11px;
+    margin-bottom: 5px;
+}
+
+.vet-info-value {
+    display: block;
+    color: #493A2B;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.vet-card-detalhes[hidden] {
+    display: none !important;
+}
+
+.vet-card-detalhes {
+    border-top: 1px solid #F0DDC5;
+    padding-top: 15px;
+    margin-top: 10px;
+}
+
+.vet-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.vet-card-texto {
+    background: #FFF4E6;
+    border-radius: 9px;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+.vet-card-texto-titulo {
+    display: block;
+    color: #B86C14;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.vet-card-texto-conteudo {
+    color: #493A2B;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.vet-card-acoes {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.vet-card-acoes button {
+    border: none;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-detalhes-vet {
+    background: #EB9933;
+    color: white;
+}
+
+.vet-card-acoes .btn-status {
+    background: #FFF0DA !important;
+    color: #B86C14 !important;
+    border: 1px solid #F3D7B2 !important;
+}
+
+.vet-card-acoes .btn-excluir-agenda {
+    background: #F4DEDA !important;
+    color: #A3473B !important;
+    border: 1px solid #EBC9C3 !important;
+}
+
+/* MODO ESCURO */
+
+body.modo-escuro .vet-card {
+    background: #2B362E;
+    border-color: #526957;
+}
+
+body.modo-escuro .vet-card-nome {
+    color: #E5EDE5;
+}
+
+body.modo-escuro .vet-card-tutor {
+    color: #B5C4B5;
+}
+
+body.modo-escuro .vet-info-item,
+body.modo-escuro .vet-card-texto {
+    background: #202923;
+}
+
+body.modo-escuro .vet-info-label {
+    color: #B5C4B5;
+}
+
+body.modo-escuro .vet-info-value,
+body.modo-escuro .vet-card-texto-conteudo {
+    color: #E5EDE5;
+}
+
+body.modo-escuro .vet-card-detalhes {
+    border-color: #526957;
+}
+
+/* CELULAR */
+
+@media (max-width: 800px) {
+    .vet-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .vet-card {
+        padding: 14px;
+    }
+
+    .vet-card-header {
+        flex-direction: column;
+    }
+
+    .vet-card-resumo,
+    .vet-info-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .vet-card-acoes button {
+        flex: 1;
+    }
+}
+
+/* =================================
+   FINANCEIRO - CARTÕES
+================================= */
+
+.financeiro-cards,
+.despesas-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.financeiro-card,
+.despesa-card {
+    background: #FFFFFF;
+    border: 1px solid #F0E2D0;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 3px 12px rgba(80, 55, 30, 0.05);
+    min-width: 0;
+}
+
+.financeiro-card-header,
+.despesa-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.financeiro-card-identificacao,
+.despesa-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.financeiro-card-icone,
+.despesa-card-icone {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #FFF0DA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+    flex-shrink: 0;
+}
+
+.financeiro-card h3,
+.despesa-card h3 {
+    color: #34483A;
+    font-size: 16px;
+    margin-bottom: 5px;
+    overflow-wrap: anywhere;
+}
+
+.financeiro-card p,
+.despesa-card span {
+    color: #8B887F;
+    font-size: 13px;
+}
+
+.financeiro-status {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 7px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.status-pago {
+    color: #52765C;
+    background: #E5F2E7;
+}
+
+.status-parcial {
+    color: #4976A5;
+    background: #E7F0FA;
+}
+
+.status-pendente {
+    color: #B47B2C;
+    background: #FFF0DA;
+}
+
+.financeiro-valores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.financeiro-valor-item,
+.despesa-card-informacoes > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.financeiro-valor-item span,
+.despesa-card-informacoes span {
+    font-size: 12px;
+    color: #929087;
+}
+
+.financeiro-valor-item strong,
+.despesa-card-informacoes strong {
+    font-size: 15px;
+    color: #34483A;
+    overflow-wrap: anywhere;
+}
+
+.financeiro-valor-item:first-child {
+    grid-column: 1 / -1;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F0E8DD;
+}
+
+.financeiro-valor-item .valor-recebido {
+    color: #52765C;
+}
+
+.financeiro-valor-item .valor-pendente {
+    color: #D98220;
+}
+
+.financeiro-card-progresso {
+    margin-top: 20px;
+}
+
+.financeiro-progresso-fundo {
+    height: 9px;
+    border-radius: 20px;
+    background: #F0EAE1;
+    overflow: hidden;
+}
+
+.financeiro-progresso-preenchido {
+    height: 100%;
+    border-radius: 20px;
+    background: #EB9933;
+}
+
+.financeiro-card-progresso small {
+    display: block;
+    text-align: right;
+    margin-top: 7px;
+    color: #929087;
+    font-size: 11px;
+}
+
+.despesa-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.despesa-card-header {
+    justify-content: flex-start;
+}
+
+.despesa-card-identificacao {
+    min-width: 0;
+}
+
+.despesa-card-identificacao h3 {
+    overflow-wrap: anywhere;
+}
+
+.despesa-card-informacoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 15px 0;
+    border-top: 1px solid #F0E8DD;
+    border-bottom: 1px solid #F0E8DD;
+}
+
+.despesa-card-informacoes .despesa-valor {
+    color: #D98220;
+}
+
+.despesa-card-acoes {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.despesa-card-acoes .btn-delete {
+    padding: 9px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.financeiro-cards .empty-table,
+.despesas-cards .empty-table {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px;
+    color: #999;
+}
+
+/* MODO ESCURO */
+
+body.modo-escuro .financeiro-card,
+body.modo-escuro .despesa-card {
+    background: #2B362E;
+    border-color: #526957;
+}
+
+body.modo-escuro .financeiro-card h3,
+body.modo-escuro .despesa-card h3,
+body.modo-escuro .financeiro-valor-item strong,
+body.modo-escuro .despesa-card-informacoes strong {
+    color: #E5EDE5;
+}
+
+body.modo-escuro .financeiro-card-icone,
+body.modo-escuro .despesa-card-icone {
+    background: #49321F;
+}
+
+body.modo-escuro .financeiro-valor-item:first-child,
+body.modo-escuro .despesa-card-informacoes {
+    border-color: #526957;
+}
+
+body.modo-escuro .financeiro-progresso-fundo {
+    background: #465249;
+}
+
+body.modo-escuro .status-pago {
+    background: #294A32;
+    color: #A9D6B0;
+}
+
+body.modo-escuro .status-parcial {
+    background: #263F59;
+    color: #B4D4F5;
+}
+
+body.modo-escuro .status-pendente {
+    background: #594322;
+    color: #F4C77D;
+}
+
+/* CELULAR */
+
+@media (max-width: 600px) {
+    .financeiro-cards,
+    .despesas-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .financeiro-card,
+    .despesa-card {
+        padding: 16px;
+    }
+
+    .financeiro-card-header {
+        align-items: flex-start;
+    }
+
+    .financeiro-valores {
+        gap: 10px;
+    }
+}

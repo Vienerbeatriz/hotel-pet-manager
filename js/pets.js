@@ -1,6 +1,6 @@
 
 const petForm = document.getElementById("petForm");
-const petTable = document.getElementById("petTable");
+const petCards = document.getElementById("petCards");
 const petCount = document.getElementById("petCount");
 const tutorSelect = document.getElementById("petTutor");
 
@@ -46,7 +46,7 @@ function salvarPets() {
     }
 }
 
-// Reduz a imagem antes de armazená-la
+// COMPRIMIR FOTO
 function comprimirFoto(arquivo) {
     return new Promise((resolve, reject) => {
 
@@ -119,6 +119,7 @@ function comprimirFoto(arquivo) {
     });
 }
 
+// ATUALIZAR TUTORES
 function atualizarTutores() {
     tutorSelect.innerHTML = "";
 
@@ -140,6 +141,22 @@ function atualizarTutores() {
     tutorSelect.disabled = clientes.length === 0;
 }
 
+// CRIAR ELEMENTO COM TEXTO
+function criarElemento(tag, classe, texto) {
+    const elemento = document.createElement(tag);
+
+    if (classe) {
+        elemento.className = classe;
+    }
+
+    if (texto !== undefined) {
+        elemento.textContent = texto;
+    }
+
+    return elemento;
+}
+
+// CRIAR BOTÃO
 function criarBotao(texto, classe, id) {
     const botao = document.createElement("button");
 
@@ -151,123 +168,264 @@ function criarBotao(texto, classe, id) {
     return botao;
 }
 
-function atualizarPets() {
-    petTable.innerHTML = "";
+// ADICIONAR INFORMAÇÃO AO CARTÃO
+function adicionarInformacao(container, titulo, valor) {
+    const item = criarElemento("div", "pet-info-item");
 
-    petCount.textContent =
-        `${pets.length} ${pets.length === 1 ? "pet" : "pets"}`;
+    const label = criarElemento("small", "", titulo);
+    const texto = criarElemento(
+        "strong",
+        "",
+        valor || "Não informado"
+    );
 
-    if (pets.length === 0) {
-        const linha = document.createElement("tr");
-        const celula = document.createElement("td");
+    item.append(label, texto);
+    container.appendChild(item);
+}
 
-        celula.colSpan = 6;
-        celula.className = "empty-table";
-        celula.textContent = "Nenhum pet cadastrado ainda.";
+// CRIAR CARTÃO DO PET
+function criarCartaoPet(pet) {
 
-        linha.appendChild(celula);
-        petTable.appendChild(linha);
+    const tutor = clientes.find(
+        cliente => cliente.id === pet.tutorId
+    );
 
-        return;
+    const cartao = criarElemento("article", "pet-card");
+    cartao.dataset.id = pet.id;
+
+    // CABEÇALHO
+    const cabecalho = criarElemento(
+        "div",
+        "pet-card-cabecalho"
+    );
+
+    const principal = criarElemento(
+        "div",
+        "pet-card-principal"
+    );
+
+    // FOTO
+    const areaFoto = criarElemento(
+        "div",
+        "pet-card-foto"
+    );
+
+    if (pet.foto) {
+        const imagem = document.createElement("img");
+
+        imagem.src = pet.foto;
+        imagem.alt = `Foto de ${pet.nome}`;
+
+        areaFoto.appendChild(imagem);
+    } else {
+        areaFoto.textContent =
+            pet.especie === "Gato" ? "🐱" : "🐶";
     }
 
-    pets.forEach(pet => {
+    // INFORMAÇÕES PRINCIPAIS
+    const informacoes = criarElemento(
+        "div",
+        "pet-card-resumo"
+    );
 
-        const tutor = clientes.find(
-            cliente => cliente.id === pet.tutorId
-        );
+    const nome = criarElemento(
+        "h3",
+        "pet-card-nome",
+        pet.nome
+    );
 
-        const linha = document.createElement("tr");
+    const especie = criarElemento(
+        "p",
+        "pet-card-especie",
+        `${pet.especie || "Espécie não informada"} • ${pet.raca || "Raça não informada"}`
+    );
 
-        // Nome
-        const nome = document.createElement("td");
-        nome.textContent = pet.nome;
+    const tutorNome = criarElemento(
+        "p",
+        "pet-card-tutor",
+        `👤 Tutor: ${tutor ? tutor.nome : "Tutor não encontrado"}`
+    );
 
-        // Foto
-        const foto = document.createElement("td");
+    informacoes.append(nome, especie, tutorNome);
+    principal.append(areaFoto, informacoes);
 
-        if (pet.foto) {
-            const imagem = document.createElement("img");
+    cabecalho.appendChild(principal);
 
-            imagem.src = pet.foto;
-            imagem.alt = `Foto de ${pet.nome}`;
-            imagem.className = "foto-pet-tabela";
+    // DETALHES
+    const detalhes = criarElemento(
+        "div",
+        "pet-card-detalhes"
+    );
 
-            foto.appendChild(imagem);
-        } else {
-            foto.textContent = "Sem foto";
-        }
+    detalhes.hidden = true;
 
-        // Espécie
-        const especie = document.createElement("td");
-        especie.textContent = pet.especie;
+    const tituloInformacoes = criarElemento(
+        "h4",
+        "",
+        "Informações do pet"
+    );
 
-        // Raça
-        const raca = document.createElement("td");
-        raca.textContent = pet.raca || "Não informada";
+    const grade = criarElemento(
+        "div",
+        "pet-info-grid"
+    );
 
-        // Tutor
-        const nomeTutor = document.createElement("td");
+    adicionarInformacao(grade, "Nome", pet.nome);
+    adicionarInformacao(grade, "Espécie", pet.especie);
+    adicionarInformacao(grade, "Raça", pet.raca);
+    adicionarInformacao(grade, "Nascimento", pet.nascimento);
+    adicionarInformacao(grade, "Sexo", pet.sexo);
+    adicionarInformacao(grade, "Porte", pet.porte);
+    adicionarInformacao(grade, "Castrado", pet.castrado);
+    adicionarInformacao(grade, "Tutor", tutor ? tutor.nome : "Tutor não encontrado");
 
-        nomeTutor.textContent = tutor
-            ? tutor.nome
-            : "Tutor não encontrado";
+    const tituloSaude = criarElemento(
+        "h4",
+        "",
+        "Saúde e cuidados"
+    );
 
-        // Ações
-        const acoes = document.createElement("td");
-        acoes.className = "acoes-pet";
+    const gradeSaude = criarElemento(
+        "div",
+        "pet-info-grid"
+    );
 
-        const botaoTrocar = criarBotao(
-            "Trocar foto",
-            "btn-secondary btn-trocar-foto",
-            pet.id
-        );
+    adicionarInformacao(gradeSaude, "Restrições alimentares", pet.alimentacao);
+    adicionarInformacao(gradeSaude, "Problemas de saúde", pet.problemasSaude);
+    adicionarInformacao(gradeSaude, "Vermífugo", pet.vermifugo);
+    adicionarInformacao(gradeSaude, "Data do vermífugo", pet.dataVermifugo);
+    adicionarInformacao(gradeSaude, "Antipulgas", pet.antipulgas);
+    adicionarInformacao(gradeSaude, "Data do antipulgas", pet.dataAntipulgas);
+    adicionarInformacao(gradeSaude, "Veterinário", pet.veterinario);
+    adicionarInformacao(gradeSaude, "Telefone do veterinário", pet.telefoneVeterinario);
 
-        const inputTrocar = document.createElement("input");
+    const comportamento = criarElemento(
+        "div",
+        "pet-info-observacao"
+    );
 
-        inputTrocar.type = "file";
-        inputTrocar.accept = "image/*";
-        inputTrocar.className = "input-trocar-foto";
-        inputTrocar.dataset.id = pet.id;
-        inputTrocar.hidden = true;
+    comportamento.appendChild(
+        criarElemento("strong", "", "Comportamento")
+    );
 
+    comportamento.appendChild(
+        criarElemento(
+            "p",
+            "",
+            pet.comportamento || "Não informado"
+        )
+    );
+
+    const observacoes = criarElemento(
+        "div",
+        "pet-info-observacao"
+    );
+
+    observacoes.appendChild(
+        criarElemento("strong", "", "Observações")
+    );
+
+    observacoes.appendChild(
+        criarElemento(
+            "p",
+            "",
+            pet.observacoes || "Nenhuma observação cadastrada."
+        )
+    );
+
+    detalhes.append(
+        tituloInformacoes,
+        grade,
+        tituloSaude,
+        gradeSaude,
+        comportamento,
+        observacoes
+    );
+
+    // AÇÕES
+    const acoes = criarElemento(
+        "div",
+        "pet-card-acoes"
+    );
+
+    const botaoLerMais = criarBotao(
+        "Ler mais",
+        "btn-ler-mais btn-detalhes-pet",
+        pet.id
+    );
+
+    const botaoTrocarFoto = criarBotao(
+        "Trocar foto",
+        "btn-secondary btn-trocar-foto",
+        pet.id
+    );
+
+    const inputTrocar = document.createElement("input");
+
+    inputTrocar.type = "file";
+    inputTrocar.accept = "image/*";
+    inputTrocar.className = "input-trocar-foto";
+    inputTrocar.dataset.id = pet.id;
+    inputTrocar.hidden = true;
+
+    acoes.append(
+        botaoLerMais,
+        botaoTrocarFoto,
+        inputTrocar
+    );
+
+    if (pet.foto) {
         const botaoRemoverFoto = criarBotao(
             "Remover foto",
             "btn-secondary btn-remover-foto",
             pet.id
         );
 
-        const botaoExcluir = criarBotao(
-            "Excluir pet",
-            "btn-delete",
-            pet.id
+        acoes.appendChild(botaoRemoverFoto);
+    }
+
+    const botaoExcluir = criarBotao(
+        "Excluir pet",
+        "btn-delete",
+        pet.id
+    );
+
+    acoes.appendChild(botaoExcluir);
+
+    cartao.append(
+        cabecalho,
+        detalhes,
+        acoes
+    );
+
+    return cartao;
+}
+
+// ATUALIZAR LISTAGEM
+function atualizarPets() {
+
+    petCards.innerHTML = "";
+
+    petCount.textContent =
+        `${pets.length} ${pets.length === 1 ? "pet" : "pets"}`;
+
+    if (pets.length === 0) {
+        const vazio = criarElemento(
+            "p",
+            "empty-table",
+            "Nenhum pet cadastrado ainda."
         );
 
-        acoes.append(
-            botaoTrocar,
-            inputTrocar
-        );
+        petCards.appendChild(vazio);
+        return;
+    }
 
-        if (pet.foto) {
-            acoes.appendChild(botaoRemoverFoto);
-        }
-
-        acoes.appendChild(botaoExcluir);
-
-        linha.append(
-            nome,
-            foto,
-            especie,
-            raca,
-            nomeTutor,
-            acoes
-        );
-
-        petTable.appendChild(linha);
+    pets.forEach(pet => {
+        petCards.appendChild(criarCartaoPet(pet));
     });
 }
 
-// Limpar pré-visualização
+// LIMPAR PRÉ-VISUALIZAÇÃO
 function limparPreviewFoto() {
     campoFoto.value = "";
     previewFoto.src = "";
@@ -275,7 +433,7 @@ function limparPreviewFoto() {
     removerFotoPreview.style.display = "none";
 }
 
-// Pré-visualização da foto
+// PRÉ-VISUALIZAÇÃO DA FOTO
 campoFoto.addEventListener("change", function () {
 
     const arquivo = this.files[0];
@@ -305,22 +463,24 @@ campoFoto.addEventListener("change", function () {
     leitor.readAsDataURL(arquivo);
 });
 
-// Remover foto antes de cadastrar
+// REMOVER FOTO ANTES DO CADASTRO
 removerFotoPreview.addEventListener("click", function () {
     limparPreviewFoto();
 });
 
-// Limpar formulário e foto
+// LIMPAR FORMULÁRIO
 petForm.addEventListener("reset", function () {
     setTimeout(limparPreviewFoto, 0);
 });
 
-// Cadastrar pet
+// CADASTRAR PET
 petForm.addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
     clientes = carregarClientes();
+
+    atualizarTutores();
 
     const tutorId = tutorSelect.value;
 
@@ -330,7 +490,6 @@ petForm.addEventListener("submit", async function(event) {
 
     if (!tutorExiste) {
         alert("Cadastre um cliente antes de cadastrar um pet.");
-        atualizarTutores();
         return;
     }
 
@@ -411,17 +570,34 @@ petForm.addEventListener("submit", async function(event) {
     }
 });
 
-// Ações da tabela
-petTable.addEventListener("click", function(event) {
+// AÇÕES DOS CARTÕES
+petCards.addEventListener("click", function(event) {
 
+    const botaoLerMais = event.target.closest(".btn-detalhes-pet");
     const botaoTrocar = event.target.closest(".btn-trocar-foto");
     const botaoRemover = event.target.closest(".btn-remover-foto");
     const botaoExcluir = event.target.closest(".btn-delete");
 
-    // Abrir seleção de nova foto
+    // LER MAIS
+    if (botaoLerMais) {
+
+        const cartao = botaoLerMais.closest(".pet-card");
+        const detalhes = cartao.querySelector(".pet-card-detalhes");
+
+        detalhes.hidden = !detalhes.hidden;
+
+        botaoLerMais.textContent = detalhes.hidden
+            ? "Ler mais"
+            : "Mostrar menos";
+
+        return;
+    }
+
+    // TROCAR FOTO
     if (botaoTrocar) {
-        const celula = botaoTrocar.closest("td");
-        const input = celula.querySelector(".input-trocar-foto");
+
+        const cartao = botaoTrocar.closest(".pet-card");
+        const input = cartao.querySelector(".input-trocar-foto");
 
         if (input) {
             input.click();
@@ -430,7 +606,7 @@ petTable.addEventListener("click", function(event) {
         return;
     }
 
-    // Remover foto já cadastrada
+    // REMOVER FOTO
     if (botaoRemover) {
 
         const confirmar = confirm(
@@ -460,7 +636,7 @@ petTable.addEventListener("click", function(event) {
         return;
     }
 
-    // Excluir pet
+    // EXCLUIR PET
     if (botaoExcluir) {
 
         const confirmar = confirm(
@@ -487,8 +663,8 @@ petTable.addEventListener("click", function(event) {
     }
 });
 
-// Trocar foto de um pet já cadastrado
-petTable.addEventListener("change", async function(event) {
+// TROCAR FOTO DE PET CADASTRADO
+petCards.addEventListener("change", async function(event) {
 
     const input = event.target.closest(".input-trocar-foto");
 
@@ -522,10 +698,11 @@ petTable.addEventListener("change", async function(event) {
         alert(erro.message || "Não foi possível atualizar a foto.");
 
     }
+
 });
 
-// Inicialização
+// INICIALIZAÇÃO
 atualizarTutores();
 atualizarPets();
 
-console.log("Módulo de pets iniciado!");
+console.log("Módulo de pets iniciado com cartões!");
