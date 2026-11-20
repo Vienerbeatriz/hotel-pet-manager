@@ -3442,3 +3442,78 @@ body.modo-escuro .status-pendente {
         overflow-wrap: anywhere;
     }
 }
+
+/* ==============================
+   AMPLIAR FOTO DOS PETS
+============================== */
+
+.pet-foto-ampliavel {
+    cursor: zoom-in;
+}
+
+.foto-pet-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.foto-pet-modal.ativo {
+    display: flex;
+}
+
+.foto-pet-modal-conteudo {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.foto-pet-modal-imagem {
+    display: block;
+    max-width: 90vw;
+    max-height: 85vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.4);
+}
+
+.foto-pet-modal-fechar {
+    position: absolute;
+    top: -18px;
+    right: -18px;
+    z-index: 2;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: #EB9933;
+    color: white;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .foto-pet-modal {
+        padding: 12px;
+    }
+
+    .foto-pet-modal-imagem {
+        max-width: 94vw;
+        max-height: 80vh;
+    }
+
+    .foto-pet-modal-fechar {
+        top: -15px;
+        right: -8px;
+    }
+}

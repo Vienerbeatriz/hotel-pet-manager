@@ -52,6 +52,82 @@ const precosPadrao = {
 };
 
 // ==============================
+// AMPLIAR FOTOS
+// ==============================
+
+let modalFotoBanho = null;
+
+function criarModalFotoBanho() {
+    if (modalFotoBanho) return;
+
+    modalFotoBanho = document.createElement("div");
+    modalFotoBanho.className = "foto-pet-modal";
+    modalFotoBanho.setAttribute("aria-hidden", "true");
+
+    const conteudo = document.createElement("div");
+    conteudo.className = "foto-pet-modal-conteudo";
+
+    const botaoFechar = document.createElement("button");
+    botaoFechar.className = "foto-pet-modal-fechar";
+    botaoFechar.type = "button";
+    botaoFechar.textContent = "×";
+    botaoFechar.setAttribute("aria-label", "Fechar imagem");
+
+    const imagem = document.createElement("img");
+    imagem.className = "foto-pet-modal-imagem";
+    imagem.alt = "Foto ampliada do pet";
+
+    conteudo.append(botaoFechar, imagem);
+    modalFotoBanho.appendChild(conteudo);
+    document.body.appendChild(modalFotoBanho);
+
+    botaoFechar.addEventListener("click", fecharFotoBanho);
+
+    modalFotoBanho.addEventListener("click", evento => {
+        if (evento.target === modalFotoBanho) {
+            fecharFotoBanho();
+        }
+    });
+}
+
+function abrirFotoBanho(src, nome) {
+    if (!src || src.includes("logo-petsitter-transparente.png")) return;
+
+    criarModalFotoBanho();
+
+    const imagem = modalFotoBanho.querySelector(
+        ".foto-pet-modal-imagem"
+    );
+
+    imagem.src = src;
+    imagem.alt = `Foto ampliada de ${nome || "pet"}`;
+
+    modalFotoBanho.classList.add("ativo");
+    modalFotoBanho.setAttribute("aria-hidden", "false");
+
+    document.body.style.overflow = "hidden";
+}
+
+function fecharFotoBanho() {
+    if (!modalFotoBanho) return;
+
+    modalFotoBanho.classList.remove("ativo");
+    modalFotoBanho.setAttribute("aria-hidden", "true");
+
+    modalFotoBanho.querySelector(
+        ".foto-pet-modal-imagem"
+    ).src = "";
+
+    document.body.style.overflow = "";
+}
+
+document.addEventListener("keydown", evento => {
+    if (evento.key === "Escape") {
+        fecharFotoBanho();
+    }
+});
+
+// ==============================
 // ARMAZENAMENTO
 // ==============================
 
@@ -620,11 +696,27 @@ function criarCartao(item) {
     const foto = criarElemento("img", "banho-card-foto");
     foto.alt = item.petNome || "Pet";
 
-    foto.src = pet?.foto || "img/logo-petsitter-transparente.png";
+    if (pet && pet.foto) {
+        foto.src = pet.foto;
+
+        foto.classList.add("pet-foto-ampliavel");
+        foto.tabIndex = 0;
+        foto.setAttribute("role", "button");
+        foto.setAttribute(
+            "aria-label",
+            `Ampliar foto de ${item.petNome || "pet"}`
+        );
+        foto.title = "Clique para ampliar a foto";
+    } else {
+        foto.src = "img/logo-petsitter-transparente.png";
+    }
 
     foto.onerror = () => {
         foto.onerror = null;
         foto.src = "img/logo-petsitter-transparente.png";
+        foto.classList.remove("pet-foto-ampliavel");
+        foto.removeAttribute("role");
+        foto.removeAttribute("tabindex");
     };
 
     const identificacao = criarElemento("div", "banho-card-identificacao");
@@ -812,6 +904,30 @@ function atualizarResumo() {
     document.getElementById("servicosConcluidos").textContent =
         concluidos.length;
 }
+
+// ==============================
+// AMPLIAÇÃO DAS FOTOS NOS CARTÕES
+// ==============================
+
+agendaCards.addEventListener("click", function(event) {
+    const foto = event.target.closest(".pet-foto-ampliavel");
+
+    if (!foto) return;
+
+    abrirFotoBanho(foto.src, foto.alt);
+});
+
+agendaCards.addEventListener("keydown", function(event) {
+    const foto = event.target.closest(".pet-foto-ampliavel");
+
+    if (
+        foto &&
+        (event.key === "Enter" || event.key === " ")
+    ) {
+        event.preventDefault();
+        abrirFotoBanho(foto.src, foto.alt);
+    }
+});
 
 // ==============================
 // ALTERAR STATUS E EXCLUIR

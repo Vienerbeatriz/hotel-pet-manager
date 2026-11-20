@@ -30,6 +30,84 @@ let clientes = [];
 let reservas = [];
 
 // ==============================
+// AMPLIAR FOTOS
+// ==============================
+
+let modalFotoReserva = null;
+
+function criarModalFotoReserva() {
+    if (modalFotoReserva) return;
+
+    modalFotoReserva = document.createElement("div");
+    modalFotoReserva.className = "foto-pet-modal";
+    modalFotoReserva.setAttribute("aria-hidden", "true");
+
+    const conteudo = document.createElement("div");
+    conteudo.className = "foto-pet-modal-conteudo";
+
+    const botaoFechar = document.createElement("button");
+    botaoFechar.className = "foto-pet-modal-fechar";
+    botaoFechar.type = "button";
+    botaoFechar.textContent = "×";
+    botaoFechar.setAttribute("aria-label", "Fechar imagem");
+
+    const imagem = document.createElement("img");
+    imagem.className = "foto-pet-modal-imagem";
+    imagem.alt = "Foto ampliada do pet";
+
+    conteudo.append(botaoFechar, imagem);
+    modalFotoReserva.appendChild(conteudo);
+    document.body.appendChild(modalFotoReserva);
+
+    botaoFechar.addEventListener("click", fecharFotoReserva);
+
+    modalFotoReserva.addEventListener("click", evento => {
+        if (evento.target === modalFotoReserva) {
+            fecharFotoReserva();
+        }
+    });
+}
+
+function abrirFotoReserva(src, nome) {
+    if (!src || src.includes("logo-petsitter-transparente.png")) return;
+
+    criarModalFotoReserva();
+
+    const imagem = modalFotoReserva.querySelector(
+        ".foto-pet-modal-imagem"
+    );
+
+    imagem.src = src;
+    imagem.alt = `Foto ampliada de ${nome || "pet"}`;
+
+    modalFotoReserva.classList.add("ativo");
+    modalFotoReserva.setAttribute("aria-hidden", "false");
+
+    document.body.style.overflow = "hidden";
+}
+
+function fecharFotoReserva() {
+    if (!modalFotoReserva) return;
+
+    modalFotoReserva.classList.remove("ativo");
+    modalFotoReserva.setAttribute("aria-hidden", "true");
+
+    const imagem = modalFotoReserva.querySelector(
+        ".foto-pet-modal-imagem"
+    );
+
+    imagem.src = "";
+
+    document.body.style.overflow = "";
+}
+
+document.addEventListener("keydown", evento => {
+    if (evento.key === "Escape") {
+        fecharFotoReserva();
+    }
+});
+
+// ==============================
 // ARMAZENAMENTO
 // ==============================
 
@@ -515,6 +593,12 @@ function criarCartaoReserva(reserva, hoje) {
 
     if (pet && pet.foto) {
         foto.src = pet.foto;
+
+        foto.classList.add("pet-foto-ampliavel");
+        foto.tabIndex = 0;
+        foto.setAttribute("role", "button");
+        foto.setAttribute("aria-label", `Ampliar foto de ${reserva.petNome || "pet"}`);
+        foto.title = "Clique para ampliar a foto";
     } else {
         foto.src = "img/logo-petsitter-transparente.png";
     }
@@ -736,6 +820,17 @@ function atualizarCards() {
 // ==============================
 
 cards.addEventListener("click", evento => {
+    const foto = evento.target.closest(".pet-foto-ampliavel");
+
+    if (foto) {
+        abrirFotoReserva(
+            foto.src,
+            foto.alt
+        );
+
+        return;
+    }
+
     const botao = evento.target.closest("button");
 
     if (!botao) return;
@@ -760,6 +855,22 @@ cards.addEventListener("click", evento => {
 
     if (botao.dataset.action === "excluir") {
         excluirReserva(id);
+    }
+});
+
+cards.addEventListener("keydown", evento => {
+    const foto = evento.target.closest(".pet-foto-ampliavel");
+
+    if (
+        foto &&
+        (evento.key === "Enter" || evento.key === " ")
+    ) {
+        evento.preventDefault();
+
+        abrirFotoReserva(
+            foto.src,
+            foto.alt
+        );
     }
 });
 

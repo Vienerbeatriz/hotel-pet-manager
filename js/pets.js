@@ -53,6 +53,83 @@ function salvarPets() {
 }
 
 // ==============================
+// AMPLIAR FOTOS
+// ==============================
+
+function criarModalFoto() {
+    let modal = document.getElementById("fotoPetModal");
+
+    if (modal) return modal;
+
+    modal = document.createElement("div");
+    modal.id = "fotoPetModal";
+    modal.className = "foto-pet-modal";
+    modal.setAttribute("aria-hidden", "true");
+
+    const conteudo = document.createElement("div");
+    conteudo.className = "foto-pet-modal-conteudo";
+
+    const fechar = document.createElement("button");
+    fechar.type = "button";
+    fechar.className = "foto-pet-modal-fechar";
+    fechar.textContent = "×";
+    fechar.setAttribute("aria-label", "Fechar foto");
+
+    const imagem = document.createElement("img");
+    imagem.className = "foto-pet-modal-imagem";
+    imagem.alt = "Foto ampliada do pet";
+
+    conteudo.append(fechar, imagem);
+    modal.appendChild(conteudo);
+    document.body.appendChild(modal);
+
+    fechar.addEventListener("click", fecharFotoPet);
+
+    modal.addEventListener("click", function(event) {
+        if (event.target === modal) {
+            fecharFotoPet();
+        }
+    });
+
+    return modal;
+}
+
+function abrirFotoPet(src, nome) {
+    if (!src) return;
+
+    const modal = criarModalFoto();
+    const imagem = modal.querySelector(".foto-pet-modal-imagem");
+
+    imagem.src = src;
+    imagem.alt = `Foto ampliada de ${nome}`;
+
+    modal.classList.add("ativo");
+    modal.setAttribute("aria-hidden", "false");
+
+    document.body.style.overflow = "hidden";
+}
+
+function fecharFotoPet() {
+    const modal = document.getElementById("fotoPetModal");
+
+    if (!modal) return;
+
+    modal.classList.remove("ativo");
+    modal.setAttribute("aria-hidden", "true");
+
+    const imagem = modal.querySelector(".foto-pet-modal-imagem");
+    imagem.src = "";
+
+    document.body.style.overflow = "";
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        fecharFotoPet();
+    }
+});
+
+// ==============================
 // COMPRIMIR FOTO
 // ==============================
 
@@ -242,11 +319,30 @@ function criarCartaoPet(pet) {
 
         imagem.src = pet.foto;
         imagem.alt = `Foto de ${pet.nome}`;
+        imagem.classList.add("pet-foto-ampliavel");
+        imagem.tabIndex = 0;
+        imagem.setAttribute("role", "button");
+        imagem.setAttribute("aria-label", `Ampliar foto de ${pet.nome}`);
+        imagem.title = "Clique para ampliar a foto";
 
         imagem.onerror = function() {
             this.onerror = null;
+            this.classList.remove("pet-foto-ampliavel");
+            this.removeAttribute("role");
+            this.removeAttribute("tabindex");
             this.src = "img/logo-petsitter-transparente.png";
         };
+
+        imagem.addEventListener("click", function() {
+            abrirFotoPet(pet.foto, pet.nome);
+        });
+
+        imagem.addEventListener("keydown", function(event) {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                abrirFotoPet(pet.foto, pet.nome);
+            }
+        });
 
         areaFoto.appendChild(imagem);
     } else {
@@ -521,7 +617,6 @@ petForm.addEventListener("reset", function() {
 petForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    // Atualiza a lista de clientes sem apagar a seleção atual.
     const tutorId = tutorSelect.value;
 
     clientes = carregarClientes();
@@ -627,8 +722,6 @@ petCards.addEventListener("click", function(event) {
     const botaoRemover = event.target.closest(".btn-remover-foto");
     const botaoExcluir = event.target.closest(".btn-delete");
 
-    // LER MAIS
-
     if (botaoLerMais) {
         const cartao = botaoLerMais.closest(".pet-card");
         const detalhes = cartao.querySelector(".pet-card-detalhes");
@@ -642,8 +735,6 @@ petCards.addEventListener("click", function(event) {
         return;
     }
 
-    // TROCAR FOTO
-
     if (botaoTrocar) {
         const cartao = botaoTrocar.closest(".pet-card");
         const input = cartao.querySelector(".input-trocar-foto");
@@ -652,8 +743,6 @@ petCards.addEventListener("click", function(event) {
 
         return;
     }
-
-    // REMOVER FOTO
 
     if (botaoRemover) {
         const confirmar = confirm(
@@ -683,8 +772,6 @@ petCards.addEventListener("click", function(event) {
         return;
     }
 
-    // EXCLUIR PET
-
     if (botaoExcluir) {
         const confirmar = confirm(
             "Deseja realmente excluir este pet?"
@@ -704,8 +791,6 @@ petCards.addEventListener("click", function(event) {
         }
 
         atualizarPets();
-
-        alert("Pet excluído com sucesso!");
     }
 });
 

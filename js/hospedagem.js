@@ -8,6 +8,107 @@
     const cards = document.getElementById("hospedagemCards");
 
     let intervaloAtualizacao = null;
+    let modalFotoHospedagem = null;
+
+    // ==============================
+    // AMPLIAR FOTOS
+    // ==============================
+
+    function criarModalFotoHospedagem() {
+        if (modalFotoHospedagem) return;
+
+        modalFotoHospedagem = document.createElement("div");
+        modalFotoHospedagem.className = "foto-pet-modal";
+        modalFotoHospedagem.setAttribute("aria-hidden", "true");
+
+        const conteudo = document.createElement("div");
+        conteudo.className = "foto-pet-modal-conteudo";
+
+        const botaoFechar = document.createElement("button");
+        botaoFechar.className = "foto-pet-modal-fechar";
+        botaoFechar.type = "button";
+        botaoFechar.textContent = "×";
+        botaoFechar.setAttribute("aria-label", "Fechar imagem");
+
+        const imagem = document.createElement("img");
+        imagem.className = "foto-pet-modal-imagem";
+        imagem.alt = "Foto ampliada do pet";
+
+        conteudo.append(botaoFechar, imagem);
+        modalFotoHospedagem.appendChild(conteudo);
+        document.body.appendChild(modalFotoHospedagem);
+
+        botaoFechar.addEventListener("click", fecharFotoHospedagem);
+
+        modalFotoHospedagem.addEventListener("click", evento => {
+            if (evento.target === modalFotoHospedagem) {
+                fecharFotoHospedagem();
+            }
+        });
+    }
+
+    function abrirFotoHospedagem(src, nome) {
+        if (!src || src.includes("logo-petsitter-transparente.png")) return;
+
+        criarModalFotoHospedagem();
+
+        const imagem = modalFotoHospedagem.querySelector(
+            ".foto-pet-modal-imagem"
+        );
+
+        imagem.src = src;
+        imagem.alt = `Foto ampliada de ${nome || "pet"}`;
+
+        modalFotoHospedagem.classList.add("ativo");
+        modalFotoHospedagem.setAttribute("aria-hidden", "false");
+
+        document.body.style.overflow = "hidden";
+    }
+
+    function fecharFotoHospedagem() {
+        if (!modalFotoHospedagem) return;
+
+        modalFotoHospedagem.classList.remove("ativo");
+        modalFotoHospedagem.setAttribute("aria-hidden", "true");
+
+        const imagem = modalFotoHospedagem.querySelector(
+            ".foto-pet-modal-imagem"
+        );
+
+        imagem.src = "";
+
+        document.body.style.overflow = "";
+    }
+
+    document.addEventListener("keydown", evento => {
+        if (evento.key === "Escape") {
+            fecharFotoHospedagem();
+        }
+    });
+
+    cards.addEventListener("click", evento => {
+        const foto = evento.target.closest(".pet-foto-ampliavel");
+
+        if (!foto) return;
+
+        abrirFotoHospedagem(foto.src, foto.alt);
+    });
+
+    cards.addEventListener("keydown", evento => {
+        const foto = evento.target.closest(".pet-foto-ampliavel");
+
+        if (
+            foto &&
+            (evento.key === "Enter" || evento.key === " ")
+        ) {
+            evento.preventDefault();
+            abrirFotoHospedagem(foto.src, foto.alt);
+        }
+    });
+
+    // ==============================
+    // CONFIGURAÇÕES
+    // ==============================
 
     function obterConfiguracoes() {
         try {
@@ -25,6 +126,10 @@
             elemento.textContent = nome;
         });
     }
+
+    // ==============================
+    // CARREGAMENTO DOS DADOS
+    // ==============================
 
     function carregarReservas() {
         try {
@@ -52,6 +157,10 @@
             ? capacidade
             : CAPACIDADE_PADRAO;
     }
+
+    // ==============================
+    // DATAS E FORMATAÇÃO
+    // ==============================
 
     function obterHoje() {
         const agora = new Date();
@@ -121,6 +230,10 @@
         container.appendChild(item);
     }
 
+    // ==============================
+    // CARTÕES DE HOSPEDAGEM
+    // ==============================
+
     function criarCartao(reserva, pets, hoje) {
         const card = criarElemento("article", "hospedagem-card");
 
@@ -136,6 +249,15 @@
 
         if (pet && pet.foto) {
             foto.src = pet.foto;
+
+            foto.classList.add("pet-foto-ampliavel");
+            foto.tabIndex = 0;
+            foto.setAttribute("role", "button");
+            foto.setAttribute(
+                "aria-label",
+                `Ampliar foto de ${reserva.petNome || "pet"}`
+            );
+            foto.title = "Clique para ampliar a foto";
         } else {
             foto.src = "img/logo-petsitter-transparente.png";
         }
@@ -143,6 +265,9 @@
         foto.onerror = () => {
             foto.onerror = null;
             foto.src = "img/logo-petsitter-transparente.png";
+            foto.classList.remove("pet-foto-ampliavel");
+            foto.removeAttribute("role");
+            foto.removeAttribute("tabindex");
         };
 
         const identificacao = criarElemento("div", "hospedagem-card-identificacao");
@@ -254,6 +379,10 @@
 
         return card;
     }
+
+    // ==============================
+    // ATUALIZAR HOSPEDAGENS
+    // ==============================
 
     function atualizarHospedagem() {
         atualizarNomeHotelHospedagem();

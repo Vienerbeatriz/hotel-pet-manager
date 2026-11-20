@@ -23,6 +23,82 @@ const filtroBusca = document.getElementById("filtroBusca");
 const filtroStatus = document.getElementById("filtroStatus");
 
 // ==============================
+// AMPLIAR FOTOS DOS PETS
+// ==============================
+
+let modalFotoVet = null;
+
+function criarModalFotoVet() {
+    if (modalFotoVet) return;
+
+    modalFotoVet = document.createElement("div");
+    modalFotoVet.className = "foto-pet-modal";
+    modalFotoVet.setAttribute("aria-hidden", "true");
+
+    const conteudo = document.createElement("div");
+    conteudo.className = "foto-pet-modal-conteudo";
+
+    const botaoFechar = document.createElement("button");
+    botaoFechar.className = "foto-pet-modal-fechar";
+    botaoFechar.type = "button";
+    botaoFechar.textContent = "×";
+    botaoFechar.setAttribute("aria-label", "Fechar imagem");
+
+    const imagem = document.createElement("img");
+    imagem.className = "foto-pet-modal-imagem";
+    imagem.alt = "Foto ampliada do pet";
+
+    conteudo.append(botaoFechar, imagem);
+    modalFotoVet.appendChild(conteudo);
+    document.body.appendChild(modalFotoVet);
+
+    botaoFechar.addEventListener("click", fecharFotoVet);
+
+    modalFotoVet.addEventListener("click", function(event) {
+        if (event.target === modalFotoVet) {
+            fecharFotoVet();
+        }
+    });
+}
+
+function abrirFotoVet(src, nome) {
+    if (!src || src.includes("logo-petsitter-transparente.png")) return;
+
+    criarModalFotoVet();
+
+    const imagem = modalFotoVet.querySelector(
+        ".foto-pet-modal-imagem"
+    );
+
+    imagem.src = src;
+    imagem.alt = `Foto ampliada de ${nome || "pet"}`;
+
+    modalFotoVet.classList.add("ativo");
+    modalFotoVet.setAttribute("aria-hidden", "false");
+
+    document.body.style.overflow = "hidden";
+}
+
+function fecharFotoVet() {
+    if (!modalFotoVet) return;
+
+    modalFotoVet.classList.remove("ativo");
+    modalFotoVet.setAttribute("aria-hidden", "true");
+
+    modalFotoVet.querySelector(
+        ".foto-pet-modal-imagem"
+    ).src = "";
+
+    document.body.style.overflow = "";
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        fecharFotoVet();
+    }
+});
+
+// ==============================
 // TIPOS DE EXAMES E PROCEDIMENTOS
 // ==============================
 
@@ -602,9 +678,23 @@ function criarCartaoAtendimento(item) {
     foto.src = pet?.foto || "img/logo-petsitter-transparente.png";
     foto.alt = `Foto de ${item.petNome || "pet"}`;
 
+    if (pet?.foto) {
+        foto.classList.add("pet-foto-ampliavel");
+        foto.tabIndex = 0;
+        foto.setAttribute("role", "button");
+        foto.setAttribute(
+            "aria-label",
+            `Ampliar foto de ${item.petNome || "pet"}`
+        );
+        foto.title = "Clique para ampliar a foto";
+    }
+
     foto.onerror = function() {
         this.onerror = null;
         this.src = "img/logo-petsitter-transparente.png";
+        this.classList.remove("pet-foto-ampliavel");
+        this.removeAttribute("role");
+        this.removeAttribute("tabindex");
     };
 
     const identificacao = criarElemento("div", "vet-card-identificacao");
@@ -814,6 +904,30 @@ function atualizarResumo() {
     document.getElementById("atendimentosConcluidos").textContent =
         concluidos.length;
 }
+
+// ==============================
+// CLIQUE PARA AMPLIAR FOTO
+// ==============================
+
+vetCards.addEventListener("click", function(event) {
+    const foto = event.target.closest(".pet-foto-ampliavel");
+
+    if (!foto) return;
+
+    abrirFotoVet(foto.src, foto.alt);
+});
+
+vetCards.addEventListener("keydown", function(event) {
+    const foto = event.target.closest(".pet-foto-ampliavel");
+
+    if (
+        foto &&
+        (event.key === "Enter" || event.key === " ")
+    ) {
+        event.preventDefault();
+        abrirFotoVet(foto.src, foto.alt);
+    }
+});
 
 // ==============================
 // ALTERAR STATUS E EXCLUIR

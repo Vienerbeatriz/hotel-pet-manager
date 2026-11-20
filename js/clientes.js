@@ -1,3 +1,4 @@
+
 const form = document.getElementById("clientForm");
 const clientCards = document.getElementById("clientCards");
 const clientCount = document.getElementById("clientCount");
@@ -47,6 +48,83 @@ function salvarDados() {
         return false;
     }
 }
+
+// ==============================
+// AMPLIAR FOTOS DOS PETS
+// ==============================
+
+function criarModalFotoCliente() {
+    let modal = document.getElementById("fotoPetModal");
+
+    if (modal) return modal;
+
+    modal = document.createElement("div");
+    modal.id = "fotoPetModal";
+    modal.className = "foto-pet-modal";
+    modal.setAttribute("aria-hidden", "true");
+
+    const conteudo = document.createElement("div");
+    conteudo.className = "foto-pet-modal-conteudo";
+
+    const fechar = document.createElement("button");
+    fechar.type = "button";
+    fechar.className = "foto-pet-modal-fechar";
+    fechar.textContent = "×";
+    fechar.setAttribute("aria-label", "Fechar foto");
+
+    const imagem = document.createElement("img");
+    imagem.className = "foto-pet-modal-imagem";
+    imagem.alt = "Foto ampliada do pet";
+
+    conteudo.append(fechar, imagem);
+    modal.appendChild(conteudo);
+    document.body.appendChild(modal);
+
+    fechar.addEventListener("click", fecharFotoCliente);
+
+    modal.addEventListener("click", function(event) {
+        if (event.target === modal) {
+            fecharFotoCliente();
+        }
+    });
+
+    return modal;
+}
+
+function abrirFotoCliente(src, nome) {
+    if (!src) return;
+
+    const modal = criarModalFotoCliente();
+    const imagem = modal.querySelector(".foto-pet-modal-imagem");
+
+    imagem.src = src;
+    imagem.alt = `Foto ampliada de ${nome}`;
+
+    modal.classList.add("ativo");
+    modal.setAttribute("aria-hidden", "false");
+
+    document.body.style.overflow = "hidden";
+}
+
+function fecharFotoCliente() {
+    const modal = document.getElementById("fotoPetModal");
+
+    if (!modal) return;
+
+    modal.classList.remove("ativo");
+    modal.setAttribute("aria-hidden", "true");
+
+    const imagem = modal.querySelector(".foto-pet-modal-imagem");
+    imagem.src = "";
+
+    document.body.style.overflow = "";
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        fecharFotoCliente();
+    }
+});
 
 // ==============================
 // MÁSCARA DO CPF
@@ -183,6 +261,15 @@ function criarCartaoPet(pet) {
 
         imagem.src = pet.foto;
         imagem.alt = `Foto de ${pet.nome || "pet"}`;
+        imagem.classList.add("pet-foto-ampliavel");
+        imagem.tabIndex = 0;
+        imagem.setAttribute("role", "button");
+        imagem.setAttribute(
+            "aria-label",
+            `Ampliar foto de ${pet.nome || "pet"}`
+        );
+
+        imagem.title = "Clique para ampliar a foto";
 
         fotoArea.appendChild(imagem);
 
@@ -223,65 +310,16 @@ function criarCartaoPet(pet) {
     adicionarInformacao(informacoes, "Porte", pet.porte);
     adicionarInformacao(informacoes, "Castrado", pet.castrado);
 
-    adicionarInformacao(
-        informacoes,
-        "Alimentação",
-        pet.alimentacao
-    );
-
-    adicionarInformacao(
-        informacoes,
-        "Problemas de saúde",
-        pet.problemasSaude
-    );
-
-    adicionarInformacao(
-        informacoes,
-        "Comportamento",
-        pet.comportamento
-    );
-
-    adicionarInformacao(
-        informacoes,
-        "Vermífugo",
-        pet.vermifugo
-    );
-
-    adicionarInformacao(
-        informacoes,
-        "Data do vermífugo",
-        pet.dataVermifugo
-    );
-
-    adicionarInformacao(
-        informacoes,
-        "Antipulgas",
-        pet.antipulgas
-    );
-
-    adicionarInformacao(
-        informacoes,
-        "Data do antipulgas",
-        pet.dataAntipulgas
-    );
-
-    adicionarInformacao(
-        informacoes,
-        "Veterinário",
-        pet.veterinario
-    );
-
-    adicionarInformacao(
-        informacoes,
-        "Telefone do veterinário",
-        pet.telefoneVeterinario
-    );
-
-    adicionarInformacao(
-        informacoes,
-        "Observações do pet",
-        pet.observacoes
-    );
+    adicionarInformacao(informacoes, "Alimentação", pet.alimentacao);
+    adicionarInformacao(informacoes, "Problemas de saúde", pet.problemasSaude);
+    adicionarInformacao(informacoes, "Comportamento", pet.comportamento);
+    adicionarInformacao(informacoes, "Vermífugo", pet.vermifugo);
+    adicionarInformacao(informacoes, "Data do vermífugo", pet.dataVermifugo);
+    adicionarInformacao(informacoes, "Antipulgas", pet.antipulgas);
+    adicionarInformacao(informacoes, "Data do antipulgas", pet.dataAntipulgas);
+    adicionarInformacao(informacoes, "Veterinário", pet.veterinario);
+    adicionarInformacao(informacoes, "Telefone do veterinário", pet.telefoneVeterinario);
+    adicionarInformacao(informacoes, "Observações do pet", pet.observacoes);
 
     cartao.append(cabecalho, informacoes);
 
@@ -349,6 +387,15 @@ function criarCartaoCliente(cliente) {
 
         imagem.src = petComFoto.foto;
         imagem.alt = `Foto de ${petComFoto.nome}`;
+        imagem.classList.add("pet-foto-ampliavel");
+        imagem.tabIndex = 0;
+        imagem.setAttribute("role", "button");
+        imagem.setAttribute(
+            "aria-label",
+            `Ampliar foto de ${petComFoto.nome}`
+        );
+
+        imagem.title = "Clique para ampliar a foto";
 
         areaFoto.appendChild(imagem);
 
@@ -381,41 +428,12 @@ function criarCartaoCliente(cliente) {
         "cliente-info-grid"
     );
 
-    adicionarInformacao(
-        gradeInformacoes,
-        "Nome completo",
-        cliente.nome
-    );
-
-    adicionarInformacao(
-        gradeInformacoes,
-        "CPF",
-        formatarCPF(cliente.cpf)
-    );
-
-    adicionarInformacao(
-        gradeInformacoes,
-        "Telefone",
-        cliente.telefone
-    );
-
-    adicionarInformacao(
-        gradeInformacoes,
-        "E-mail",
-        cliente.email
-    );
-
-    adicionarInformacao(
-        gradeInformacoes,
-        "Endereço",
-        cliente.endereco
-    );
-
-    adicionarInformacao(
-        gradeInformacoes,
-        "Observações",
-        cliente.observacoes
-    );
+    adicionarInformacao(gradeInformacoes, "Nome completo", cliente.nome);
+    adicionarInformacao(gradeInformacoes, "CPF", formatarCPF(cliente.cpf));
+    adicionarInformacao(gradeInformacoes, "Telefone", cliente.telefone);
+    adicionarInformacao(gradeInformacoes, "E-mail", cliente.email);
+    adicionarInformacao(gradeInformacoes, "Endereço", cliente.endereco);
+    adicionarInformacao(gradeInformacoes, "Observações", cliente.observacoes);
 
     detalhes.append(tituloDados, gradeInformacoes);
 
@@ -529,6 +547,13 @@ function atualizarLista() {
 
 clientCards.addEventListener("click", function(event) {
 
+    const imagem = event.target.closest(".pet-foto-ampliavel");
+
+    if (imagem) {
+        abrirFotoCliente(imagem.src, imagem.alt.replace("Foto de ", ""));
+        return;
+    }
+
     const botao = event.target.closest(".btn-ler-mais");
 
     if (!botao) return;
@@ -554,6 +579,21 @@ clientCards.addEventListener("click", function(event) {
         String(!aberto)
     );
 
+});
+
+clientCards.addEventListener("keydown", function(event) {
+    const imagem = event.target.closest(".pet-foto-ampliavel");
+
+    if (!imagem) return;
+
+    if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+
+        abrirFotoCliente(
+            imagem.src,
+            imagem.alt.replace("Foto de ", "")
+        );
+    }
 });
 
 // ==============================
