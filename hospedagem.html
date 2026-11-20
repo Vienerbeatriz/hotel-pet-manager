@@ -1,23 +1,37 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#52765C">
-    <title>Hospedagens | Hotel Pet Manager</title>
-    <link rel="stylesheet" href="css/style.css?v=4">
+    <meta name="theme-color" content="#EB9933">
+
+    <title>Hospedagens | Petsitter</title>
+
+    <link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
+<script>
+    try {
+        const configTema = JSON.parse(
+            localStorage.getItem("hotelPetConfiguracoes")
+        ) || {};
 
+        if (configTema.modoEscuro === true) {
+            document.body.classList.add("modo-escuro");
+        }
+    } catch (erro) {
+        console.error("Erro ao carregar o tema:", erro);
+    }
+</script>
 <div class="layout">
 
     <aside class="sidebar">
 
-        <div class="logo">
-            <span>🐾</span>
-            <h2 class="nomeHotelDinamico">Hotel Pet</h2>
-            <small>MANAGER</small>
+        <div class="logo logo-petsitter">
+            <img
+                src="img/logo-petsitter-transparente.png"
+                alt="Petsitter - Hospedagem para Cães 100% Livre"
+            >
         </div>
 
         <nav>
@@ -26,13 +40,15 @@
             <a href="pets.html">🐶 Pets</a>
             <a href="reservas.html">📅 Reservas</a>
             <a href="hospedagem.html" class="active">🛏️ Hospedagens</a>
+            <a href="agenda-banho.html">🛁 Agenda de Banho</a>
+            <a href="agenda-vet.html">🩺 Agenda Veterinária</a>
             <a href="financeiro.html">💰 Financeiro</a>
             <a href="configuracoes.html">⚙️ Configurações</a>
         </nav>
 
         <div class="sidebar-footer">
-            <span class="nomeHotelDinamico">Hotel Pet Manager</span>
-            <small>Gestão inteligente</small>
+            <span class="nomeHotelDinamico">Petsitter</span>
+            <small>Hospedagem para Cães 100% Livre</small>
         </div>
 
     </aside>
@@ -42,6 +58,7 @@
     <main class="main-content">
 
         <header class="topbar">
+
             <button
                 class="menu-toggle"
                 id="abrirMenu"
@@ -62,6 +79,7 @@
                     <small>Gerenciamento</small>
                 </div>
             </div>
+
         </header>
 
         <section class="welcome">
@@ -131,7 +149,7 @@
         </section>
 
         <footer>
-            <span class="nomeHotelDinamico">Hotel Pet Manager</span> © 2026
+            <span class="nomeHotelDinamico">Petsitter</span> © 2026
         </footer>
 
     </main>
@@ -139,7 +157,7 @@
 </div>
 
 <script src="js/hospedagem.js"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/app.js?v=5"></script>
 
 </body>
 </html>

@@ -1,5 +1,6 @@
-
 const CONFIG_KEY = "hotelPetConfiguracoes";
+
+/* APLICAÇÃO DO TEMA */
 
 function obterConfiguracoes() {
     try {
@@ -8,17 +9,6 @@ function obterConfiguracoes() {
         return {};
     }
 }
-
-function atualizarNomeHotel() {
-    const config = obterConfiguracoes();
-    const nome = config.nome || "Hotel Pet Manager";
-
-    document.querySelectorAll(".nomeHotelDinamico").forEach(elemento => {
-        elemento.textContent = nome;
-    });
-}
-
-/* MODO ESCURO */
 
 function aplicarTema() {
     const config = obterConfiguracoes();
@@ -31,9 +21,24 @@ function aplicarTema() {
     if (metaTheme) {
         metaTheme.setAttribute(
             "content",
-            escuro ? "#202923" : "#52765C"
+            escuro ? "#202923" : "#EB9933"
         );
     }
+}
+
+/* APLICA O TEMA ASSIM QUE O SCRIPT É CARREGADO */
+
+aplicarTema();
+
+/* NOME DO ESTABELECIMENTO */
+
+function atualizarNomeHotel() {
+    const config = obterConfiguracoes();
+    const nome = config.nome || "Hotel Pet Manager";
+
+    document.querySelectorAll(".nomeHotelDinamico").forEach(elemento => {
+        elemento.textContent = nome;
+    });
 }
 
 /* RELÓGIO */
@@ -138,4 +143,4 @@ window.addEventListener(
     }
 );
 
-console.log("Hotel Pet Manager iniciado!");
+console.log("Petsitter iniciado com sucesso!");

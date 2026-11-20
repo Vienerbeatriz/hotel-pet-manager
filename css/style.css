@@ -1135,3 +1135,173 @@ body.modo-escuro .btn-delete {
     accent-color: #52765C;
     cursor: pointer;
 }
+
+/* =====================================
+   IDENTIDADE VISUAL PETSITTER
+===================================== */
+
+:root {
+    --laranja-principal: #EB9933;
+    --laranja-escuro: #D98220;
+    --laranja-claro: #FFF0DA;
+    --laranja-destaque: #F4B65F;
+}
+
+/* Cores gerais */
+body {
+    background: #FFF9F1;
+    color: #493A2B;
+}
+
+/* Menu lateral */
+.sidebar {
+    background: var(--laranja-principal);
+}
+
+nav a:hover,
+nav a.active {
+    background: var(--laranja-escuro);
+}
+
+/* Logo e rodapé */
+.logo,
+.sidebar-footer {
+    color: white;
+}
+
+/* Destaques */
+.welcome {
+    background: var(--laranja-claro);
+}
+
+.stat-card h2,
+.form-group label,
+th {
+    color: var(--laranja-escuro);
+}
+
+/* Botões */
+.btn-primary,
+.menu-toggle {
+    background: var(--laranja-principal);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--laranja-escuro);
+}
+
+/* Botão mobile */
+@media (max-width: 650px) {
+    .menu-toggle,
+    .topbar .menu-toggle,
+    button.menu-toggle#abrirMenu {
+        background: var(--laranja-claro) !important;
+        color: var(--laranja-escuro) !important;
+    }
+}
+
+/* Campos */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--laranja-principal);
+    box-shadow: 0 0 0 3px #EB993322;
+}
+
+/* Contador */
+#clientCount {
+    background: var(--laranja-claro);
+    color: var(--laranja-escuro);
+}
+
+/* Painel do relógio */
+.painel-relogio {
+    background: var(--laranja-claro);
+}
+
+.painel-relogio h2,
+.painel-relogio > p,
+.mensagem-dia {
+    color: var(--laranja-escuro);
+}
+
+/* Cartões de acesso */
+.acesso-card {
+    background: #FFFAF3;
+    border-color: #F3D7B2;
+}
+
+.acesso-card strong {
+    color: var(--laranja-escuro);
+}
+
+.acesso-card:hover {
+    background: var(--laranja-claro);
+}
+
+/* Modo escuro */
+body.modo-escuro .sidebar {
+    background: #713F19;
+}
+
+body.modo-escuro nav a:hover,
+body.modo-escuro nav a.active {
+    background: #965B27;
+}
+
+body.modo-escuro .stat-card h2,
+body.modo-escuro .form-group label,
+body.modo-escuro th,
+body.modo-escuro .acesso-card strong,
+body.modo-escuro .painel-relogio h2,
+body.modo-escuro .mensagem-dia {
+    color: #F4B65F;
+}
+
+body.modo-escuro .welcome,
+body.modo-escuro .painel-relogio {
+    background: #49321F;
+}
+
+body.modo-escuro .menu-toggle {
+    background: #713F19 !important;
+    color: #FFF0DA !important;
+}
+
+body.modo-escuro .acesso-card {
+    border-color: #79502D;
+}
+
+body.modo-escuro #clientCount {
+    background: #713F19;
+    color: #FFE0B5;
+}
+
+/* Checkbox */
+.form-group input[type="checkbox"] {
+    accent-color: var(--laranja-principal);
+}
+
+/* =====================================
+   LOGO PETSITTER
+===================================== */
+
+.logo-petsitter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 10px;
+}
+
+.logo-petsitter img {
+    display: block;
+    width: 155px;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.sidebar-footer span {
+    font-weight: bold;
+}

@@ -1,0 +1,939 @@
+
+const CLIENT_KEY = "hotelPetClientes";
+const PET_KEY = "hotelPetAnimais";
+
+const AGENDA_KEY = "petsitterAgendaBanho";
+const PRECOS_KEY = "petsitterPrecosBanho";
+
+const agendaForm = document.getElementById("agendaForm");
+const agendaTable = document.getElementById("agendaTable");
+
+const tutorSelect = document.getElementById("agendaTutor");
+const petSelect = document.getElementById("agendaPet");
+
+const servicoSelect = document.getElementById("agendaServico");
+const porteSelect = document.getElementById("agendaPorte");
+const valorInput = document.getElementById("agendaValor");
+
+const avisoConfigPrecos = document.getElementById("avisoConfigPrecos");
+
+const filtroData = document.getElementById("filtroData");
+const filtroStatus = document.getElementById("filtroStatus");
+const filtroBusca = document.getElementById("filtroBusca");
+
+const labelClassificacao = document.getElementById("labelClassificacao");
+
+const formaPagamentoInput = document.getElementById("agendaFormaPagamento");
+const grupoParcelas = document.getElementById("grupoParcelas");
+const parcelasInput = document.getElementById("agendaParcelas");
+
+// ==============================
+// CONFIGURAÇÃO DOS PREÇOS
+// ==============================
+
+const camposPrecos = {
+    banho: {
+        pequeno: "banhoPequeno",
+        medio: "banhoMedio",
+        grande: "banhoGrande"
+    },
+
+    tosa: {
+        pequeno: "tosaPequeno",
+        medio: "tosaMedio",
+        grande: "tosaGrande"
+    },
+
+    pelo: {
+        curto: "peloPequeno",
+        medio: "peloMedio",
+        longo: "peloGrande"
+    }
+};
+
+const precosPadrao = {
+    banho: {
+        pequeno: 0,
+        medio: 0,
+        grande: 0
+    },
+
+    tosa: {
+        pequeno: 0,
+        medio: 0,
+        grande: 0
+    },
+
+    pelo: {
+        curto: 0,
+        medio: 0,
+        longo: 0
+    }
+};
+
+// ==============================
+// ARMAZENAMENTO
+// ==============================
+
+function carregarDados(chave, padrao = []) {
+    try {
+        return JSON.parse(localStorage.getItem(chave)) ?? padrao;
+    } catch {
+        return padrao;
+    }
+}
+
+let clientes = carregarDados(CLIENT_KEY);
+let pets = carregarDados(PET_KEY);
+let agendamentos = carregarDados(AGENDA_KEY);
+let precos = carregarDados(PRECOS_KEY, precosPadrao);
+
+if (!Array.isArray(clientes)) clientes = [];
+if (!Array.isArray(pets)) pets = [];
+if (!Array.isArray(agendamentos)) agendamentos = [];
+
+function salvarAgendamentos() {
+    try {
+        localStorage.setItem(
+            AGENDA_KEY,
+            JSON.stringify(agendamentos)
+        );
+
+        return true;
+    } catch (erro) {
+        console.error(erro);
+        alert("Não foi possível salvar os agendamentos.");
+        return false;
+    }
+}
+
+function salvarPrecosStorage() {
+    try {
+        localStorage.setItem(
+            PRECOS_KEY,
+            JSON.stringify(precos)
+        );
+
+        return true;
+    } catch (erro) {
+        console.error(erro);
+        alert("Não foi possível salvar a tabela de preços.");
+        return false;
+    }
+}
+
+// ==============================
+// FORMATAÇÃO
+// ==============================
+
+function formatarMoeda(valor) {
+    return Number(valor || 0).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+function formatarData(data) {
+    if (!data) return "-";
+
+    const partes = data.split("-");
+
+    if (partes.length !== 3) return data;
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+function obterNomeServico(servico) {
+    const nomes = {
+        banho: "Banho",
+        tosa: "Tosa higiênica",
+        pelo: "Tipo de pelo"
+    };
+
+    return nomes[servico] || servico;
+}
+
+function obterNomePorte(classificacao) {
+    const nomes = {
+        pequeno: "Pequeno",
+        medio: "Médio",
+        grande: "Grande",
+        curto: "Pelo curto",
+        longo: "Pelo longo"
+    };
+
+    return nomes[classificacao] || classificacao || "-";
+}
+
+function normalizarPorte(porte) {
+    if (!porte) return "";
+
+    return String(porte)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+}
+
+// Normaliza os textos para facilitar as pesquisas.
+
+function normalizarTexto(texto) {
+    return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+}
+
+// ==============================
+// CLIENTES E PETS
+// ==============================
+
+function atualizarClientes() {
+    clientes = carregarDados(CLIENT_KEY);
+
+    if (!Array.isArray(clientes)) clientes = [];
+
+    tutorSelect.innerHTML = "";
+
+    const inicial = document.createElement("option");
+    inicial.value = "";
+    inicial.textContent = "Selecione um tutor";
+
+    tutorSelect.appendChild(inicial);
+
+    clientes.forEach(cliente => {
+        const opcao = document.createElement("option");
+
+        opcao.value = cliente.id;
+        opcao.textContent = cliente.nome;
+
+        tutorSelect.appendChild(opcao);
+    });
+}
+
+function atualizarPetsDoTutor() {
+    pets = carregarDados(PET_KEY);
+
+    if (!Array.isArray(pets)) pets = [];
+
+    const tutorId = tutorSelect.value;
+
+    petSelect.innerHTML = "";
+
+    const inicial = document.createElement("option");
+    inicial.value = "";
+    inicial.textContent = "Selecione um pet";
+
+    petSelect.appendChild(inicial);
+
+    const petsDoTutor = pets.filter(
+        pet => String(pet.tutorId) === String(tutorId)
+    );
+
+    petsDoTutor.forEach(pet => {
+        const opcao = document.createElement("option");
+
+        opcao.value = pet.id;
+        opcao.textContent = pet.nome;
+
+        petSelect.appendChild(opcao);
+    });
+
+    petSelect.disabled = petsDoTutor.length === 0;
+
+    if (petsDoTutor.length === 0 && tutorId) {
+        inicial.textContent = "Este tutor não possui pets cadastrados";
+    }
+
+    porteSelect.value = "";
+    atualizarValorAutomatico();
+}
+
+tutorSelect.addEventListener("change", atualizarPetsDoTutor);
+
+// ==============================
+// PREÇOS
+// ==============================
+
+function carregarPrecos() {
+    const salvos = carregarDados(PRECOS_KEY, precosPadrao);
+
+    const peloSalvo = salvos.pelo || {};
+
+    precos = {
+        banho: {
+            ...precosPadrao.banho,
+            ...(salvos.banho || {})
+        },
+
+        tosa: {
+            ...precosPadrao.tosa,
+            ...(salvos.tosa || {})
+        },
+
+        pelo: {
+            curto: Number(
+                peloSalvo.curto ?? peloSalvo.pequeno ?? 0
+            ),
+
+            medio: Number(peloSalvo.medio ?? 0),
+
+            longo: Number(
+                peloSalvo.longo ?? peloSalvo.grande ?? 0
+            )
+        }
+    };
+
+    for (const servico in camposPrecos) {
+        for (const classificacao in camposPrecos[servico]) {
+            const id = camposPrecos[servico][classificacao];
+            const campo = document.getElementById(id);
+
+            if (campo) {
+                campo.value = Number(
+                    precos[servico][classificacao] || 0
+                );
+            }
+        }
+    }
+
+    atualizarAvisoPrecos();
+}
+
+function todosPrecosConfigurados() {
+    for (const servico in camposPrecos) {
+        for (const classificacao in camposPrecos[servico]) {
+            const valor = Number(
+                precos[servico][classificacao]
+            );
+
+            if (!Number.isFinite(valor) || valor <= 0) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+function atualizarAvisoPrecos() {
+    if (!avisoConfigPrecos) return;
+
+    avisoConfigPrecos.style.display =
+        todosPrecosConfigurados() ? "none" : "block";
+}
+
+function verificarCamposPrecos() {
+    let existeValorZerado = false;
+
+    for (const servico in camposPrecos) {
+        for (const classificacao in camposPrecos[servico]) {
+            const id = camposPrecos[servico][classificacao];
+            const campo = document.getElementById(id);
+
+            if (
+                !campo ||
+                campo.value.trim() === "" ||
+                Number(campo.value) <= 0
+            ) {
+                existeValorZerado = true;
+            }
+        }
+    }
+
+    if (existeValorZerado) {
+        avisoConfigPrecos.style.display = "block";
+    } else {
+        atualizarAvisoPrecos();
+    }
+}
+
+for (const servico in camposPrecos) {
+    for (const classificacao in camposPrecos[servico]) {
+        const id = camposPrecos[servico][classificacao];
+        const campo = document.getElementById(id);
+
+        campo.addEventListener("input", verificarCamposPrecos);
+    }
+}
+
+document.getElementById("salvarPrecos").addEventListener("click", function() {
+
+    const novosPrecos = {
+        banho: {},
+        tosa: {},
+        pelo: {}
+    };
+
+    for (const servico in camposPrecos) {
+        for (const classificacao in camposPrecos[servico]) {
+
+            const id = camposPrecos[servico][classificacao];
+            const campo = document.getElementById(id);
+            const valor = Number(campo.value);
+
+            if (
+                campo.value.trim() === "" ||
+                !Number.isFinite(valor) ||
+                valor <= 0
+            ) {
+                alert(
+                    "Preencha os nove valores com preços maiores que zero."
+                );
+
+                campo.focus();
+                return;
+            }
+
+            novosPrecos[servico][classificacao] = valor;
+        }
+    }
+
+    const precosAnteriores = precos;
+
+    precos = novosPrecos;
+
+    if (!salvarPrecosStorage()) {
+        precos = precosAnteriores;
+        return;
+    }
+
+    atualizarAvisoPrecos();
+    atualizarValorAutomatico();
+
+    alert("Tabela de preços atualizada com sucesso! 🧡");
+});
+
+// ==============================
+// CLASSIFICAÇÃO DO PET
+// ==============================
+
+function atualizarOpcoesClassificacao() {
+    const tipoPelo = servicoSelect.value === "pelo";
+
+    labelClassificacao.textContent = tipoPelo
+        ? "Tipo de pelo *"
+        : "Porte do pet *";
+
+    if (tipoPelo) {
+        porteSelect.innerHTML = `
+            <option value="">Selecione o tipo de pelo</option>
+            <option value="curto">Pelo curto</option>
+            <option value="medio">Pelo médio</option>
+            <option value="longo">Pelo longo</option>
+        `;
+    } else {
+        porteSelect.innerHTML = `
+            <option value="">Selecione o porte</option>
+            <option value="pequeno">Pequeno</option>
+            <option value="medio">Médio</option>
+            <option value="grande">Grande</option>
+        `;
+    }
+
+    atualizarValorAutomatico();
+}
+
+// ==============================
+// VALOR AUTOMÁTICO
+// ==============================
+
+function obterPrecoAtual() {
+    const servico = servicoSelect.value;
+    const classificacao = porteSelect.value;
+
+    if (!servico || !classificacao) return null;
+
+    return Number(
+        precos?.[servico]?.[classificacao] ?? 0
+    );
+}
+
+function atualizarValorAutomatico() {
+    const valor = obterPrecoAtual();
+
+    if (valor === null) {
+        valorInput.value = "";
+        return;
+    }
+
+    valorInput.value = valor.toFixed(2);
+}
+
+servicoSelect.addEventListener(
+    "change",
+    atualizarOpcoesClassificacao
+);
+
+porteSelect.addEventListener(
+    "change",
+    atualizarValorAutomatico
+);
+
+// Ao selecionar um pet, preenche o porte automaticamente.
+
+petSelect.addEventListener("change", function() {
+    const pet = pets.find(
+        item => String(item.id) === String(petSelect.value)
+    );
+
+    if (!pet || !pet.porte) return;
+
+    if (servicoSelect.value === "pelo") return;
+
+    const porte = normalizarPorte(pet.porte);
+
+    if (["pequeno", "medio", "grande"].includes(porte)) {
+        porteSelect.value = porte;
+        atualizarValorAutomatico();
+    }
+});
+
+// ==============================
+// FORMA DE PAGAMENTO
+// ==============================
+
+function atualizarFormaPagamento() {
+    const credito =
+        formaPagamentoInput.value === "Cartão de crédito";
+
+    grupoParcelas.classList.toggle("visivel", credito);
+
+    parcelasInput.disabled = !credito;
+
+    if (!credito) {
+        parcelasInput.value = "1";
+    }
+}
+
+formaPagamentoInput.addEventListener(
+    "change",
+    atualizarFormaPagamento
+);
+
+// ==============================
+// CADASTRAR AGENDAMENTO
+// ==============================
+
+agendaForm.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    clientes = carregarDados(CLIENT_KEY);
+    pets = carregarDados(PET_KEY);
+
+    if (!Array.isArray(clientes)) clientes = [];
+    if (!Array.isArray(pets)) pets = [];
+
+    const tutorId = tutorSelect.value;
+    const petId = petSelect.value;
+
+    const tutor = clientes.find(
+        item => String(item.id) === String(tutorId)
+    );
+
+    const pet = pets.find(
+        item => String(item.id) === String(petId)
+    );
+
+    if (!tutor || !pet) {
+        alert("Selecione um tutor e um pet válidos.");
+        return;
+    }
+
+    if (String(pet.tutorId) !== String(tutor.id)) {
+        alert("O pet selecionado não pertence a este tutor.");
+        return;
+    }
+
+    if (!servicoSelect.value || !porteSelect.value) {
+        alert("Selecione o serviço e sua classificação.");
+        return;
+    }
+
+    const valor = Number(valorInput.value);
+
+    if (
+        !Number.isFinite(valor) ||
+        valor < 0 ||
+        valorInput.value.trim() === ""
+    ) {
+        alert("Informe um valor válido para o serviço.");
+        return;
+    }
+
+    const data = document.getElementById("agendaData").value;
+    const horario = document.getElementById("agendaHorario").value;
+
+    if (!data || !horario) {
+        alert("Informe a data e o horário do atendimento.");
+        return;
+    }
+
+    const formaPagamento = formaPagamentoInput.value;
+    const parcelas = Number(parcelasInput.value) || 1;
+
+    if (
+        formaPagamento === "Cartão de crédito" &&
+        (parcelas < 1 || parcelas > 12)
+    ) {
+        alert("Selecione uma quantidade válida de parcelas.");
+        parcelasInput.focus();
+        return;
+    }
+
+    const novoAgendamento = {
+        id: Date.now().toString(),
+
+        tutorId: tutor.id,
+        tutorNome: tutor.nome,
+
+        petId: pet.id,
+        petNome: pet.nome,
+
+        servico: servicoSelect.value,
+        porte: porteSelect.value,
+
+        data: data,
+        horario: horario,
+
+        valor: valor,
+
+        formaPagamento: formaPagamento || "",
+
+        parcelasPagamento:
+            formaPagamento === "Cartão de crédito"
+                ? parcelas
+                : 1,
+
+        status: document.getElementById("agendaStatus").value,
+
+        observacoes: document
+            .getElementById("agendaObservacoes")
+            .value.trim(),
+
+        criadoEm: new Date().toISOString()
+    };
+
+    agendamentos.push(novoAgendamento);
+
+    if (!salvarAgendamentos()) {
+        agendamentos.pop();
+        return;
+    }
+
+    atualizarAgenda();
+
+    agendaForm.reset();
+
+    atualizarOpcoesClassificacao();
+
+    petSelect.innerHTML =
+        '<option value="">Selecione um pet</option>';
+
+    petSelect.disabled = true;
+
+    atualizarFormaPagamento();
+
+    alert("Agendamento cadastrado com sucesso! 🛁");
+});
+
+// Atualiza os campos depois de limpar o formulário.
+
+agendaForm.addEventListener("reset", function() {
+    setTimeout(() => {
+        atualizarOpcoesClassificacao();
+        atualizarFormaPagamento();
+
+        petSelect.innerHTML =
+            '<option value="">Selecione um pet</option>';
+
+        petSelect.disabled = true;
+    }, 0);
+});
+
+// ==============================
+// LISTAGEM
+// ==============================
+
+function criarCelula(texto) {
+    const celula = document.createElement("td");
+    celula.textContent = texto ?? "-";
+
+    return celula;
+}
+
+function criarBotao(texto, classe, id) {
+    const botao = document.createElement("button");
+
+    botao.type = "button";
+    botao.textContent = texto;
+    botao.className = classe;
+    botao.dataset.id = id;
+
+    return botao;
+}
+
+function atualizarAgenda() {
+    agendaTable.innerHTML = "";
+
+    agendamentos = carregarDados(AGENDA_KEY);
+
+    if (!Array.isArray(agendamentos)) {
+        agendamentos = [];
+    }
+
+    const dataSelecionada = filtroData.value;
+    const statusSelecionado = filtroStatus.value;
+
+    // Texto digitado na pesquisa.
+
+    const busca = normalizarTexto(
+        filtroBusca ? filtroBusca.value : ""
+    );
+
+    const filtrados = agendamentos
+        .filter(item => {
+            return !dataSelecionada || item.data === dataSelecionada;
+        })
+
+        .filter(item => {
+            return !statusSelecionado || item.status === statusSelecionado;
+        })
+
+        // Busca pelo nome do pet ou do tutor.
+
+        .filter(item => {
+            if (!busca) return true;
+
+            const nomePet = normalizarTexto(item.petNome);
+            const nomeTutor = normalizarTexto(item.tutorNome);
+
+            return (
+                nomePet.includes(busca) ||
+                nomeTutor.includes(busca)
+            );
+        })
+
+        .sort((a, b) => {
+            const dataA = `${a.data} ${a.horario}`;
+            const dataB = `${b.data} ${b.horario}`;
+
+            return dataA.localeCompare(dataB);
+        });
+
+    if (filtrados.length === 0) {
+        const linha = document.createElement("tr");
+        const celula = document.createElement("td");
+
+        celula.colSpan = 11;
+        celula.className = "empty-table";
+        celula.textContent = busca || dataSelecionada || statusSelecionado
+            ? "Nenhum agendamento encontrado para essa pesquisa."
+            : "Nenhum agendamento cadastrado.";
+
+        linha.appendChild(celula);
+        agendaTable.appendChild(linha);
+    }
+
+    filtrados.forEach(item => {
+
+        const linha = document.createElement("tr");
+
+        linha.appendChild(criarCelula(formatarData(item.data)));
+        linha.appendChild(criarCelula(item.horario));
+        linha.appendChild(criarCelula(item.petNome));
+        linha.appendChild(criarCelula(item.tutorNome));
+        linha.appendChild(criarCelula(obterNomeServico(item.servico)));
+
+        // Compatibilidade com agendamentos antigos de tipo de pelo.
+
+        let classificacao = item.porte;
+
+        if (item.servico === "pelo") {
+            const classificacoesAntigas = {
+                pequeno: "curto",
+                medio: "medio",
+                grande: "longo"
+            };
+
+            classificacao =
+                classificacoesAntigas[item.porte] || item.porte;
+        }
+
+        linha.appendChild(criarCelula(obterNomePorte(classificacao)));
+        linha.appendChild(criarCelula(formatarMoeda(item.valor)));
+
+        // Forma de pagamento.
+
+        linha.appendChild(
+            criarCelula(item.formaPagamento || "Não informado")
+        );
+
+        // Parcelamento somente para cartão de crédito.
+
+        const parcelas =
+            item.formaPagamento === "Cartão de crédito"
+                ? `${Number(item.parcelasPagamento) || 1}x`
+                : "-";
+
+        linha.appendChild(criarCelula(parcelas));
+
+        const celulaStatus = document.createElement("td");
+        const status = document.createElement("span");
+
+        status.className = "status-agenda";
+
+        if (item.status === "Concluído") {
+            status.classList.add("status-concluido");
+        } else if (item.status === "Cancelado") {
+            status.classList.add("status-cancelado");
+        } else {
+            status.classList.add("status-agendado");
+        }
+
+        status.textContent = item.status;
+
+        celulaStatus.appendChild(status);
+        linha.appendChild(celulaStatus);
+
+        const celulaAcoes = document.createElement("td");
+        celulaAcoes.className = "acoes-agenda";
+
+        const botaoStatus = criarBotao(
+            "Alterar status",
+            "btn-status",
+            item.id
+        );
+
+        const botaoExcluir = criarBotao(
+            "Excluir",
+            "btn-excluir-agenda",
+            item.id
+        );
+
+        celulaAcoes.append(botaoStatus, botaoExcluir);
+        linha.appendChild(celulaAcoes);
+
+        agendaTable.appendChild(linha);
+    });
+
+    atualizarResumo();
+}
+
+// ==============================
+// RESUMO
+// ==============================
+
+function atualizarResumo() {
+    const pendentes = agendamentos.filter(
+        item => item.status === "Agendado"
+    );
+
+    const concluidos = agendamentos.filter(
+        item => item.status === "Concluído"
+    );
+
+    document.getElementById("totalAgendamentos").textContent =
+        agendamentos.length;
+
+    document.getElementById("servicosPendentes").textContent =
+        pendentes.length;
+
+    document.getElementById("servicosConcluidos").textContent =
+        concluidos.length;
+}
+
+// ==============================
+// ALTERAR STATUS E EXCLUIR
+// ==============================
+
+agendaTable.addEventListener("click", function(event) {
+
+    const botaoStatus = event.target.closest(".btn-status");
+    const botaoExcluir = event.target.closest(".btn-excluir-agenda");
+
+    if (botaoStatus) {
+
+        const item = agendamentos.find(
+            agendamento => String(agendamento.id) === String(botaoStatus.dataset.id)
+        );
+
+        if (!item) return;
+
+        const opcoes = [
+            "Agendado",
+            "Concluído",
+            "Cancelado"
+        ];
+
+        const atual = opcoes.indexOf(item.status);
+        const proximo = opcoes[(atual + 1) % opcoes.length];
+
+        const confirmar = confirm(
+            `Deseja alterar o status de "${item.status}" para "${proximo}"?`
+        );
+
+        if (!confirmar) return;
+
+        const anterior = item.status;
+        item.status = proximo;
+
+        if (!salvarAgendamentos()) {
+            item.status = anterior;
+            return;
+        }
+
+        atualizarAgenda();
+
+        return;
+    }
+
+    if (botaoExcluir) {
+
+        const confirmar = confirm(
+            "Deseja realmente excluir este agendamento?"
+        );
+
+        if (!confirmar) return;
+
+        const anteriores = agendamentos;
+
+        agendamentos = agendamentos.filter(
+            item => String(item.id) !== String(botaoExcluir.dataset.id)
+        );
+
+        if (!salvarAgendamentos()) {
+            agendamentos = anteriores;
+            return;
+        }
+
+        atualizarAgenda();
+
+        alert("Agendamento excluído com sucesso.");
+    }
+});
+
+// ==============================
+// FILTROS
+// ==============================
+
+filtroData.addEventListener("change", atualizarAgenda);
+filtroStatus.addEventListener("change", atualizarAgenda);
+
+// Pesquisa instantânea por pet ou tutor.
+
+if (filtroBusca) {
+    filtroBusca.addEventListener("input", atualizarAgenda);
+}
+
+// ==============================
+// INICIALIZAÇÃO
+// ==============================
+
+atualizarClientes();
+carregarPrecos();
+atualizarOpcoesClassificacao();
+atualizarFormaPagamento();
+atualizarAgenda();

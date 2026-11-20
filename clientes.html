@@ -4,20 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#52765C">
-    <title>Clientes | Hotel Pet Manager</title>
-    <link rel="stylesheet" href="css/style.css?v=4">
+    <meta name="theme-color" content="#EB9933">
+
+    <title>Clientes | Petsitter</title>
+
+    <link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
+<script>
+    try {
+        const configTema = JSON.parse(
+            localStorage.getItem("hotelPetConfiguracoes")
+        ) || {};
 
+        if (configTema.modoEscuro === true) {
+            document.body.classList.add("modo-escuro");
+        }
+    } catch (erro) {
+        console.error("Erro ao carregar o tema:", erro);
+    }
+</script>
 <div class="layout">
 
     <aside class="sidebar">
 
-        <div class="logo">
-            <span>🐾</span>
-            <h2 class="nomeHotelDinamico">Hotel Pet</h2>
-            <small>MANAGER</small>
+        <div class="logo logo-petsitter">
+            <img
+                src="img/logo-petsitter-transparente.png"
+                alt="Petsitter - Hospedagem para Cães 100% Livre"
+            >
         </div>
 
         <nav>
@@ -26,13 +41,15 @@
             <a href="pets.html">🐶 Pets</a>
             <a href="reservas.html">📅 Reservas</a>
             <a href="hospedagem.html">🛏️ Hospedagens</a>
+            <a href="agenda-banho.html">🛁 Agenda de Banho</a>
+            <a href="agenda-vet.html">🩺 Agenda Veterinária</a>
             <a href="financeiro.html">💰 Financeiro</a>
             <a href="configuracoes.html">⚙️ Configurações</a>
         </nav>
 
         <div class="sidebar-footer">
-            <span class="nomeHotelDinamico">Hotel Pet Manager</span>
-            <small>Gestão inteligente</small>
+            <span class="nomeHotelDinamico">Petsitter</span>
+            <small>Hospedagem para Cães 100% Livre</small>
         </div>
 
     </aside>
@@ -53,7 +70,7 @@
 
             <div class="topbar-titulo">
                 <h1>Clientes</h1>
-                <p>Gerencie os tutores cadastrados no hotel.</p>
+                <p>Gerencie os tutores cadastrados na Petsitter.</p>
             </div>
 
             <div class="user-profile">
@@ -87,6 +104,19 @@
                             type="text"
                             id="nome"
                             placeholder="Nome do tutor"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cpf">CPF *</label>
+                        <input
+                            type="text"
+                            id="cpf"
+                            placeholder="000.000.000-00"
+                            maxlength="14"
+                            inputmode="numeric"
+                            autocomplete="off"
                             required
                         >
                     </div>
@@ -160,6 +190,7 @@
                     <thead>
                         <tr>
                             <th>Nome</th>
+                            <th>CPF</th>
                             <th>Telefone</th>
                             <th>E-mail</th>
                             <th>Ações</th>
@@ -168,7 +199,7 @@
 
                     <tbody id="clientTable">
                         <tr>
-                            <td colspan="4" class="empty-table">
+                            <td colspan="5" class="empty-table">
                                 Nenhum cliente cadastrado ainda.
                             </td>
                         </tr>
@@ -179,15 +210,15 @@
         </section>
 
         <footer>
-            <span class="nomeHotelDinamico">Hotel Pet Manager</span> © 2026
+            <span class="nomeHotelDinamico">Petsitter</span> © 2026
         </footer>
 
     </main>
 
 </div>
 
-<script src="js/clientes.js"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/clientes.js?v=2"></script>
+<script src="js/app.js?v=5"></script>
 
 </body>
 </html>

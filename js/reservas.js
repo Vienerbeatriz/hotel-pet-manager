@@ -20,9 +20,18 @@ const tabela = document.getElementById("reservationTable");
 const contador = document.getElementById("reservationCount");
 const filtro = document.getElementById("filtroReservas");
 
+const formaPagamentoInput = document.getElementById("formaPagamento");
+const grupoParcelas = document.getElementById("grupoParcelas");
+const parcelasInput = document.getElementById("parcelasPagamento");
+const valorParcelaPreview = document.getElementById("valorParcelaPreview");
+
 let pets = [];
 let clientes = [];
 let reservas = [];
+
+// ==============================
+// ARMAZENAMENTO
+// ==============================
 
 function lerDados(chave) {
     try {
@@ -34,8 +43,23 @@ function lerDados(chave) {
 }
 
 function salvarReservas() {
-    localStorage.setItem(RESERVATION_KEY, JSON.stringify(reservas));
+    try {
+        localStorage.setItem(
+            RESERVATION_KEY,
+            JSON.stringify(reservas)
+        );
+
+        return true;
+    } catch (erro) {
+        console.error(erro);
+        alert("Não foi possível salvar as reservas.");
+        return false;
+    }
 }
+
+// ==============================
+// DATAS E FORMATAÇÃO
+// ==============================
 
 function obterHoje() {
     const hoje = new Date();
@@ -72,6 +96,10 @@ function formatarMoeda(valor) {
     });
 }
 
+// ==============================
+// VALORES DA RESERVA
+// ==============================
+
 function obterValorTotal(reserva) {
     if (
         reserva.valorTotal !== undefined &&
@@ -87,7 +115,9 @@ function obterValorTotal(reserva) {
         return Math.max(0, Number(reserva.valorInformado) || 0);
     }
 
-    const diaria = Number(reserva.diaria ?? reserva.valorInformado) || 0;
+    const diaria = Number(
+        reserva.diaria ?? reserva.valorInformado
+    ) || 0;
 
     return Math.max(0, diaria * dias);
 }
@@ -110,15 +140,25 @@ function obterStatusPagamento(reserva) {
     return "Pendente";
 }
 
+// ==============================
+// CARREGAMENTO DOS DADOS
+// ==============================
+
 function carregarDados() {
     pets = lerDados(PET_KEY);
     clientes = lerDados(CLIENT_KEY);
 
-    // Reservas antigas continuam preservadas.
-    // Caso ainda não tenham valorPago, consideramos R$ 0,00.
+    // Mantém as reservas anteriores e acrescenta os
+    // novos campos sem apagar os dados existentes.
+
     reservas = lerDados(RESERVATION_KEY).map(reserva => ({
         ...reserva,
-        valorPago: Math.max(0, Number(reserva.valorPago) || 0)
+        valorPago: Math.max(0, Number(reserva.valorPago) || 0),
+        formaPagamento: reserva.formaPagamento || "",
+        parcelasPagamento: Math.max(
+            1,
+            Number(reserva.parcelasPagamento) || 1
+        )
     }));
 
     carregarPets();
@@ -158,6 +198,10 @@ petSelect.addEventListener("change", () => {
     tutorInput.value = tutor ? tutor.nome : "";
 });
 
+// ==============================
+// CÁLCULO DE DIAS E TOTAL
+// ==============================
+
 function atualizarDuracao() {
     const entrada = entradaInput.value;
     const saida = saidaInput.value;
@@ -177,7 +221,7 @@ function atualizarDuracao() {
     atualizarTotal();
 }
 
-function atualizarTotal() {
+function obterTotalDoFormulario() {
     const dias = calcularDias(
         entradaInput.value,
         saidaInput.value
@@ -185,16 +229,20 @@ function atualizarTotal() {
 
     const valor = Number(valorInput.value) || 0;
 
-    let total = 0;
+    if (dias <= 0) return 0;
 
-    if (dias > 0) {
-        total = tipoCobranca.value === "diaria"
-            ? valor * dias
-            : valor;
-    }
+    return tipoCobranca.value === "diaria"
+        ? valor * dias
+        : valor;
+}
+
+function atualizarTotal() {
+    const total = obterTotalDoFormulario();
 
     totalInput.value = formatarMoeda(total);
     valorPagoInput.max = total.toFixed(2);
+
+    atualizarPreviewParcelas();
 }
 
 entradaInput.addEventListener("change", atualizarDuracao);
@@ -209,6 +257,51 @@ tipoCobranca.addEventListener("change", () => {
 
     atualizarTotal();
 });
+
+valorPagoInput.addEventListener("input", atualizarPreviewParcelas);
+
+// ==============================
+// FORMA DE PAGAMENTO
+// ==============================
+
+function atualizarFormaPagamento() {
+    const credito = formaPagamentoInput.value === "Cartão de crédito";
+
+    grupoParcelas.classList.toggle("visivel", credito);
+
+    parcelasInput.required = credito && Number(valorPagoInput.value) > 0;
+
+    atualizarPreviewParcelas();
+}
+
+function atualizarPreviewParcelas() {
+    const valorPago = Number(valorPagoInput.value) || 0;
+    const parcelas = Number(parcelasInput.value) || 1;
+
+    if (formaPagamentoInput.value !== "Cartão de crédito") {
+        valorParcelaPreview.textContent = "Valor por parcela: R$ 0,00";
+        return;
+    }
+
+    const valorParcela = valorPago / parcelas;
+
+    valorParcelaPreview.textContent =
+        `Valor por parcela: ${formatarMoeda(valorParcela)}`;
+}
+
+formaPagamentoInput.addEventListener(
+    "change",
+    atualizarFormaPagamento
+);
+
+parcelasInput.addEventListener(
+    "change",
+    atualizarPreviewParcelas
+);
+
+// ==============================
+// SITUAÇÃO DA RESERVA
+// ==============================
 
 function identificarSituacao(reserva, hoje) {
     if (reserva.status === "Pendente") {
@@ -225,6 +318,10 @@ function identificarSituacao(reserva, hoje) {
 
     return "Finalizada";
 }
+
+// ==============================
+// CADASTRAR RESERVA
+// ==============================
 
 function salvarNovaReserva(evento) {
     evento.preventDefault();
@@ -243,6 +340,7 @@ function salvarNovaReserva(evento) {
     const entrada = entradaInput.value;
     const saida = saidaInput.value;
     const dias = calcularDias(entrada, saida);
+
     const valor = Number(valorInput.value);
     const valorPago = Number(valorPagoInput.value) || 0;
 
@@ -251,7 +349,11 @@ function salvarNovaReserva(evento) {
         return;
     }
 
-    if (!Number.isFinite(valor) || valor < 0) {
+    if (
+        !Number.isFinite(valor) ||
+        valor < 0 ||
+        valorInput.value.trim() === ""
+    ) {
         alert("Informe um valor válido para a hospedagem.");
         return;
     }
@@ -270,48 +372,100 @@ function salvarNovaReserva(evento) {
         return;
     }
 
+    const formaPagamento = formaPagamentoInput.value;
+
+    if (valorPago > 0 && !formaPagamento) {
+        alert("Selecione a forma de pagamento do valor recebido.");
+        formaPagamentoInput.focus();
+        return;
+    }
+
+    const parcelas = Number(parcelasInput.value) || 1;
+
+    if (
+        formaPagamento === "Cartão de crédito" &&
+        valorPago > 0 &&
+        (parcelas < 1 || parcelas > 12)
+    ) {
+        alert("Selecione uma quantidade válida de parcelas.");
+        parcelasInput.focus();
+        return;
+    }
+
     const novaReserva = {
         id: Date.now(),
+
         petId: pet.id,
         petNome: pet.nome,
         tutorNome: tutor.nome,
+
         entrada: entrada,
         saida: saida,
         dias: dias,
+
         tipoCobranca: tipoCobranca.value,
         valorInformado: valor,
         diaria: tipoCobranca.value === "diaria" ? valor : 0,
         valorTotal: valorTotal,
+
         valorPago: valorPago,
+
+        formaPagamento: valorPago > 0 ? formaPagamento : "",
+
+        parcelasPagamento:
+            formaPagamento === "Cartão de crédito" && valorPago > 0
+                ? parcelas
+                : 1,
+
         status: statusInput.value,
         observacoes: observacoesInput.value
     };
 
     reservas.push(novaReserva);
 
-    salvarReservas();
+    if (!salvarReservas()) {
+        reservas.pop();
+        return;
+    }
 
     form.reset();
 
     tutorInput.value = "";
     duracaoInput.value = "0 dias";
     totalInput.value = "R$ 0,00";
+
     valorPagoInput.value = "0";
     valorPagoInput.max = "";
+
     labelValor.textContent = "Valor por diária (R$)";
+
+    grupoParcelas.classList.remove("visivel");
+    parcelasInput.required = false;
+    parcelasInput.value = "1";
+
+    valorParcelaPreview.textContent = "Valor por parcela: R$ 0,00";
 
     atualizarTabela();
 
-    alert("Reserva cadastrada com sucesso!");
+    alert("Reserva cadastrada com sucesso! 🧡");
 }
+
+// ==============================
+// CRIAÇÃO DE CÉLULAS
+// ==============================
 
 function criarCelula(linha, texto) {
     const celula = document.createElement("td");
-    celula.textContent = texto;
+    celula.textContent = texto ?? "-";
+
     linha.appendChild(celula);
 
     return celula;
 }
+
+// ==============================
+// EXCLUIR RESERVA
+// ==============================
 
 function excluirReserva(id) {
     const confirmar = confirm(
@@ -320,13 +474,23 @@ function excluirReserva(id) {
 
     if (!confirmar) return;
 
+    const anteriores = reservas;
+
     reservas = reservas.filter(reserva =>
         String(reserva.id) !== String(id)
     );
 
-    salvarReservas();
+    if (!salvarReservas()) {
+        reservas = anteriores;
+        return;
+    }
+
     atualizarTabela();
 }
+
+// ==============================
+// TABELA DE RESERVAS
+// ==============================
 
 function atualizarTabela() {
     const hoje = obterHoje();
@@ -369,7 +533,7 @@ function atualizarTabela() {
     if (reservasFiltradas.length === 0) {
         tabela.innerHTML = `
             <tr>
-                <td colspan="11" class="empty-table">
+                <td colspan="13" class="empty-table">
                     Nenhuma reserva encontrada neste filtro.
                 </td>
             </tr>
@@ -398,6 +562,18 @@ function atualizarTabela() {
         criarCelula(linha, tipoValor);
         criarCelula(linha, formatarMoeda(valorTotal));
         criarCelula(linha, formatarMoeda(valorPago));
+
+        criarCelula(
+            linha,
+            reserva.formaPagamento || "Não informado"
+        );
+
+        const parcelas = reserva.formaPagamento === "Cartão de crédito" &&
+            valorPago > 0
+                ? `${Number(reserva.parcelasPagamento) || 1}x`
+                : "-";
+
+        criarCelula(linha, parcelas);
 
         const celulaPagamento = criarCelula(linha, statusPagamento);
         celulaPagamento.style.fontWeight = "bold";
@@ -443,7 +619,12 @@ function atualizarTabela() {
     });
 }
 
+// ==============================
+// EVENTOS E INICIALIZAÇÃO
+// ==============================
+
 form.addEventListener("submit", salvarNovaReserva);
 filtro.addEventListener("change", atualizarTabela);
 
+atualizarFormaPagamento();
 carregarDados();

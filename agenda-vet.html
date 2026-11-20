@@ -1,0 +1,649 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#EB9933">
+
+    <title>Agenda Veterinária | Petsitter</title>
+
+    <link rel="stylesheet" href="css/style.css?v=5">
+
+    <style>
+        .pagina-intro {
+            background: #FFF0DA;
+            padding: 24px;
+            border-radius: 15px;
+            margin-bottom: 24px;
+        }
+
+        .pagina-intro h2,
+        .secao-titulo {
+            color: #D98220;
+            margin-bottom: 8px;
+        }
+
+        .pagina-intro p {
+            color: #806548;
+            font-size: 14px;
+        }
+
+        .secao-descricao {
+            color: #999;
+            font-size: 13px;
+            margin-bottom: 22px;
+        }
+
+        .agenda-resumo {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .resumo-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid #F3E6D5;
+        }
+
+        .resumo-card span {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .resumo-card strong {
+            display: block;
+            color: #D98220;
+            font-size: 25px;
+            margin-top: 8px;
+        }
+
+        .agenda-filtros {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .agenda-filtros input,
+        .agenda-filtros select {
+            padding: 11px;
+            border: 1px solid #D8DED3;
+            border-radius: 8px;
+            background: #FFF9F1;
+            color: #493A2B;
+        }
+
+        /* MENUS DE SELEÇÃO */
+
+        select {
+            color: #493A2B !important;
+            background-color: #FFF9F1 !important;
+            border: 1px solid #D8DED3 !important;
+            color-scheme: light;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23B86C14' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+
+            background-repeat: no-repeat !important;
+            background-position: right 12px center !important;
+            background-size: 16px !important;
+            padding-right: 38px !important;
+            cursor: pointer;
+        }
+
+        select option {
+            background-color: #FFF9F1;
+            color: #493A2B;
+        }
+
+        select option:checked {
+            background-color: #EB9933;
+            color: #FFFFFF;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #EB9933 !important;
+            box-shadow: 0 0 0 2px rgba(235, 153, 51, 0.18);
+        }
+
+        select:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .campo-oculto {
+            display: none;
+        }
+
+        .campo-oculto.visivel {
+            display: block;
+        }
+
+        .status-agenda {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status-agendado {
+            background: #FFF0DA;
+            color: #B86C14;
+        }
+
+        .status-concluido {
+            background: #E2EBDD;
+            color: #52765C;
+        }
+
+        .status-cancelado {
+            background: #F4DEDA;
+            color: #A3473B;
+        }
+
+        .acoes-agenda {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .acoes-agenda button {
+            border: none;
+            border-radius: 7px;
+            padding: 8px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background 0.2s ease;
+            opacity: 1 !important;
+            filter: none !important;
+        }
+
+        /* BOTÃO ALTERAR STATUS */
+
+        .acoes-agenda button.btn-status,
+        .acoes-agenda button.btn-status:hover,
+        .acoes-agenda button.btn-status:focus,
+        .acoes-agenda button.btn-status:active,
+        .acoes-agenda button.btn-status:visited {
+            background: #FFF0DA !important;
+            background-color: #FFF0DA !important;
+            color: #B86C14 !important;
+            border: 1px solid #F3D7B2 !important;
+            box-shadow: none !important;
+            opacity: 1 !important;
+            filter: none !important;
+            outline: none;
+        }
+
+        /* BOTÃO EXCLUIR */
+
+        .acoes-agenda button.btn-excluir-agenda,
+        .acoes-agenda button.btn-excluir-agenda:hover,
+        .acoes-agenda button.btn-excluir-agenda:focus,
+        .acoes-agenda button.btn-excluir-agenda:active {
+            background: #F4DEDA !important;
+            background-color: #F4DEDA !important;
+            color: #A3473B !important;
+            border: 1px solid #EBC9C3 !important;
+            box-shadow: none !important;
+            opacity: 1 !important;
+            filter: none !important;
+            outline: none;
+        }
+
+        .campo-ajuda {
+            color: #999;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        @media(max-width: 650px) {
+            .agenda-resumo {
+                grid-template-columns: 1fr;
+            }
+
+            .agenda-filtros {
+                flex-direction: column;
+            }
+
+            .agenda-filtros input,
+            .agenda-filtros select {
+                width: 100%;
+            }
+        }
+
+        /* MODO ESCURO */
+
+        body.modo-escuro .pagina-intro {
+            background: #49321F;
+        }
+
+        body.modo-escuro .pagina-intro p {
+            color: #E5D0B5;
+        }
+
+        body.modo-escuro .resumo-card {
+            background: #2B362E;
+            border-color: #526957;
+        }
+
+        body.modo-escuro .resumo-card span {
+            color: #B5C4B5;
+        }
+
+        body.modo-escuro .agenda-filtros input,
+        body.modo-escuro .agenda-filtros select {
+            background-color: #202923;
+            color: #E5EDE5;
+            border-color: #526957;
+            color-scheme: dark;
+        }
+
+        body.modo-escuro select {
+            color: #E5EDE5 !important;
+            background-color: #202923 !important;
+            border-color: #526957 !important;
+            color-scheme: dark;
+
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23F4B65F' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+        }
+
+        body.modo-escuro select option {
+            background-color: #202923;
+            color: #E5EDE5;
+        }
+
+        body.modo-escuro select option:checked {
+            background-color: #D98220;
+            color: #FFFFFF;
+        }
+
+        body.modo-escuro .acoes-agenda button.btn-status,
+        body.modo-escuro .acoes-agenda button.btn-status:hover,
+        body.modo-escuro .acoes-agenda button.btn-status:focus,
+        body.modo-escuro .acoes-agenda button.btn-status:active {
+            background: #FFF0DA !important;
+            background-color: #FFF0DA !important;
+            color: #B86C14 !important;
+        }
+
+        body.modo-escuro .acoes-agenda button.btn-excluir-agenda,
+        body.modo-escuro .acoes-agenda button.btn-excluir-agenda:hover,
+        body.modo-escuro .acoes-agenda button.btn-excluir-agenda:focus,
+        body.modo-escuro .acoes-agenda button.btn-excluir-agenda:active {
+            background: #F4DEDA !important;
+            background-color: #F4DEDA !important;
+            color: #A3473B !important;
+        }
+    </style>
+</head>
+
+<body>
+<script>
+    try {
+        const configTema = JSON.parse(
+            localStorage.getItem("hotelPetConfiguracoes")
+        ) || {};
+
+        if (configTema.modoEscuro === true) {
+            document.body.classList.add("modo-escuro");
+        }
+    } catch (erro) {
+        console.error("Erro ao carregar o tema:", erro);
+    }
+</script>
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="logo logo-petsitter">
+            <img
+                src="img/logo-petsitter-transparente.png"
+                alt="Petsitter - Hospedagem para Cães 100% Livre"
+            >
+        </div>
+
+        <nav>
+            <a href="index.html">🏠 Painel inicial</a>
+            <a href="clientes.html">👥 Clientes</a>
+            <a href="pets.html">🐶 Pets</a>
+            <a href="reservas.html">📅 Reservas</a>
+            <a href="hospedagem.html">🛏️ Hospedagens</a>
+            <a href="agenda-banho.html">🛁 Agenda de Banho</a>
+            <a href="agenda-vet.html" class="active">🩺 Agenda Veterinária</a>
+            <a href="financeiro.html">💰 Financeiro</a>
+            <a href="configuracoes.html">⚙️ Configurações</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="nomeHotelDinamico">Petsitter</span>
+            <small>Hospedagem para Cães 100% Livre</small>
+        </div>
+
+    </aside>
+
+    <div class="menu-fundo" id="menuFundo"></div>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <button
+                class="menu-toggle"
+                id="abrirMenu"
+                type="button"
+                aria-label="Abrir menu"
+                aria-expanded="false"
+            >☰</button>
+
+            <div>
+                <h1>Agenda Veterinária</h1>
+                <p>Organize consultas, exames e procedimentos dos pets.</p>
+            </div>
+
+            <div class="user-profile">
+                <span>🩺</span>
+                <div>
+                    <strong>Petsitter</strong>
+                    <small>Agenda veterinária</small>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="pagina-intro">
+            <h2>🧡 Saúde e cuidado em primeiro lugar</h2>
+            <p>
+                Organize consultas, exames laboratoriais, exames de imagem,
+                procedimentos e acompanhamentos veterinários.
+            </p>
+        </section>
+
+        <!-- RESUMO -->
+
+        <section class="agenda-resumo">
+
+            <div class="resumo-card">
+                <span>📅 Total de atendimentos</span>
+                <strong id="totalAtendimentos">0</strong>
+            </div>
+
+            <div class="resumo-card">
+                <span>🩺 Atendimentos agendados</span>
+                <strong id="atendimentosPendentes">0</strong>
+            </div>
+
+            <div class="resumo-card">
+                <span>✅ Atendimentos realizados</span>
+                <strong id="atendimentosConcluidos">0</strong>
+            </div>
+
+        </section>
+
+        <!-- NOVO ATENDIMENTO -->
+
+        <section class="panel client-form">
+
+            <h3 class="secao-titulo">➕ Novo atendimento veterinário</h3>
+
+            <p class="secao-descricao">
+                Cadastre consultas, exames, vacinas e outros procedimentos.
+            </p>
+
+            <form id="vetForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="vetTutor">Tutor responsável *</label>
+                        <select id="vetTutor" required>
+                            <option value="">Selecione um tutor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vetPet">Pet *</label>
+                        <select id="vetPet" required disabled>
+                            <option value="">Selecione um pet</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vetCategoria">Categoria *</label>
+                        <select id="vetCategoria" required>
+                            <option value="">Selecione uma categoria</option>
+                            <option value="Consulta">Consultas e acompanhamentos</option>
+                            <option value="Laboratorial">Exames laboratoriais</option>
+                            <option value="Fezes">Exames de fezes</option>
+                            <option value="Urina">Exames de urina</option>
+                            <option value="Pele">Exames de pele e pelos</option>
+                            <option value="Imagem">Exames de imagem</option>
+                            <option value="Cardiológico">Exames cardiológicos</option>
+                            <option value="Infeccioso">Testes infecciosos</option>
+                            <option value="Procedimento">Procedimentos veterinários</option>
+                            <option value="Vacina">Vacinação e prevenção</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vetProcedimento">Exame ou procedimento *</label>
+                        <select id="vetProcedimento" required disabled>
+                            <option value="">Selecione primeiro a categoria</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group campo-oculto" id="grupoOutro">
+                        <label for="vetOutro">Descreva o exame ou procedimento *</label>
+                        <input
+                            type="text"
+                            id="vetOutro"
+                            placeholder="Digite o nome do atendimento"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vetVeterinario">Médico-veterinário</label>
+                        <input
+                            type="text"
+                            id="vetVeterinario"
+                            placeholder="Nome do profissional"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vetClinica">Clínica ou laboratório</label>
+                        <input
+                            type="text"
+                            id="vetClinica"
+                            placeholder="Nome do estabelecimento"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vetData">Data *</label>
+                        <input type="date" id="vetData" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vetHorario">Horário *</label>
+                        <input type="time" id="vetHorario" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vetValor">Valor (R$)</label>
+                        <input
+                            type="number"
+                            id="vetValor"
+                            min="0"
+                            step="0.01"
+                            placeholder="0,00"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vetFormaPagamento">Forma de pagamento</label>
+                        <select id="vetFormaPagamento">
+                            <option value="">Ainda não foi pago</option>
+                            <option value="PIX">PIX</option>
+                            <option value="Dinheiro">Dinheiro</option>
+                            <option value="Cartão de crédito">Cartão de crédito</option>
+                            <option value="Cartão de débito">Cartão de débito</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group campo-oculto" id="grupoParcelas">
+                        <label for="vetParcelas">Parcelamento no crédito</label>
+                        <select id="vetParcelas">
+                            <option value="1">1x</option>
+                            <option value="2">2x</option>
+                            <option value="3">3x</option>
+                            <option value="4">4x</option>
+                            <option value="5">5x</option>
+                            <option value="6">6x</option>
+                            <option value="7">7x</option>
+                            <option value="8">8x</option>
+                            <option value="9">9x</option>
+                            <option value="10">10x</option>
+                            <option value="11">11x</option>
+                            <option value="12">12x</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vetStatus">Status</label>
+                        <select id="vetStatus">
+                            <option value="Agendado">Agendado</option>
+                            <option value="Concluído">Concluído</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="vetResultado">Resultado ou laudo</label>
+                        <textarea
+                            id="vetResultado"
+                            rows="3"
+                            placeholder="Registre o resultado informado pelo veterinário..."
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="vetObservacoes">Observações</label>
+                        <textarea
+                            id="vetObservacoes"
+                            rows="3"
+                            placeholder="Orientações, preparo, retorno ou outras informações..."
+                        ></textarea>
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+
+                    <button type="reset" class="btn-secondary">
+                        Limpar
+                    </button>
+
+                    <button type="submit" class="btn-primary">
+                        Salvar atendimento
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+        <!-- LISTA DE ATENDIMENTOS -->
+
+        <section class="panel client-list">
+
+            <div class="list-header">
+                <div>
+                    <h3 class="secao-titulo">📋 Atendimentos registrados</h3>
+                    <p>Consulte e gerencie a agenda veterinária.</p>
+                </div>
+            </div>
+
+            <div class="agenda-filtros">
+
+                <input
+                    type="date"
+                    id="filtroData"
+                    aria-label="Filtrar por data"
+                >
+
+                <input
+                    type="search"
+                    id="filtroBusca"
+                    placeholder="Buscar pet, tutor, exame ou clínica..."
+                    aria-label="Buscar atendimento"
+                >
+
+                <select id="filtroStatus">
+                    <option value="">Todos os status</option>
+                    <option value="Agendado">Agendados</option>
+                    <option value="Concluído">Concluídos</option>
+                    <option value="Cancelado">Cancelados</option>
+                </select>
+
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Horário</th>
+                            <th>Pet</th>
+                            <th>Tutor</th>
+                            <th>Categoria</th>
+                            <th>Exame / procedimento</th>
+                            <th>Veterinário</th>
+                            <th>Valor</th>
+                            <th>Pagamento</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="vetTable">
+                        <tr>
+                            <td colspan="11" class="empty-table">
+                                Nenhum atendimento cadastrado.
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <footer>
+            <span class="nomeHotelDinamico">Petsitter</span> © 2026
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="js/agenda-vet.js?v=2"></script>
+<script src="js/app.js?v=5"></script>
+
+</body>
+</html>

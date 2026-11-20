@@ -1,22 +1,103 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#52765C">
-    <title>Pets | Hotel Pet Manager</title>
-    <link rel="stylesheet" href="css/style.css?v=4">
-</head>
-<body>
+    <meta name="theme-color" content="#EB9933">
 
+    <title>Pets | Petsitter</title>
+
+    <link rel="stylesheet" href="css/style.css?v=5">
+
+    <style>
+        .pet-foto-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        #petFotoPreview {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 2px solid #EB9933;
+            background: #FFF0DA;
+        }
+
+        #petFoto {
+            max-width: 100%;
+            color: #754817;
+        }
+
+        #petFoto::file-selector-button {
+            background: #EB9933;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        #petFoto::file-selector-button:hover {
+            background: #D98220;
+        }
+
+        .foto-pet-tabela {
+            width: 65px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid #FFF0DA;
+        }
+
+        .acoes-pet {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .acoes-pet button {
+            margin: 3px;
+        }
+
+        .subtitulo-formulario {
+            grid-column: 1 / -1;
+            color: #D98220;
+            border-bottom: 1px solid #F4B65F;
+            padding-bottom: 8px;
+            margin: 12px 0 4px;
+        }
+    </style>
+</head>
+
+<body>
+<script>
+    try {
+        const configTema = JSON.parse(
+            localStorage.getItem("hotelPetConfiguracoes")
+        ) || {};
+
+        if (configTema.modoEscuro === true) {
+            document.body.classList.add("modo-escuro");
+        }
+    } catch (erro) {
+        console.error("Erro ao carregar o tema:", erro);
+    }
+</script>
 <div class="layout">
 
     <aside class="sidebar">
-        <div class="logo">
-            <span>🐾</span>
-            <h2 class="nomeHotelDinamico">Hotel Pet</h2>
-            <small>MANAGER</small>
+
+        <div class="logo logo-petsitter">
+            <img
+                src="img/logo-petsitter-transparente.png"
+                alt="Petsitter - Hospedagem para Cães 100% Livre"
+            >
         </div>
 
         <nav>
@@ -25,17 +106,19 @@
             <a href="pets.html" class="active">🐶 Pets</a>
             <a href="reservas.html">📅 Reservas</a>
             <a href="hospedagem.html">🛏️ Hospedagens</a>
+            <a href="agenda-banho.html">🛁 Agenda de Banho</a>
+            <a href="agenda-vet.html">🩺 Agenda Veterinária</a>
             <a href="financeiro.html">💰 Financeiro</a>
             <a href="configuracoes.html">⚙️ Configurações</a>
         </nav>
 
         <div class="sidebar-footer">
-            <span class="nomeHotelDinamico">Hotel Pet Manager</span>
-            <small>Gestão inteligente</small>
+            <span class="nomeHotelDinamico">Petsitter</span>
+            <small>Hospedagem para Cães 100% Livre</small>
         </div>
+
     </aside>
 
-    <!-- Fundo para fechar o menu ao tocar fora -->
     <div class="menu-fundo" id="menuFundo"></div>
 
     <main class="main-content">
@@ -52,7 +135,7 @@
 
             <div>
                 <h1>Pets</h1>
-                <p>Gerencie os animais cadastrados no hotel.</p>
+                <p>Gerencie os animais cadastrados na Petsitter.</p>
             </div>
 
             <div class="user-profile">
@@ -70,6 +153,8 @@
             <p>Registre os animais e vincule cada um ao seu tutor.</p>
         </section>
 
+        <!-- CADASTRO DE PET -->
+
         <section class="panel client-form">
 
             <h3>➕ Novo pet</h3>
@@ -78,10 +163,54 @@
 
                 <div class="form-grid">
 
+                    <!-- FOTO -->
+
+                    <div class="form-group full-width">
+
+                        <label for="petFoto">Foto do pet</label>
+
+                        <div class="pet-foto-container">
+
+                            <img
+                                id="petFotoPreview"
+                                src=""
+                                alt="Pré-visualização da foto do pet"
+                                style="display: none;"
+                            >
+
+                            <input
+                                type="file"
+                                id="petFoto"
+                                accept="image/*"
+                            >
+
+                            <button
+                                type="button"
+                                id="removerPetFoto"
+                                class="btn-secondary"
+                                style="display: none;"
+                            >
+                                Remover foto
+                            </button>
+
+                        </div>
+
+                        <small>
+                            Selecione uma foto do animal no celular ou computador.
+                        </small>
+
+                    </div>
+
+                    <h4 class="subtitulo-formulario">Informações do pet</h4>
+
                     <div class="form-group">
                         <label for="petNome">Nome do pet *</label>
-                        <input id="petNome" type="text"
-                            placeholder="Nome do animal" required>
+                        <input
+                            id="petNome"
+                            type="text"
+                            placeholder="Nome do animal"
+                            required
+                        >
                     </div>
 
                     <div class="form-group">
@@ -103,8 +232,11 @@
 
                     <div class="form-group">
                         <label for="petRaca">Raça</label>
-                        <input id="petRaca" type="text"
-                            placeholder="Ex.: Golden Retriever">
+                        <input
+                            id="petRaca"
+                            type="text"
+                            placeholder="Ex.: Golden Retriever"
+                        >
                     </div>
 
                     <div class="form-group">
@@ -133,27 +265,129 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="petCastrado">É castrado?</label>
+                        <select id="petCastrado">
+                            <option value="">Não informado</option>
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label for="petAlimentacao">Restrições alimentares</label>
-                        <input id="petAlimentacao" type="text"
-                            placeholder="Alergias ou restrições">
+                        <input
+                            id="petAlimentacao"
+                            type="text"
+                            placeholder="Alergias ou restrições"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="petProblemasSaude">Problemas de saúde</label>
+                        <input
+                            id="petProblemasSaude"
+                            type="text"
+                            placeholder="Doenças, alergias ou condições"
+                        >
                     </div>
 
                     <div class="form-group full-width">
+                        <label for="petComportamento">Comportamento</label>
+                        <textarea
+                            id="petComportamento"
+                            rows="3"
+                            placeholder="Como o pet se comporta? É tranquilo, agitado, sociável, tem medo de algo..."
+                        ></textarea>
+                    </div>
+
+                    <!-- SAÚDE -->
+
+                    <h4 class="subtitulo-formulario">Saúde e cuidados</h4>
+
+                    <div class="form-group">
+                        <label for="petVermifugo">Vermífugo</label>
+                        <select id="petVermifugo">
+                            <option value="">Não informado</option>
+                            <option value="Em dia">Em dia</option>
+                            <option value="Pendente">Pendente</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="petDataVermifugo">Data do último vermífugo</label>
+                        <input
+                            type="date"
+                            id="petDataVermifugo"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="petAntipulgas">Antipulgas</label>
+                        <select id="petAntipulgas">
+                            <option value="">Não informado</option>
+                            <option value="Em dia">Em dia</option>
+                            <option value="Pendente">Pendente</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="petDataAntipulgas">Data da última aplicação de antipulgas</label>
+                        <input
+                            type="date"
+                            id="petDataAntipulgas"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="petVeterinario">Veterinário responsável</label>
+                        <input
+                            id="petVeterinario"
+                            type="text"
+                            placeholder="Nome do veterinário"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="petTelefoneVeterinario">Contato do veterinário</label>
+                        <input
+                            id="petTelefoneVeterinario"
+                            type="tel"
+                            placeholder="(00) 00000-0000"
+                        >
+                    </div>
+
+                    <!-- OBSERVAÇÕES -->
+
+                    <h4 class="subtitulo-formulario">Observações</h4>
+
+                    <div class="form-group full-width">
                         <label for="petObservacoes">Observações importantes</label>
-                        <textarea id="petObservacoes" rows="3"
-                            placeholder="Comportamento, cuidados especiais..."></textarea>
+                        <textarea
+                            id="petObservacoes"
+                            rows="3"
+                            placeholder="Cuidados especiais e outras informações importantes..."
+                        ></textarea>
                     </div>
 
                 </div>
 
                 <div class="form-actions">
-                    <button type="reset" class="btn-secondary">Limpar</button>
-                    <button type="submit" class="btn-primary">Salvar pet</button>
+
+                    <button type="reset" class="btn-secondary">
+                        Limpar
+                    </button>
+
+                    <button type="submit" class="btn-primary">
+                        Salvar pet
+                    </button>
+
                 </div>
 
             </form>
 
         </section>
+
+        <!-- LISTAGEM DE PETS -->
 
         <section class="panel client-list">
 
@@ -167,10 +401,13 @@
             </div>
 
             <div class="table-container">
+
                 <table>
+
                     <thead>
                         <tr>
                             <th>Pet</th>
+                            <th>Foto</th>
                             <th>Espécie</th>
                             <th>Raça</th>
                             <th>Tutor</th>
@@ -180,25 +417,28 @@
 
                     <tbody id="petTable">
                         <tr>
-                            <td colspan="5" class="empty-table">
+                            <td colspan="6" class="empty-table">
                                 Nenhum pet cadastrado ainda.
                             </td>
                         </tr>
                     </tbody>
+
                 </table>
+
             </div>
 
         </section>
 
         <footer>
-            <span class="nomeHotelDinamico">Hotel Pet Manager</span> © 2026
+            <span class="nomeHotelDinamico">Petsitter</span> © 2026
         </footer>
 
     </main>
+
 </div>
 
-<script src="js/pets.js"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/pets.js?v=9"></script>
+<script src="js/app.js?v=5"></script>
 
 </body>
 </html>
