@@ -11,9 +11,14 @@ const removerFotoPreview = document.getElementById("removerPetFoto");
 const CLIENT_KEY = "hotelPetClientes";
 const PET_KEY = "hotelPetAnimais";
 
+// ==============================
+// ARMAZENAMENTO
+// ==============================
+
 function carregarClientes() {
     try {
-        return JSON.parse(localStorage.getItem(CLIENT_KEY)) || [];
+        const dados = JSON.parse(localStorage.getItem(CLIENT_KEY));
+        return Array.isArray(dados) ? dados : [];
     } catch {
         return [];
     }
@@ -21,7 +26,8 @@ function carregarClientes() {
 
 function carregarPets() {
     try {
-        return JSON.parse(localStorage.getItem(PET_KEY)) || [];
+        const dados = JSON.parse(localStorage.getItem(PET_KEY));
+        return Array.isArray(dados) ? dados : [];
     } catch {
         return [];
     }
@@ -46,7 +52,10 @@ function salvarPets() {
     }
 }
 
+// ==============================
 // COMPRIMIR FOTO
+// ==============================
+
 function comprimirFoto(arquivo) {
     return new Promise((resolve, reject) => {
 
@@ -62,12 +71,10 @@ function comprimirFoto(arquivo) {
 
         const leitor = new FileReader();
 
-        leitor.onload = function () {
-
+        leitor.onload = function() {
             const imagem = new Image();
 
-            imagem.onload = function () {
-
+            imagem.onload = function() {
                 const limite = 700;
 
                 let largura = imagem.width;
@@ -104,14 +111,14 @@ function comprimirFoto(arquivo) {
                 resolve(canvas.toDataURL("image/jpeg", 0.78));
             };
 
-            imagem.onerror = function () {
+            imagem.onerror = function() {
                 reject(new Error("Não foi possível carregar a imagem."));
             };
 
             imagem.src = leitor.result;
         };
 
-        leitor.onerror = function () {
+        leitor.onerror = function() {
             reject(new Error("Erro ao ler a imagem."));
         };
 
@@ -119,8 +126,17 @@ function comprimirFoto(arquivo) {
     });
 }
 
+// ==============================
 // ATUALIZAR TUTORES
+// ==============================
+
 function atualizarTutores() {
+    const valorAnterior = tutorSelect.value;
+
+    clientes = carregarClientes();
+
+    if (!Array.isArray(clientes)) clientes = [];
+
     tutorSelect.innerHTML = "";
 
     const opcaoInicial = document.createElement("option");
@@ -132,16 +148,25 @@ function atualizarTutores() {
     clientes.forEach(cliente => {
         const opcao = document.createElement("option");
 
-        opcao.value = cliente.id;
+        opcao.value = String(cliente.id);
         opcao.textContent = cliente.nome;
 
         tutorSelect.appendChild(opcao);
     });
 
     tutorSelect.disabled = clientes.length === 0;
+
+    if (clientes.some(cliente =>
+        String(cliente.id) === String(valorAnterior)
+    )) {
+        tutorSelect.value = String(valorAnterior);
+    }
 }
 
-// CRIAR ELEMENTO COM TEXTO
+// ==============================
+// ELEMENTOS
+// ==============================
+
 function criarElemento(tag, classe, texto) {
     const elemento = document.createElement(tag);
 
@@ -156,7 +181,6 @@ function criarElemento(tag, classe, texto) {
     return elemento;
 }
 
-// CRIAR BOTÃO
 function criarBotao(texto, classe, id) {
     const botao = document.createElement("button");
 
@@ -168,11 +192,11 @@ function criarBotao(texto, classe, id) {
     return botao;
 }
 
-// ADICIONAR INFORMAÇÃO AO CARTÃO
 function adicionarInformacao(container, titulo, valor) {
     const item = criarElemento("div", "pet-info-item");
 
     const label = criarElemento("small", "", titulo);
+
     const texto = criarElemento(
         "strong",
         "",
@@ -183,17 +207,19 @@ function adicionarInformacao(container, titulo, valor) {
     container.appendChild(item);
 }
 
+// ==============================
 // CRIAR CARTÃO DO PET
+// ==============================
+
 function criarCartaoPet(pet) {
 
     const tutor = clientes.find(
-        cliente => cliente.id === pet.tutorId
+        cliente => String(cliente.id) === String(pet.tutorId)
     );
 
     const cartao = criarElemento("article", "pet-card");
     cartao.dataset.id = pet.id;
 
-    // CABEÇALHO
     const cabecalho = criarElemento(
         "div",
         "pet-card-cabecalho"
@@ -205,6 +231,7 @@ function criarCartaoPet(pet) {
     );
 
     // FOTO
+
     const areaFoto = criarElemento(
         "div",
         "pet-card-foto"
@@ -216,6 +243,11 @@ function criarCartaoPet(pet) {
         imagem.src = pet.foto;
         imagem.alt = `Foto de ${pet.nome}`;
 
+        imagem.onerror = function() {
+            this.onerror = null;
+            this.src = "img/logo-petsitter-transparente.png";
+        };
+
         areaFoto.appendChild(imagem);
     } else {
         areaFoto.textContent =
@@ -223,6 +255,7 @@ function criarCartaoPet(pet) {
     }
 
     // INFORMAÇÕES PRINCIPAIS
+
     const informacoes = criarElemento(
         "div",
         "pet-card-resumo"
@@ -252,6 +285,7 @@ function criarCartaoPet(pet) {
     cabecalho.appendChild(principal);
 
     // DETALHES
+
     const detalhes = criarElemento(
         "div",
         "pet-card-detalhes"
@@ -277,7 +311,11 @@ function criarCartaoPet(pet) {
     adicionarInformacao(grade, "Sexo", pet.sexo);
     adicionarInformacao(grade, "Porte", pet.porte);
     adicionarInformacao(grade, "Castrado", pet.castrado);
-    adicionarInformacao(grade, "Tutor", tutor ? tutor.nome : "Tutor não encontrado");
+    adicionarInformacao(
+        grade,
+        "Tutor",
+        tutor ? tutor.nome : "Tutor não encontrado"
+    );
 
     const tituloSaude = criarElemento(
         "h4",
@@ -343,6 +381,7 @@ function criarCartaoPet(pet) {
     );
 
     // AÇÕES
+
     const acoes = criarElemento(
         "div",
         "pet-card-acoes"
@@ -401,22 +440,25 @@ function criarCartaoPet(pet) {
     return cartao;
 }
 
+// ==============================
 // ATUALIZAR LISTAGEM
-function atualizarPets() {
+// ==============================
 
+function atualizarPets() {
     petCards.innerHTML = "";
 
     petCount.textContent =
         `${pets.length} ${pets.length === 1 ? "pet" : "pets"}`;
 
     if (pets.length === 0) {
-        const vazio = criarElemento(
-            "p",
-            "empty-table",
-            "Nenhum pet cadastrado ainda."
+        petCards.appendChild(
+            criarElemento(
+                "p",
+                "empty-table",
+                "Nenhum pet cadastrado ainda."
+            )
         );
 
-        petCards.appendChild(vazio);
         return;
     }
 
@@ -425,7 +467,10 @@ function atualizarPets() {
     });
 }
 
-// LIMPAR PRÉ-VISUALIZAÇÃO
+// ==============================
+// FOTOS
+// ==============================
+
 function limparPreviewFoto() {
     campoFoto.value = "";
     previewFoto.src = "";
@@ -433,9 +478,7 @@ function limparPreviewFoto() {
     removerFotoPreview.style.display = "none";
 }
 
-// PRÉ-VISUALIZAÇÃO DA FOTO
-campoFoto.addEventListener("change", function () {
-
+campoFoto.addEventListener("change", function() {
     const arquivo = this.files[0];
 
     if (!arquivo) return;
@@ -454,7 +497,7 @@ campoFoto.addEventListener("change", function () {
 
     const leitor = new FileReader();
 
-    leitor.onload = function (evento) {
+    leitor.onload = function(evento) {
         previewFoto.src = evento.target.result;
         previewFoto.style.display = "block";
         removerFotoPreview.style.display = "inline-block";
@@ -463,33 +506,35 @@ campoFoto.addEventListener("change", function () {
     leitor.readAsDataURL(arquivo);
 });
 
-// REMOVER FOTO ANTES DO CADASTRO
-removerFotoPreview.addEventListener("click", function () {
+removerFotoPreview.addEventListener("click", function() {
     limparPreviewFoto();
 });
 
-// LIMPAR FORMULÁRIO
-petForm.addEventListener("reset", function () {
+petForm.addEventListener("reset", function() {
     setTimeout(limparPreviewFoto, 0);
 });
 
+// ==============================
 // CADASTRAR PET
-petForm.addEventListener("submit", async function(event) {
+// ==============================
 
+petForm.addEventListener("submit", async function(event) {
     event.preventDefault();
+
+    // Atualiza a lista de clientes sem apagar a seleção atual.
+    const tutorId = tutorSelect.value;
 
     clientes = carregarClientes();
 
-    atualizarTutores();
+    if (!Array.isArray(clientes)) clientes = [];
 
-    const tutorId = tutorSelect.value;
-
-    const tutorExiste = clientes.some(
-        cliente => cliente.id === tutorId
+    const tutor = clientes.find(
+        cliente => String(cliente.id) === String(tutorId)
     );
 
-    if (!tutorExiste) {
-        alert("Cadastre um cliente antes de cadastrar um pet.");
+    if (!tutor) {
+        atualizarTutores();
+        alert("Selecione um cliente cadastrado no campo Tutor.");
         return;
     }
 
@@ -501,7 +546,6 @@ petForm.addEventListener("submit", async function(event) {
     botaoSalvar.textContent = "Salvando...";
 
     try {
-
         let foto = null;
 
         const arquivo = campoFoto.files[0];
@@ -514,7 +558,7 @@ petForm.addEventListener("submit", async function(event) {
             id: Date.now().toString(),
 
             nome: document.getElementById("petNome").value.trim(),
-            tutorId: tutorId,
+            tutorId: tutor.id,
 
             especie: document.getElementById("petEspecie").value,
             raca: document.getElementById("petRaca").value.trim(),
@@ -545,6 +589,10 @@ petForm.addEventListener("submit", async function(event) {
             foto: foto
         };
 
+        pets = carregarPets();
+
+        if (!Array.isArray(pets)) pets = [];
+
         pets.push(novoPet);
 
         if (!salvarPets()) {
@@ -559,28 +607,29 @@ petForm.addEventListener("submit", async function(event) {
         alert("Pet cadastrado com sucesso! 🐾");
 
     } catch (erro) {
+        console.error("Erro ao cadastrar pet:", erro);
 
         alert(erro.message || "Erro ao cadastrar o pet.");
 
     } finally {
-
         botaoSalvar.disabled = false;
         botaoSalvar.textContent = "Salvar pet";
-
     }
 });
 
+// ==============================
 // AÇÕES DOS CARTÕES
-petCards.addEventListener("click", function(event) {
+// ==============================
 
+petCards.addEventListener("click", function(event) {
     const botaoLerMais = event.target.closest(".btn-detalhes-pet");
     const botaoTrocar = event.target.closest(".btn-trocar-foto");
     const botaoRemover = event.target.closest(".btn-remover-foto");
     const botaoExcluir = event.target.closest(".btn-delete");
 
     // LER MAIS
-    if (botaoLerMais) {
 
+    if (botaoLerMais) {
         const cartao = botaoLerMais.closest(".pet-card");
         const detalhes = cartao.querySelector(".pet-card-detalhes");
 
@@ -594,21 +643,19 @@ petCards.addEventListener("click", function(event) {
     }
 
     // TROCAR FOTO
-    if (botaoTrocar) {
 
+    if (botaoTrocar) {
         const cartao = botaoTrocar.closest(".pet-card");
         const input = cartao.querySelector(".input-trocar-foto");
 
-        if (input) {
-            input.click();
-        }
+        if (input) input.click();
 
         return;
     }
 
     // REMOVER FOTO
-    if (botaoRemover) {
 
+    if (botaoRemover) {
         const confirmar = confirm(
             "Deseja remover a foto deste pet?"
         );
@@ -616,7 +663,7 @@ petCards.addEventListener("click", function(event) {
         if (!confirmar) return;
 
         const pet = pets.find(
-            item => item.id === botaoRemover.dataset.id
+            item => String(item.id) === String(botaoRemover.dataset.id)
         );
 
         if (!pet) return;
@@ -637,8 +684,8 @@ petCards.addEventListener("click", function(event) {
     }
 
     // EXCLUIR PET
-    if (botaoExcluir) {
 
+    if (botaoExcluir) {
         const confirmar = confirm(
             "Deseja realmente excluir este pet?"
         );
@@ -648,7 +695,7 @@ petCards.addEventListener("click", function(event) {
         const petsAnteriores = pets;
 
         pets = pets.filter(
-            pet => pet.id !== botaoExcluir.dataset.id
+            pet => String(pet.id) !== String(botaoExcluir.dataset.id)
         );
 
         if (!salvarPets()) {
@@ -659,29 +706,28 @@ petCards.addEventListener("click", function(event) {
         atualizarPets();
 
         alert("Pet excluído com sucesso!");
-
     }
 });
 
+// ==============================
 // TROCAR FOTO DE PET CADASTRADO
-petCards.addEventListener("change", async function(event) {
+// ==============================
 
+petCards.addEventListener("change", async function(event) {
     const input = event.target.closest(".input-trocar-foto");
 
     if (!input || !input.files[0]) return;
 
     const pet = pets.find(
-        item => item.id === input.dataset.id
+        item => String(item.id) === String(input.dataset.id)
     );
 
     if (!pet) return;
 
     try {
-
         const novaFoto = await comprimirFoto(input.files[0]);
 
         const fotoAnterior = pet.foto;
-
         pet.foto = novaFoto;
 
         if (!salvarPets()) {
@@ -694,14 +740,36 @@ petCards.addEventListener("change", async function(event) {
         alert("Foto atualizada com sucesso! 🐶");
 
     } catch (erro) {
-
         alert(erro.message || "Não foi possível atualizar a foto.");
-
     }
-
 });
 
+// ==============================
+// ATUALIZAÇÃO DOS CLIENTES
+// ==============================
+
+window.addEventListener("storage", function(event) {
+    if (event.key === CLIENT_KEY) {
+        atualizarTutores();
+        atualizarPets();
+    }
+
+    if (event.key === PET_KEY) {
+        pets = carregarPets();
+        atualizarPets();
+    }
+});
+
+window.addEventListener("pageshow", function() {
+    atualizarTutores();
+    pets = carregarPets();
+    atualizarPets();
+});
+
+// ==============================
 // INICIALIZAÇÃO
+// ==============================
+
 atualizarTutores();
 atualizarPets();
 
