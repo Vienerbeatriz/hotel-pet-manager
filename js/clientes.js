@@ -1,4 +1,3 @@
-
 const form = document.getElementById("clientForm");
 const clientTable = document.getElementById("clientTable");
 const clientCount = document.getElementById("clientCount");
@@ -128,7 +127,7 @@ function atualizarLista() {
         const linha = document.createElement("tr");
         const celula = document.createElement("td");
 
-        celula.colSpan = 5;
+        celula.colSpan = 6;
         celula.className = "empty-table";
         celula.textContent = "Nenhum cliente cadastrado ainda.";
 
@@ -154,6 +153,9 @@ function atualizarLista() {
         const email = document.createElement("td");
         email.textContent = cliente.email || "Não informado";
 
+        const endereco = document.createElement("td");
+        endereco.textContent = cliente.endereco || "Não informado";
+
         const acoes = document.createElement("td");
 
         const excluir = document.createElement("button");
@@ -165,7 +167,14 @@ function atualizarLista() {
 
         acoes.appendChild(excluir);
 
-        linha.append(nome, cpf, telefone, email, acoes);
+        linha.append(
+            nome,
+            cpf,
+            telefone,
+            email,
+            endereco,
+            acoes
+        );
 
         clientTable.appendChild(linha);
     });

@@ -1305,3 +1305,41 @@ body.modo-escuro #clientCount {
 .sidebar-footer span {
     font-weight: bold;
 }
+/* =====================================
+   CORREÇÃO DOS CAMPOS NO MODO ESCURO
+===================================== */
+
+body.modo-escuro .form-group input,
+body.modo-escuro .form-group textarea,
+body.modo-escuro .form-group select {
+    background-color: #202923 !important;
+    color: #E5EDE5 !important;
+    border-color: #79502D;
+    color-scheme: dark;
+}
+
+/* Quando clicar ou digitar */
+body.modo-escuro .form-group input:focus,
+body.modo-escuro .form-group textarea:focus,
+body.modo-escuro .form-group select:focus {
+    background-color: #202923 !important;
+    color: #FFFFFF !important;
+    border-color: #EB9933 !important;
+    box-shadow: 0 0 0 3px #EB993322;
+}
+
+/* Texto selecionado */
+body.modo-escuro .form-group input::selection,
+body.modo-escuro .form-group textarea::selection {
+    background: #965B27;
+    color: #FFFFFF;
+}
+
+/* Preenchimento automático do navegador */
+body.modo-escuro .form-group input:-webkit-autofill,
+body.modo-escuro .form-group input:-webkit-autofill:hover,
+body.modo-escuro .form-group input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #FFFFFF !important;
+    -webkit-box-shadow: 0 0 0 1000px #202923 inset !important;
+    transition: background-color 9999s ease-in-out 0s;
+}
