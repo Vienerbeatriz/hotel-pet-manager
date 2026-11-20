@@ -483,7 +483,19 @@
                 </div>
 
                 <div class="form-actions">
-
+<button
+    class="menu-toggle"
+    id="abrirMenu"
+    type="button"
+    aria-label="Abrir menu"
+    aria-expanded="false"
+    onclick="
+        document.body.classList.toggle('menu-aberto');
+        this.setAttribute('aria-expanded',
+            document.body.classList.contains('menu-aberto')
+        );
+    "
+>☰</button>
                     <button type="reset" class="btn-secondary">
                         Limpar
                     </button>
