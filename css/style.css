@@ -1598,3 +1598,315 @@ body.modo-escuro .form-group input:-webkit-autofill:focus {
         touch-action: manipulation;
     }
 }
+/* =====================================
+   CARTÕES DE CLIENTES
+===================================== */
+
+.client-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+}
+
+.cliente-card {
+    background: #FFFAF3;
+    border: 1px solid #F0DCC3;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 3px 12px #493A2B0A;
+    min-width: 0;
+}
+
+.cliente-card-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+}
+
+.cliente-card-principal {
+    flex: 1;
+    min-width: 0;
+}
+
+.cliente-card-nome {
+    color: #493A2B;
+    font-size: 20px;
+    margin-bottom: 12px;
+    overflow-wrap: anywhere;
+}
+
+.cliente-card-telefone,
+.cliente-card-pets-resumo {
+    color: #786B5C;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 5px;
+}
+
+.cliente-card-foto {
+    width: 125px;
+    height: 125px;
+    flex: 0 0 125px;
+    border-radius: 13px;
+    background: #FFF0DA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 42px;
+}
+
+.cliente-card-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cliente-card-acoes {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.cliente-card-acoes button {
+    min-height: 44px;
+    padding: 11px 18px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.cliente-card-detalhes {
+    border-top: 1px solid #F0DCC3;
+    margin-top: 20px;
+    padding-top: 20px;
+}
+
+.cliente-card-detalhes[hidden] {
+    display: none;
+}
+
+.cliente-detalhes-titulo {
+    color: #D98220;
+    font-size: 17px;
+    margin-bottom: 15px;
+}
+
+.cliente-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.cliente-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+    background: #FFF3E4;
+    padding: 12px;
+    border-radius: 9px;
+}
+
+.cliente-info-label {
+    font-size: 12px;
+    color: #A66A2C;
+}
+
+.cliente-info-value {
+    color: #493A2B;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.cliente-titulo-pets {
+    margin-top: 25px;
+}
+
+.cliente-pets-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.cliente-pet-card {
+    background: #FFF7EC;
+    border: 1px solid #F0DCC3;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.cliente-pet-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 15px;
+}
+
+.cliente-pet-foto {
+    width: 90px;
+    height: 90px;
+    flex: 0 0 90px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #FFF0DA;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+}
+
+.cliente-pet-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cliente-pet-identificacao h4 {
+    color: #493A2B;
+    font-size: 17px;
+    margin-bottom: 6px;
+}
+
+.cliente-pet-identificacao span {
+    color: #786B5C;
+    font-size: 13px;
+}
+
+.cliente-pet-informacoes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.cliente-sem-pets,
+.cliente-lista-vazia {
+    color: #786B5C;
+    background: #FFF3E4;
+    padding: 18px;
+    border-radius: 10px;
+    line-height: 1.5;
+}
+
+/* MODO ESCURO */
+
+body.modo-escuro .cliente-card {
+    background: #2B362E;
+    border-color: #526957;
+}
+
+body.modo-escuro .cliente-card-nome,
+body.modo-escuro .cliente-pet-identificacao h4 {
+    color: #F4B65F;
+}
+
+body.modo-escuro .cliente-card-telefone,
+body.modo-escuro .cliente-card-pets-resumo,
+body.modo-escuro .cliente-pet-identificacao span {
+    color: #C4CEC5;
+}
+
+body.modo-escuro .cliente-card-detalhes {
+    border-color: #526957;
+}
+
+body.modo-escuro .cliente-info-item,
+body.modo-escuro .cliente-pet-card,
+body.modo-escuro .cliente-sem-pets,
+body.modo-escuro .cliente-lista-vazia {
+    background: #202923;
+    border-color: #526957;
+}
+
+body.modo-escuro .cliente-info-label,
+body.modo-escuro .cliente-detalhes-titulo {
+    color: #F4B65F;
+}
+
+body.modo-escuro .cliente-info-value {
+    color: #E5EDE5;
+}
+
+body.modo-escuro .cliente-card-foto,
+body.modo-escuro .cliente-pet-foto {
+    background: #49321F;
+}
+
+/* CELULAR */
+
+@media screen and (max-width: 650px) {
+
+    .client-cards {
+        gap: 15px;
+    }
+
+    .cliente-card {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .cliente-card-cabecalho {
+        gap: 12px;
+    }
+
+    .cliente-card-nome {
+        font-size: 18px;
+    }
+
+    .cliente-card-telefone,
+    .cliente-card-pets-resumo {
+        font-size: 13px;
+    }
+
+    .cliente-card-foto {
+        width: 100px;
+        height: 100px;
+        flex-basis: 100px;
+    }
+
+    .cliente-card-acoes {
+        flex-direction: column;
+    }
+
+    .cliente-card-acoes button {
+        width: 100%;
+        min-height: 48px;
+        font-size: 15px;
+    }
+
+    .cliente-info-grid,
+    .cliente-pet-informacoes {
+        grid-template-columns: 1fr;
+    }
+
+    .cliente-pet-card {
+        padding: 12px;
+    }
+
+    .cliente-pet-foto {
+        width: 78px;
+        height: 78px;
+        flex-basis: 78px;
+    }
+}
+
+@media screen and (max-width: 360px) {
+
+    .cliente-card-cabecalho {
+        align-items: flex-start;
+    }
+
+    .cliente-card-foto {
+        width: 82px;
+        height: 82px;
+        flex-basis: 82px;
+    }
+
+    .cliente-card {
+        padding: 13px;
+    }
+}

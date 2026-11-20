@@ -7,7 +7,7 @@
 
     <title>Clientes | Petsitter</title>
 
-    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body>
 <script>
@@ -23,6 +23,7 @@
         console.error("Erro ao carregar o tema:", erro);
     }
 </script>
+
 <div class="layout">
 
     <aside class="sidebar">
@@ -178,34 +179,13 @@
             <div class="list-header">
                 <div>
                     <h3>👥 Clientes cadastrados</h3>
-                    <p>Consulte os tutores registrados.</p>
+                    <p>Consulte os tutores e seus animais.</p>
                 </div>
 
                 <span id="clientCount">0 clientes</span>
             </div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>CPF</th>
-                            <th>Telefone</th>
-                            <th>E-mail</th>
-                            <th>Endereço</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="clientTable">
-                        <tr>
-                            <td colspan="6" class="empty-table">
-                                Nenhum cliente cadastrado ainda.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <div id="clientCards" class="client-cards"></div>
 
         </section>
 
@@ -217,7 +197,7 @@
 
 </div>
 
-<script src="js/clientes.js?v=2"></script>
+<script src="js/clientes.js?v=3"></script>
 <script src="js/app.js?v=5"></script>
 
 </body>
