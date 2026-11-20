@@ -257,7 +257,16 @@
                 type="button"
                 aria-label="Abrir menu"
                 aria-expanded="false"
-            >☰</button>
+                onclick="
+                    document.body.classList.toggle('menu-aberto');
+                    this.setAttribute(
+                        'aria-expanded',
+                        document.body.classList.contains('menu-aberto')
+                    );
+                "
+            >
+                ☰
+            </button>
 
             <div>
                 <h1>Agenda Veterinária</h1>
@@ -483,19 +492,7 @@
                 </div>
 
                 <div class="form-actions">
-<button
-    class="menu-toggle"
-    id="abrirMenu"
-    type="button"
-    aria-label="Abrir menu"
-    aria-expanded="false"
-    onclick="
-        document.body.classList.toggle('menu-aberto');
-        this.setAttribute('aria-expanded',
-            document.body.classList.contains('menu-aberto')
-        );
-    "
->☰</button>
+
                     <button type="reset" class="btn-secondary">
                         Limpar
                     </button>
@@ -510,7 +507,7 @@
 
         </section>
 
-        <!-- LISTA DE ATENDIMENTOS EM CARTÕES -->
+        <!-- LISTA DE ATENDIMENTOS -->
 
         <section class="panel client-list">
 
@@ -571,7 +568,7 @@
 <!-- SCRIPTS -->
 
 <script src="js/agenda-vet.js?v=3"></script>
-<script src="js/app.js?v=5"></script>
+<script src="js/app.js?v=6"></script>
 
 </body>
 </html>

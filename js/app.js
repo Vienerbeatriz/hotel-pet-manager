@@ -249,7 +249,6 @@ function atualizarReceitaMes(reservas, banho, vet, hoje) {
 }
 
 // PRÓXIMAS MOVIMENTAÇÕES
-// MOSTRA SOMENTE BANHO E VETERINÁRIO
 
 function atualizarMovimentacoes(banho, vet, hoje) {
     const container = document.getElementById("movimentacoesDashboard");
@@ -257,8 +256,6 @@ function atualizarMovimentacoes(banho, vet, hoje) {
     if (!container) return;
 
     const movimentacoes = [];
-
-    // AGENDAMENTOS DE BANHO
 
     banho.forEach(item => {
         if (registroCancelado(item)) return;
@@ -276,8 +273,6 @@ function atualizarMovimentacoes(banho, vet, hoje) {
         });
     });
 
-    // AGENDAMENTOS VETERINÁRIOS
-
     vet.forEach(item => {
         if (registroCancelado(item)) return;
         if (!item.data || item.data < hoje) return;
@@ -293,8 +288,6 @@ function atualizarMovimentacoes(banho, vet, hoje) {
             icone: "🩺"
         });
     });
-
-    // ORGANIZA POR DATA E HORÁRIO
 
     movimentacoes.sort((a, b) => {
         const dataA = `${a.data} ${a.horario}`;
@@ -341,8 +334,8 @@ function configurarMenu() {
     const botaoMenu = document.getElementById("abrirMenu");
     const fundoMenu = document.getElementById("menuFundo");
 
-    if (!botaoMenu || !fundoMenu) {
-        console.error("Botão ou fundo do menu não encontrado.");
+    if (!botaoMenu) {
+        console.error("Botão abrirMenu não encontrado.");
         return;
     }
 
@@ -351,21 +344,32 @@ function configurarMenu() {
         botaoMenu.setAttribute("aria-expanded", "false");
     }
 
-    botaoMenu.onclick = function () {
-        document.body.classList.toggle("menu-aberto");
+    function alternarMenu() {
+        const aberto = document.body.classList.toggle("menu-aberto");
 
-        const aberto = document.body.classList.contains("menu-aberto");
+        botaoMenu.setAttribute(
+            "aria-expanded",
+            String(aberto)
+        );
+    }
 
-        botaoMenu.setAttribute("aria-expanded", String(aberto));
+    // Evita registrar o mesmo evento mais de uma vez.
+    botaoMenu.onclick = alternarMenu;
 
-        console.log("Menu:", aberto ? "aberto" : "fechado");
-    };
-
-    fundoMenu.onclick = fecharMenu;
+    if (fundoMenu) {
+        fundoMenu.onclick = fecharMenu;
+    }
 
     document.querySelectorAll(".sidebar nav a").forEach(link => {
-        link.addEventListener("click", fecharMenu);
+        link.onclick = fecharMenu;
     });
+
+    // Fecha o menu ao pressionar ESC.
+    document.onkeydown = function (evento) {
+        if (evento.key === "Escape") {
+            fecharMenu();
+        }
+    };
 }
 
 // INICIALIZAÇÃO
