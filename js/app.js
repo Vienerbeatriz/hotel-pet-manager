@@ -340,40 +340,47 @@ function configurarMenu() {
         return;
     }
 
+    // Evita configurar os eventos mais de uma vez
+    if (botaoMenu.dataset.menuConfigurado === "true") {
+        return;
+    }
+
+    botaoMenu.dataset.menuConfigurado = "true";
+
+    function abrirMenu() {
+        document.body.classList.add("menu-aberto");
+        botaoMenu.setAttribute("aria-expanded", "true");
+    }
+
     function fecharMenu() {
         document.body.classList.remove("menu-aberto");
-
         botaoMenu.setAttribute("aria-expanded", "false");
     }
 
     function alternarMenu(evento) {
-        if (evento) {
-            evento.stopPropagation();
-        }
+        evento.stopPropagation();
 
-        const aberto = document.body.classList.toggle("menu-aberto");
-
-        botaoMenu.setAttribute(
-            "aria-expanded",
-            String(aberto)
-        );
-    }
-
-    // ABRIR E FECHAR PELO BOTÃO
-
-    botaoMenu.onclick = alternarMenu;
-
-    // FECHAR AO CLICAR NO FUNDO ESCURO
-
-    if (fundoMenu) {
-        fundoMenu.onclick = function (evento) {
-            evento.stopPropagation();
+        if (document.body.classList.contains("menu-aberto")) {
             fecharMenu();
-        };
+        } else {
+            abrirMenu();
+        }
     }
 
-    // FECHAR AO CLICAR FORA DA SIDEBAR
+    // Abrir e fechar pelo botão
+    botaoMenu.addEventListener("click", alternarMenu);
 
+    // Fechar pelo fundo escuro
+    if (fundoMenu) {
+        fundoMenu.addEventListener("click", fecharMenu);
+    }
+
+    // Fechar ao clicar em um link
+    sidebar.querySelectorAll("nav a").forEach(link => {
+        link.addEventListener("click", fecharMenu);
+    });
+
+    // Fechar ao clicar fora do menu
     document.addEventListener("click", function (evento) {
         if (!document.body.classList.contains("menu-aberto")) {
             return;
@@ -387,14 +394,7 @@ function configurarMenu() {
         }
     });
 
-    // FECHAR AO CLICAR EM UM LINK
-
-    document.querySelectorAll(".sidebar nav a").forEach(link => {
-        link.addEventListener("click", fecharMenu);
-    });
-
-    // FECHAR COM ESC
-
+    // Fechar com ESC
     document.addEventListener("keydown", function (evento) {
         if (evento.key === "Escape") {
             fecharMenu();
