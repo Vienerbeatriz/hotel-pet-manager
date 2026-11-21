@@ -150,13 +150,12 @@ async function enviarNotificacaoNovaReserva(reserva) {
             localStorage.getItem("hotelPetConfiguracoes")
         ) || {};
 
-        // Respeita a preferência de notificações
         if (configuracoes.avisoReservas === false) {
             return;
         }
 
-        // Importa o Supabase sem transformar o arquivo inteiro em módulo
-        const { default: supabase } = await import("./js/supabase.js");
+        // Caminho corrigido: reservas.js já está dentro da pasta js
+        const { default: supabase } = await import("./supabase.js");
 
         const { error } = await supabase.functions.invoke(
             "enviar-notificacao",
@@ -721,7 +720,7 @@ function salvarNovaReserva(evento) {
         return;
     }
 
-    // Envia a notificação somente depois de salvar a reserva
+    // Notifica somente depois que a reserva foi salva
     // Se o envio falhar, a reserva continua salva normalmente
     enviarNotificacaoNovaReserva(novaReserva);
 
