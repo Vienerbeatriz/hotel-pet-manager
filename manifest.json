@@ -7,12 +7,12 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#EB9933",
+  "background_color": "#C87520",
+  "theme_color": "#C87520",
   "icons": [
     {
-      "src": "./img/logo-petsitter-transparente.png",
-      "sizes": "any",
+      "src": "./img/icone-petsitter.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     }
