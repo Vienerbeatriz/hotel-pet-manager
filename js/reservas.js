@@ -1,3 +1,4 @@
+
 const PET_KEY = "hotelPetAnimais";
 const CLIENT_KEY = "hotelPetClientes";
 const RESERVATION_KEY = "hotelPetReservas";
@@ -136,6 +137,48 @@ function salvarReservas() {
         console.error(erro);
         alert("Não foi possível salvar as reservas.");
         return false;
+    }
+}
+
+// ==============================
+// NOTIFICAÇÃO DE NOVA RESERVA
+// ==============================
+
+async function enviarNotificacaoNovaReserva(reserva) {
+    try {
+        const configuracoes = JSON.parse(
+            localStorage.getItem("hotelPetConfiguracoes")
+        ) || {};
+
+        // Respeita a preferência de notificações
+        if (configuracoes.avisoReservas === false) {
+            return;
+        }
+
+        // Importa o Supabase sem transformar o arquivo inteiro em módulo
+        const { default: supabase } = await import("./js/supabase.js");
+
+        const { error } = await supabase.functions.invoke(
+            "enviar-notificacao",
+            {
+                body: {
+                    title: "Nova reserva na Petsitter! 🐾",
+                    body: `${reserva.petNome} foi reservado por ${reserva.tutorNome}.`
+                }
+            }
+        );
+
+        if (error) {
+            throw error;
+        }
+
+        console.log("Notificação de nova reserva enviada!");
+
+    } catch (erro) {
+        console.error(
+            "A reserva foi salva, mas a notificação não foi enviada:",
+            erro
+        );
     }
 }
 
@@ -677,6 +720,10 @@ function salvarNovaReserva(evento) {
         reservas.pop();
         return;
     }
+
+    // Envia a notificação somente depois de salvar a reserva
+    // Se o envio falhar, a reserva continua salva normalmente
+    enviarNotificacaoNovaReserva(novaReserva);
 
     form.reset();
 
