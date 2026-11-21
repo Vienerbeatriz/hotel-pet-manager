@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#EB9933">
+
+    <title>Login | Petsitter</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #f8f5ef;
+            font-family: Arial, sans-serif;
+            color: #34483A;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 38px 30px;
+            background: white;
+            border-radius: 22px;
+            box-shadow: 0 10px 35px rgba(52, 72, 58, .10);
+            text-align: center;
+        }
+
+        .login-logo {
+            width: 180px;
+            max-width: 80%;
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .login-container h1 {
+            margin: 0 0 10px;
+            font-size: 25px;
+            color: #34483A;
+        }
+
+        .login-container p {
+            margin-bottom: 28px;
+            color: #7b8279;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .login-form {
+            text-align: left;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #34483A;
+        }
+
+        .login-form input {
+            width: 100%;
+            height: 48px;
+            margin-bottom: 19px;
+            padding: 0 14px;
+            border: 1px solid #e4dfd5;
+            border-radius: 10px;
+            outline: none;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        .login-form input:focus {
+            border-color: #EB9933;
+            box-shadow: 0 0 0 3px rgba(235, 153, 51, .12);
+        }
+
+        .btn-login {
+            width: 100%;
+            height: 49px;
+            border: none;
+            border-radius: 10px;
+            background: #EB9933;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-login:hover {
+            background: #d98725;
+        }
+
+        .btn-login:disabled {
+            opacity: .7;
+            cursor: wait;
+        }
+
+        .login-mensagem {
+            display: none;
+            margin-top: 17px;
+            padding: 12px;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .login-mensagem.erro {
+            display: block;
+            background: #fff0ed;
+            color: #bd4235;
+        }
+
+        .login-mensagem.sucesso {
+            display: block;
+            background: #edf8ef;
+            color: #347044;
+        }
+
+        .login-footer {
+            margin-top: 28px;
+            color: #a19b90;
+            font-size: 11px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="login-container">
+
+        <img
+            src="./img/logo-petsitter-transparente.png"
+            alt="Petsitter"
+            class="login-logo"
+        >
+
+        <h1>Bem-vindo à Petsitter!</h1>
+
+        <p>
+            Entre com seus dados para acessar
+            o sistema de gerenciamento.
+        </p>
+
+        <form id="loginForm" class="login-form">
+
+            <label for="email">E-mail</label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Digite seu e-mail"
+                autocomplete="username"
+                required
+            >
+
+            <label for="senha">Senha</label>
+
+            <input
+                type="password"
+                id="senha"
+                placeholder="Digite sua senha"
+                autocomplete="current-password"
+                required
+            >
+
+            <button
+                type="submit"
+                class="btn-login"
+                id="btnLogin"
+            >
+                Entrar no sistema
+            </button>
+
+            <div
+                id="loginMensagem"
+                class="login-mensagem"
+                role="alert"
+                aria-live="polite"
+            ></div>
+
+        </form>
+
+        <div class="login-footer">
+            Petsitter © 2026
+            <br>
+            Hospedagem para Cães 100% Livre
+        </div>
+
+    </main>
+
+    <script type="module" src="./js/login.js"></script>
+
+</body>
+</html>

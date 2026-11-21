@@ -8,7 +8,236 @@
 
     <title>Petsitter</title>
 
+    <link rel="manifest" href="./manifest.json">
     <link rel="stylesheet" href="css/style.css?v=8">
+
+    <style>
+        .notificacoes-wrapper {
+            position: relative;
+            margin-left: auto;
+            margin-right: 18px;
+        }
+
+        .btn-notificacoes {
+            position: relative;
+            width: 43px;
+            height: 43px;
+            border: 1px solid #e7e2d8;
+            border-radius: 12px;
+            background: #fff;
+            color: #34483A;
+            font-size: 21px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notificacoes-contador {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            min-width: 19px;
+            height: 19px;
+            padding: 0 5px;
+            border-radius: 20px;
+            background: #d94b3d;
+            color: #fff;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notificacoes-contador[hidden] {
+            display: none;
+        }
+
+        .notificacoes-painel {
+            position: absolute;
+            top: 52px;
+            right: 0;
+            width: 350px;
+            max-width: calc(100vw - 30px);
+            max-height: 430px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #e8e3d9;
+            border-radius: 14px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .14);
+            z-index: 1000;
+            color: #34483A;
+        }
+
+        .notificacoes-painel[hidden] {
+            display: none;
+        }
+
+        .notificacoes-cabecalho {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 16px;
+            border-bottom: 1px solid #eee9df;
+        }
+
+        .notificacoes-cabecalho h3 {
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .btn-marcar-todas {
+            border: none;
+            background: transparent;
+            color: #b87827;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .notificacao-item {
+            display: flex;
+            gap: 11px;
+            padding: 13px 15px;
+            border-bottom: 1px solid #f0ede7;
+            align-items: flex-start;
+        }
+
+        .notificacao-item.nao-lida {
+            background: #fff9ef;
+        }
+
+        .notificacao-icone {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8edda;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+
+        .notificacao-conteudo {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notificacao-conteudo strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .notificacao-conteudo p {
+            margin: 0;
+            font-size: 12px;
+            color: #6c746b;
+            line-height: 1.5;
+        }
+
+        .notificacao-conteudo small {
+            display: block;
+            margin-top: 5px;
+            font-size: 11px;
+            color: #9a8b75;
+        }
+
+        .btn-marcar-notificacao {
+            border: none;
+            background: transparent;
+            color: #b87827;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 4px;
+            white-space: nowrap;
+        }
+
+        .notificacoes-vazio {
+            padding: 25px 15px;
+            text-align: center;
+            color: #7b8279;
+            font-size: 13px;
+        }
+
+        .notificacoes-dispositivo {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee9df;
+        }
+
+        .btn-ativar-notificacoes {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            border-radius: 9px;
+            background: #EB9933;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-ativar-notificacoes:disabled {
+            opacity: .7;
+            cursor: default;
+        }
+
+        .status-notificacoes-dispositivo {
+            display: block;
+            margin-top: 8px;
+            color: #6c746b;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        body.modo-escuro .btn-notificacoes,
+        body.modo-escuro .notificacoes-painel {
+            background: #29352d;
+            color: #f0f0e8;
+            border-color: #455348;
+        }
+
+        body.modo-escuro .notificacoes-cabecalho,
+        body.modo-escuro .notificacao-item,
+        body.modo-escuro .notificacoes-dispositivo {
+            border-color: #455348;
+        }
+
+        body.modo-escuro .notificacao-item.nao-lida {
+            background: #354438;
+        }
+
+        body.modo-escuro .notificacao-conteudo p,
+        body.modo-escuro .notificacoes-vazio,
+        body.modo-escuro .status-notificacoes-dispositivo {
+            color: #c3c9c1;
+        }
+
+        body.modo-escuro .notificacao-icone {
+            background: #465647;
+        }
+
+        @media (max-width: 600px) {
+            .notificacoes-wrapper {
+                margin-left: auto;
+                margin-right: 8px;
+            }
+
+            .notificacoes-painel {
+                position: fixed;
+                top: 75px;
+                right: 12px;
+                width: calc(100vw - 24px);
+            }
+
+            .btn-notificacoes {
+                width: 39px;
+                height: 39px;
+            }
+        }
+    </style>
 
     <!-- Aplica o tema antes de mostrar o painel -->
     <script>
@@ -29,10 +258,10 @@
         }
     </script>
 </head>
+
 <body>
 
     <script>
-        // Garante que o tema seja aplicado também ao body.
         if (document.documentElement.classList.contains("modo-escuro")) {
             document.body.classList.add("modo-escuro");
         }
@@ -87,6 +316,67 @@
                     <p>Bem-vindo ao espaço de gerenciamento da Petsitter!</p>
                 </div>
 
+                <div class="notificacoes-wrapper">
+
+                    <button
+                        type="button"
+                        class="btn-notificacoes"
+                        id="btnNotificacoes"
+                        aria-label="Abrir notificações"
+                        aria-expanded="false"
+                        aria-controls="painelNotificacoes"
+                    >
+                        🔔
+                        <span
+                            class="notificacoes-contador"
+                            id="contadorNotificacoes"
+                            hidden
+                        >0</span>
+                    </button>
+
+                    <div
+                        class="notificacoes-painel"
+                        id="painelNotificacoes"
+                        hidden
+                    >
+                        <div class="notificacoes-cabecalho">
+                            <h3>🔔 Notificações</h3>
+
+                            <button
+                                type="button"
+                                class="btn-marcar-todas"
+                                id="btnMarcarTodas"
+                            >
+                                Marcar todas como lidas
+                            </button>
+                        </div>
+
+                        <div class="notificacoes-dispositivo">
+                            <button
+                                type="button"
+                                class="btn-ativar-notificacoes"
+                                id="btnAtivarNotificacoes"
+                            >
+                                🔔 Ativar notificações no dispositivo
+                            </button>
+
+                            <small
+                                class="status-notificacoes-dispositivo"
+                                id="statusNotificacoesDispositivo"
+                            >
+                                Ative para receber notificações neste navegador.
+                            </small>
+                        </div>
+
+                        <div id="listaNotificacoes">
+                            <p class="notificacoes-vazio">
+                                Carregando notificações...
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
                 <div class="user-profile">
                     <span>🐾</span>
                     <div>
@@ -109,7 +399,6 @@
             </section>
 
             <!-- INDICADORES -->
-
             <section class="stats">
 
                 <div class="stat-card">
@@ -143,7 +432,6 @@
             </section>
 
             <!-- PRÓXIMAS MOVIMENTAÇÕES E RELÓGIO -->
-
             <section class="dashboard-bottom">
 
                 <div class="panel">
@@ -180,6 +468,33 @@
 
     </div>
 
-    <script src="js/app.js?v=9"></script>
+    <!-- CONTROLE DE AUTENTICAÇÃO -->
+    <script type="module" src="./js/auth-guard.js"></script>
+
+    <!-- REGISTRO DO SERVICE WORKER -->
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", async () => {
+                try {
+                    const registro =
+                        await navigator.serviceWorker.register(
+                            "./service-worker.js"
+                        );
+
+                    console.log(
+                        "Petsitter PWA registrado com sucesso!",
+                        registro
+                    );
+
+                } catch (erro) {
+                    console.error(
+                        "Erro ao registrar PWA:",
+                        erro
+                    );
+                }
+            });
+        }
+    </script>
+
 </body>
 </html>
