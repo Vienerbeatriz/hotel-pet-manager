@@ -29,7 +29,6 @@
 <div class="layout">
 
     <aside class="sidebar">
-
         <div class="logo logo-petsitter">
             <img
                 src="img/logo-petsitter-transparente.png"
@@ -53,7 +52,6 @@
             <span class="nomeHotelDinamico">Petsitter</span>
             <small>Gestão inteligente</small>
         </div>
-
     </aside>
 
     <div class="menu-fundo" id="menuFundo"></div>
@@ -61,7 +59,6 @@
     <main class="main-content">
 
         <header class="topbar">
-
             <button
                 class="menu-toggle"
                 id="abrirMenu"
@@ -82,7 +79,6 @@
                     <small>Gerenciamento</small>
                 </div>
             </div>
-
         </header>
 
         <section class="welcome">
@@ -95,7 +91,6 @@
         <!-- DADOS DO ESTABELECIMENTO -->
 
         <section class="client-form panel">
-
             <div class="list-header">
                 <div>
                     <h2>🏨 Dados do estabelecimento</h2>
@@ -104,7 +99,6 @@
             </div>
 
             <form id="configForm">
-
                 <div class="form-grid">
 
                     <div class="form-group">
@@ -145,7 +139,6 @@
                             required
                         >
                     </div>
-
                 </div>
 
                 <div class="form-actions">
@@ -153,15 +146,12 @@
                         Salvar configurações
                     </button>
                 </div>
-
             </form>
-
         </section>
 
         <!-- APARÊNCIA -->
 
         <section class="client-form panel">
-
             <div class="list-header">
                 <div>
                     <h2>🎨 Aparência</h2>
@@ -170,7 +160,6 @@
             </div>
 
             <div class="form-group">
-
                 <label for="modoEscuro">
                     <input type="checkbox" id="modoEscuro">
                     🌙 Ativar modo escuro
@@ -180,15 +169,12 @@
                     Deixa o fundo, os cartões e os painéis do sistema
                     em tons escuros.
                 </small>
-
             </div>
-
         </section>
 
         <!-- NOTIFICAÇÕES -->
 
         <section class="client-form panel">
-
             <div class="list-header">
                 <div>
                     <h2>🔔 Notificações</h2>
@@ -234,12 +220,24 @@
                 Ative as notificações para receber avisos do hotel.
             </p>
 
+            <div class="form-actions">
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="testarNotificacaoPush"
+                >
+                    🧪 Enviar notificação de teste
+                </button>
+            </div>
+
+            <p id="statusTesteNotificacao">
+                Use o botão para testar o recebimento de notificações.
+            </p>
         </section>
 
         <!-- BACKUP -->
 
         <section class="client-form panel">
-
             <div class="list-header">
                 <div>
                     <h2>💾 Backup dos dados</h2>
@@ -260,7 +258,6 @@
                     Exportar backup
                 </button>
             </div>
-
         </section>
 
         <footer>
@@ -268,12 +265,11 @@
         </footer>
 
     </main>
-
 </div>
 
 <script src="js/configuracoes.js?v=5"></script>
 <script src="js/app.js?v=9"></script>
-<script type="module" src="js/notificacoes.js"></script>
+<script type="module" src="js/notificacoes.js?v=2"></script>
 
 </body>
 </html>

@@ -1,16 +1,22 @@
 
 import supabase from "./supabase.js";
 
-// COLOQUE AQUI SUA CHAVE PÚBLICA VAPID
+// CHAVE PÚBLICA VAPID
 const VAPID_PUBLIC_KEY = "BC8uzTmvthfyLukq6Sn6r1YeVb1tJdV5h68UF0BM-CUNawshRx_rEqhw-7jlh9E-E1JU4eIpykxzkHP6RVAShx8";
 
+// ELEMENTOS
 const botao = document.getElementById("ativarNotificacoesPush");
 const status = document.getElementById("statusNotificacoesPush");
 
+const botaoTeste = document.getElementById("testarNotificacaoPush");
+const statusTeste = document.getElementById("statusTesteNotificacao");
+
 function mostrarStatus(mensagem) {
-    if (status) {
-        status.textContent = mensagem;
-    }
+    if (status) status.textContent = mensagem;
+}
+
+function mostrarStatusTeste(mensagem) {
+    if (statusTeste) statusTeste.textContent = mensagem;
 }
 
 function converterChaveBase64(chave) {
@@ -21,7 +27,6 @@ function converterChaveBase64(chave) {
         .replace(/_/g, "/");
 
     const binario = window.atob(base64);
-
     const bytes = new Uint8Array(binario.length);
 
     for (let i = 0; i < binario.length; i++) {
@@ -31,6 +36,7 @@ function converterChaveBase64(chave) {
     return bytes;
 }
 
+// ATIVAR NOTIFICAÇÕES NO DISPOSITIVO
 async function ativarNotificacoes() {
     try {
         if (!("serviceWorker" in navigator)) {
@@ -45,11 +51,7 @@ async function ativarNotificacoes() {
             throw new Error("Este navegador não oferece suporte a notificações.");
         }
 
-        if (VAPID_PUBLIC_KEY === "COLE_AQUI_SUA_CHAVE_PUBLICA_VAPID") {
-            throw new Error("A chave pública VAPID ainda não foi configurada.");
-        }
-
-        mostrarStatus("Solicitando permissão para notificações...");
+        mostrarStatus("Solicitando permissão...");
 
         const permissao = await Notification.requestPermission();
 
@@ -87,34 +89,23 @@ async function ativarNotificacoes() {
 
         const dadosInscricao = inscricao.toJSON();
 
-        const endpoint = dadosInscricao.endpoint;
-        const p256dh = dadosInscricao.keys?.p256dh;
-        const auth = dadosInscricao.keys?.auth;
-
-        if (!endpoint || !p256dh || !auth) {
-            throw new Error("Não foi possível obter os dados da inscrição.");
-        }
-
         const { error } = await supabase
             .from("push_subscriptions")
             .upsert(
                 {
                     user_id: user.id,
-                    endpoint,
-                    p256dh,
-                    auth
+                    endpoint: dadosInscricao.endpoint,
+                    p256dh: dadosInscricao.keys?.p256dh,
+                    auth: dadosInscricao.keys?.auth
                 },
                 {
                     onConflict: "endpoint"
                 }
             );
 
-        if (error) {
-            throw error;
-        }
+        if (error) throw error;
 
         mostrarStatus("✅ Notificações ativadas neste dispositivo!");
-
         alert("Notificações ativadas com sucesso!");
 
     } catch (erro) {
@@ -129,6 +120,61 @@ async function ativarNotificacoes() {
     }
 }
 
+// ENVIAR NOTIFICAÇÃO DE TESTE
+async function testarNotificacao() {
+    try {
+        mostrarStatusTeste("Verificando autenticação...");
+
+        const {
+            data: { session },
+            error: erroSessao
+        } = await supabase.auth.getSession();
+
+        if (erroSessao || !session) {
+            throw new Error("Sua sessão não foi encontrada. Faça login novamente.");
+        }
+
+        mostrarStatusTeste("Enviando notificação de teste...");
+
+        const { data, error } = await supabase.functions.invoke(
+            "enviar-notificacao",
+            {
+                body: {
+                    title: "Petsitter 🐾",
+                    body: "Teste de notificação enviado com sucesso!"
+                }
+            }
+        );
+
+        if (error) {
+            throw error;
+        }
+
+        console.log("Resposta da notificação:", data);
+
+        mostrarStatusTeste(
+            "✅ Solicitação enviada! Verifique se a notificação chegou ao dispositivo."
+        );
+
+        alert("Solicitação de teste enviada!");
+
+    } catch (erro) {
+        console.error("Erro no teste de notificação:", erro);
+
+        mostrarStatusTeste("Não foi possível enviar a notificação.");
+
+        alert(
+            "Erro ao testar notificação:\n" +
+            (erro.message || "Tente novamente.")
+        );
+    }
+}
+
+// EVENTOS DOS BOTÕES
 if (botao) {
     botao.addEventListener("click", ativarNotificacoes);
+}
+
+if (botaoTeste) {
+    botaoTeste.addEventListener("click", testarNotificacao);
 }
