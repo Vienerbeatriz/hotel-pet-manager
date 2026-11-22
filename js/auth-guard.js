@@ -13,7 +13,8 @@ async function verificarAcesso() {
         }
 
         const script = document.createElement("script");
-        script.src = "./js/app.js?v=11";
+        script.type = "module";
+        script.src = "./js/app.js?v=12";
 
         script.onload = () => {
             console.log("Painel Petsitter carregado!");
