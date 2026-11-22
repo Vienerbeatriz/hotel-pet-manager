@@ -1,4 +1,3 @@
-
 // CHAVES DO LOCALSTORAGE
 
 const CONFIG_KEY = "hotelPetConfiguracoes";
@@ -140,7 +139,6 @@ function atualizarRelogio() {
 
 function atualizarDashboard() {
     const reservas = carregarLista(RESERVAS_KEY);
-    const clientes = carregarLista(CLIENTES_KEY);
     const banho = carregarLista(BANHO_KEY);
     const vet = carregarLista(VET_KEY);
 
@@ -148,7 +146,7 @@ function atualizarDashboard() {
 
     atualizarPetsHospedados(reservas, hoje);
     atualizarReservasFuturas(reservas, hoje);
-    atualizarClientes(clientes);
+    atualizarClientes();
     atualizarReceitaMes(reservas, banho, vet, hoje);
     atualizarMovimentacoes(banho, vet, hoje);
     atualizarNotificacoes();
@@ -202,12 +200,52 @@ function atualizarReservasFuturas(reservas, hoje) {
 
 // CLIENTES CADASTRADOS
 
-function atualizarClientes(clientes) {
+let ultimaConsultaClientes = 0;
+let consultaClientesEmAndamento = false;
+let clientesJaConsultados = false;
+
+async function atualizarClientes() {
     const elemento = document.getElementById("clientesCadastrados");
 
     if (!elemento) return;
 
-    elemento.textContent = clientes.length;
+    // Evita consultas repetidas a cada 5 segundos.
+    if (consultaClientesEmAndamento) return;
+
+    const agora = Date.now();
+
+    // Atualiza o contador no máximo a cada 30 segundos.
+    if (agora - ultimaConsultaClientes < 30000) {
+        return;
+    }
+
+    consultaClientesEmAndamento = true;
+
+    try {
+        const { default: supabase } = await import("./supabase.js");
+
+        const { count, error } = await supabase
+            .from("clientes")
+            .select("*", { count: "exact", head: true });
+
+        if (error) throw error;
+
+        elemento.textContent = count ?? 0;
+        clientesJaConsultados = true;
+        ultimaConsultaClientes = Date.now();
+
+    } catch (erro) {
+        console.error("Erro ao contar clientes:", erro);
+
+        if (!clientesJaConsultados) {
+            elemento.textContent = "—";
+        }
+
+        ultimaConsultaClientes = Date.now();
+
+    } finally {
+        consultaClientesEmAndamento = false;
+    }
 }
 
 // RECEITA DO MÊS
