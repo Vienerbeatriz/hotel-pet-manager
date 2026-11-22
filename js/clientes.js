@@ -94,7 +94,9 @@ function criarModalFotoCliente() {
     fechar.addEventListener("click", fecharFotoCliente);
 
     modal.addEventListener("click", function(event) {
-        if (event.target === modal) fecharFotoCliente();
+        if (event.target === modal) {
+            fecharFotoCliente();
+        }
     });
 
     return modal;
@@ -111,6 +113,7 @@ function abrirFotoCliente(src, nome) {
 
     modal.classList.add("ativo");
     modal.setAttribute("aria-hidden", "false");
+
     document.body.style.overflow = "hidden";
 }
 
@@ -123,11 +126,14 @@ function fecharFotoCliente() {
     modal.setAttribute("aria-hidden", "true");
 
     modal.querySelector(".foto-pet-modal-imagem").src = "";
+
     document.body.style.overflow = "";
 }
 
 document.addEventListener("keydown", function(event) {
-    if (event.key === "Escape") fecharFotoCliente();
+    if (event.key === "Escape") {
+        fecharFotoCliente();
+    }
 });
 
 // ==============================
@@ -163,6 +169,7 @@ function validarCPF(cpf) {
     let primeiroDigito = (soma * 10) % 11;
 
     if (primeiroDigito === 10) primeiroDigito = 0;
+
     if (primeiroDigito !== Number(cpf[9])) return false;
 
     soma = 0;
@@ -236,13 +243,16 @@ function adicionarInformacao(container, titulo, valor) {
 
 function criarCartaoPet(pet) {
     const cartao = criarElemento("div", "cliente-pet-card");
+
     const cabecalho = criarElemento("div", "cliente-pet-header");
     const fotoArea = criarElemento("div", "cliente-pet-foto");
 
-    if (pet.foto) {
+    // FOTO DO SUPABASE
+
+    if (pet.foto_url) {
         const imagem = document.createElement("img");
 
-        imagem.src = pet.foto;
+        imagem.src = pet.foto_url;
         imagem.alt = `Foto de ${pet.nome || "pet"}`;
         imagem.classList.add("pet-foto-ampliavel");
         imagem.tabIndex = 0;
@@ -250,12 +260,22 @@ function criarCartaoPet(pet) {
         imagem.setAttribute("aria-label", `Ampliar foto de ${pet.nome || "pet"}`);
         imagem.title = "Clique para ampliar a foto";
 
+        imagem.onerror = function() {
+            this.onerror = null;
+            this.style.display = "none";
+            fotoArea.textContent = pet.especie === "Gato" ? "🐱" : "🐶";
+        };
+
         fotoArea.appendChild(imagem);
+
     } else {
-        fotoArea.textContent = "🐶";
+        fotoArea.textContent = pet.especie === "Gato" ? "🐱" : "🐶";
     }
 
-    const identificacao = criarElemento("div", "cliente-pet-identificacao");
+    const identificacao = criarElemento(
+        "div",
+        "cliente-pet-identificacao"
+    );
 
     identificacao.appendChild(
         criarElemento("h4", "", pet.nome || "Pet sem nome")
@@ -271,7 +291,12 @@ function criarCartaoPet(pet) {
 
     cabecalho.append(fotoArea, identificacao);
 
-    const informacoes = criarElemento("div", "cliente-pet-informacoes");
+    // INFORMAÇÕES
+
+    const informacoes = criarElemento(
+        "div",
+        "cliente-pet-informacoes"
+    );
 
     adicionarInformacao(informacoes, "Espécie", pet.especie);
     adicionarInformacao(informacoes, "Raça", pet.raca);
@@ -279,15 +304,16 @@ function criarCartaoPet(pet) {
     adicionarInformacao(informacoes, "Sexo", pet.sexo);
     adicionarInformacao(informacoes, "Porte", pet.porte);
     adicionarInformacao(informacoes, "Castrado", pet.castrado);
+    adicionarInformacao(informacoes, "Peso", pet.peso);
     adicionarInformacao(informacoes, "Alimentação", pet.alimentacao);
-    adicionarInformacao(informacoes, "Problemas de saúde", pet.problemasSaude);
+    adicionarInformacao(informacoes, "Problemas de saúde", pet.problemas_saude);
     adicionarInformacao(informacoes, "Comportamento", pet.comportamento);
     adicionarInformacao(informacoes, "Vermífugo", pet.vermifugo);
-    adicionarInformacao(informacoes, "Data do vermífugo", pet.dataVermifugo);
+    adicionarInformacao(informacoes, "Data do vermífugo", pet.data_vermifugo);
     adicionarInformacao(informacoes, "Antipulgas", pet.antipulgas);
-    adicionarInformacao(informacoes, "Data do antipulgas", pet.dataAntipulgas);
+    adicionarInformacao(informacoes, "Data do antipulgas", pet.data_antipulgas);
     adicionarInformacao(informacoes, "Veterinário", pet.veterinario);
-    adicionarInformacao(informacoes, "Telefone do veterinário", pet.telefoneVeterinario);
+    adicionarInformacao(informacoes, "Telefone do veterinário", pet.telefone_veterinario);
     adicionarInformacao(informacoes, "Observações do pet", pet.observacoes);
 
     cartao.append(cabecalho, informacoes);
@@ -300,15 +326,30 @@ function criarCartaoPet(pet) {
 // ==============================
 
 function criarCartaoCliente(cliente) {
+
+    // A tabela pets utiliza cliente_id
+
     const petsDoCliente = pets.filter(
-        pet => String(pet.tutor_id) === String(cliente.id)
+        pet => String(pet.cliente_id) === String(cliente.id)
     );
 
     const cartao = criarElemento("article", "cliente-card");
-    const cabecalho = criarElemento("div", "cliente-card-cabecalho");
-    const informacoesPrincipais = criarElemento("div", "cliente-card-principal");
 
-    const nome = criarElemento("h3", "cliente-card-nome", cliente.nome);
+    const cabecalho = criarElemento(
+        "div",
+        "cliente-card-cabecalho"
+    );
+
+    const informacoesPrincipais = criarElemento(
+        "div",
+        "cliente-card-principal"
+    );
+
+    const nome = criarElemento(
+        "h3",
+        "cliente-card-nome",
+        cliente.nome
+    );
 
     const telefone = criarElemento(
         "p",
@@ -326,13 +367,21 @@ function criarCartaoCliente(cliente) {
 
     informacoesPrincipais.append(nome, telefone, resumoPets);
 
-    const areaFoto = criarElemento("div", "cliente-card-foto");
-    const petComFoto = petsDoCliente.find(pet => pet.foto);
+    // FOTO DO PET NO CARTÃO DO CLIENTE
+
+    const areaFoto = criarElemento(
+        "div",
+        "cliente-card-foto"
+    );
+
+    const petComFoto = petsDoCliente.find(
+        pet => pet.foto_url
+    );
 
     if (petComFoto) {
         const imagem = document.createElement("img");
 
-        imagem.src = petComFoto.foto;
+        imagem.src = petComFoto.foto_url;
         imagem.alt = `Foto de ${petComFoto.nome}`;
         imagem.classList.add("pet-foto-ampliavel");
         imagem.tabIndex = 0;
@@ -340,14 +389,26 @@ function criarCartaoCliente(cliente) {
         imagem.setAttribute("aria-label", `Ampliar foto de ${petComFoto.nome}`);
         imagem.title = "Clique para ampliar a foto";
 
+        imagem.onerror = function() {
+            this.onerror = null;
+            this.style.display = "none";
+            areaFoto.textContent = "🐶";
+        };
+
         areaFoto.appendChild(imagem);
+
     } else {
         areaFoto.textContent = "🐶";
     }
 
     cabecalho.append(informacoesPrincipais, areaFoto);
 
-    const detalhes = criarElemento("div", "cliente-card-detalhes");
+    // DETALHES DO CLIENTE
+
+    const detalhes = criarElemento(
+        "div",
+        "cliente-card-detalhes"
+    );
 
     const tituloDados = criarElemento(
         "h4",
@@ -355,7 +416,10 @@ function criarCartaoCliente(cliente) {
         "Informações do tutor"
     );
 
-    const gradeInformacoes = criarElemento("div", "cliente-info-grid");
+    const gradeInformacoes = criarElemento(
+        "div",
+        "cliente-info-grid"
+    );
 
     adicionarInformacao(gradeInformacoes, "Nome completo", cliente.nome);
     adicionarInformacao(gradeInformacoes, "CPF", formatarCPF(cliente.cpf));
@@ -365,6 +429,8 @@ function criarCartaoCliente(cliente) {
     adicionarInformacao(gradeInformacoes, "Observações", cliente.observacoes);
 
     detalhes.append(tituloDados, gradeInformacoes);
+
+    // PETS DO TUTOR
 
     const tituloPets = criarElemento(
         "h4",
@@ -382,8 +448,12 @@ function criarCartaoCliente(cliente) {
                 "Este tutor ainda não possui animais cadastrados."
             )
         );
+
     } else {
-        const listaPets = criarElemento("div", "cliente-pets-lista");
+        const listaPets = criarElemento(
+            "div",
+            "cliente-pets-lista"
+        );
 
         petsDoCliente.forEach(pet => {
             listaPets.appendChild(criarCartaoPet(pet));
@@ -394,7 +464,12 @@ function criarCartaoCliente(cliente) {
 
     detalhes.hidden = true;
 
-    const rodape = criarElemento("div", "cliente-card-acoes");
+    // BOTÕES
+
+    const rodape = criarElemento(
+        "div",
+        "cliente-card-acoes"
+    );
 
     const botaoLerMais = criarElemento(
         "button",
@@ -415,6 +490,7 @@ function criarCartaoCliente(cliente) {
     botaoExcluir.dataset.id = cliente.id;
 
     rodape.append(botaoLerMais, botaoExcluir);
+
     cartao.append(cabecalho, detalhes, rodape);
 
     return cartao;
@@ -443,7 +519,9 @@ function atualizarListaVisual() {
     }
 
     clientes.forEach(cliente => {
-        clientCards.appendChild(criarCartaoCliente(cliente));
+        clientCards.appendChild(
+            criarCartaoCliente(cliente)
+        );
     });
 }
 
@@ -452,10 +530,15 @@ function atualizarListaVisual() {
 // ==============================
 
 clientCards.addEventListener("click", async function(event) {
+
     const imagem = event.target.closest(".pet-foto-ampliavel");
 
     if (imagem) {
-        abrirFotoCliente(imagem.src, imagem.alt.replace("Foto de ", ""));
+        abrirFotoCliente(
+            imagem.src,
+            imagem.alt.replace("Foto de ", "")
+        );
+
         return;
     }
 
@@ -463,17 +546,30 @@ clientCards.addEventListener("click", async function(event) {
 
     if (botaoLerMais) {
         const cartao = botaoLerMais.closest(".cliente-card");
-        const detalhes = cartao.querySelector(".cliente-card-detalhes");
+
+        const detalhes = cartao.querySelector(
+            ".cliente-card-detalhes"
+        );
+
         const aberto = !detalhes.hidden;
 
         detalhes.hidden = aberto;
-        botaoLerMais.textContent = aberto ? "Ler mais" : "Mostrar menos";
-        botaoLerMais.setAttribute("aria-expanded", String(!aberto));
+
+        botaoLerMais.textContent = aberto
+            ? "Ler mais"
+            : "Mostrar menos";
+
+        botaoLerMais.setAttribute(
+            "aria-expanded",
+            String(!aberto)
+        );
 
         return;
     }
 
-    const botaoExcluir = event.target.closest(".btn-excluir-cliente");
+    const botaoExcluir = event.target.closest(
+        ".btn-excluir-cliente"
+    );
 
     if (!botaoExcluir) return;
 
@@ -496,14 +592,26 @@ clientCards.addEventListener("click", async function(event) {
         await carregarDados();
 
         alert("Cliente excluído com sucesso!");
+
     } catch (erro) {
         console.error("Erro ao excluir cliente:", erro);
-        alert("Não foi possível excluir o cliente. Verifique se existem pets ou reservas vinculados a ele.");
+
+        alert(
+            "Não foi possível excluir o cliente. " +
+            "Verifique se existem vínculos no banco de dados."
+        );
     }
 });
 
+// ==============================
+// ACESSIBILIDADE DAS FOTOS
+// ==============================
+
 clientCards.addEventListener("keydown", function(event) {
-    const imagem = event.target.closest(".pet-foto-ampliavel");
+
+    const imagem = event.target.closest(
+        ".pet-foto-ampliavel"
+    );
 
     if (!imagem) return;
 
@@ -546,6 +654,7 @@ form.addEventListener("submit", async function(event) {
 
     const cpfExistente = clientes.some(cliente => {
         const cpfSalvo = String(cliente.cpf || "").replace(/\D/g, "");
+
         return cpfSalvo === novoCliente.cpf;
     });
 
@@ -567,13 +676,17 @@ form.addEventListener("submit", async function(event) {
         form.reset();
 
         alert("Cliente cadastrado com sucesso! 🧡");
+
     } catch (erro) {
         console.error("Erro ao cadastrar cliente:", erro);
 
         if (erro.code === "23505") {
             alert("Este CPF já está cadastrado no sistema.");
         } else {
-            alert("Não foi possível cadastrar o cliente. Verifique a conexão e as permissões do banco.");
+            alert(
+                "Não foi possível cadastrar o cliente. " +
+                "Verifique a conexão e as permissões do banco."
+            );
         }
     }
 });
